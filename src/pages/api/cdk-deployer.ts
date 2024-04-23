@@ -24,6 +24,7 @@ export default async function handler(
     if(filteredDevelopers.length === 0) filteredDevelopers.push(...developers);
 
     const selectedDeveloper = filteredDevelopers[Math.floor(Math.random() * filteredDevelopers.length)];
+    console.log("selected: ", selectedDeveloper?.name)
 
     // up the count on the selected developer on the developers file and write it down with qsl
     await sql`UPDATE developers SET count = count + 1 WHERE name = ${selectedDeveloper.name}`;
@@ -33,7 +34,7 @@ export default async function handler(
   return res.status(200).json(
     {
       response_type: 'in_channel',
-      text: `The @cdk-deployer for this week will be: @${selectedDeveloper.name}`,
+      text: `The @cdk-deployer for this week will be: <@${selectedDeveloper.slack_id}>`,
     }
   );
     
