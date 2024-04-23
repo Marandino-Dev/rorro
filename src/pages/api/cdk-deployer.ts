@@ -31,7 +31,10 @@ export default async function handler(
     await sql`UPDATE developers set current = false WHERE name != ${selectedDeveloper.name}`;
 
   return res.status(200).json(
-    selectedDeveloper.name
+    {
+      response_type: 'in_channel',
+      text: `The @cdk-deployer for this week will be: @${selectedDeveloper.name}`,
+    }
   );
     
   } catch (error) {
