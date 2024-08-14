@@ -1,16 +1,8 @@
-import { PostgresClient, TableName } from "@/pages/api/_utils/database";
-import type { NextApiRequest, NextApiResponse } from "next";
+import { PostgresClient, TableName } from "utils/database";
 import { logRequest, returnInvalidRequest } from "utils/server-helper";
 
-type SlackUser = {
-  slackId: string;
-  fullName: string;
-  count: number;
-  holiday: boolean;
-  current: boolean;
-  backup: boolean
-}
-
+import { SlackUser } from "types";
+import type { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(
   req: NextApiRequest,
@@ -33,7 +25,7 @@ export default async function handler(
           fullName: 'Marcelo',
           count: 0,
           holiday: false,
-          current: false,
+          onDuty: false,
           backup: false
         }, TableName.Users);
       console.log(users)

@@ -22,7 +22,10 @@
       ],
       "utils/*": [
         "./src/pages/api/_utils/*"
-      ]
+      ],
+      "types": [
+        "./src/_types"
+      ],
     }
   },
   "include": [
