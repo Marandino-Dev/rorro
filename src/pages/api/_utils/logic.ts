@@ -33,14 +33,6 @@ export function getCurrentSlackUser(users: SlackUser[]): SlackUser {
 }
 
 /**
- * Filters an array of Slack users based on the highest count.
- *
- * @param {SlackUser[]} users - The array of Slack users to filter.
- * @param {number} highestCount - The highest count to filter by.
- * @return {SlackUser[]} The filtered array of Slack users.
- */
-
-/**
  * Filters an array of Slack users based on the highest count, returning all users if no users have a lower count.
  *
  * @param {SlackUser[]} users - The array of Slack users to filter.
