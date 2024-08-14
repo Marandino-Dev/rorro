@@ -6,7 +6,7 @@ on:
 
 jobs:
   release-candidate-validation:
-    name: pre-commit
+    name: release-candidate-validation
     runs-on: ubuntu-latest
 
     steps:
