@@ -1,7 +1,6 @@
-import Navbar from "./api/components/navbar"
+import { Navbar } from "./api/components/navbar";
 
 export default function App() {
-  return (
-    <Navbar />
-  )
+  return <Navbar />;
 }
+
