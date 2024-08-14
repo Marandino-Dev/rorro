@@ -1,15 +1,7 @@
-type SlackUser = {
-  slackId: string;
-  fullName: string;
-  count: number;
-  holiday: boolean;
-  onDuty: boolean;
-  backup: boolean;
-};
+import { SlackUser } from "types";
 
 /**
  * Retrieves the highest count from a list of Slack users.
- *
  * @param {SlackUser[]} users - An array of Slack users to retrieve the highest count from.
  * @return {number} The highest count found among the Slack users.
  */
@@ -20,7 +12,6 @@ export function getHighestCount(users: SlackUser[]): number {
 
 /**
  * Retrieves the Slack user who is currently on duty.
- *
  * @param {SlackUser[]} users - An array of Slack users to search through.
  * @return {SlackUser} The Slack user who is currently on duty.
  */
@@ -34,7 +25,6 @@ export function getCurrentSlackUser(users: SlackUser[]): SlackUser {
 
 /**
  * Filters an array of Slack users based on the highest count, returning all users if no users have a lower count.
- *
  * @param {SlackUser[]} users - The array of Slack users to filter.
  * @param {number} highestCount - The highest count to filter by.
  * @return {SlackUser[]} The filtered array of Slack users.
@@ -49,7 +39,6 @@ export function filterSlackUsers(users: SlackUser[], highestCount: number): Slac
 
 /**
  * Selects a random Slack user from the provided list, excluding users with the highest count.
- *
  * @param {SlackUser[]} users - The list of Slack users to select from.
  * @param {number} highestCount - The highest count to exclude users with.
  * @return {SlackUser} A randomly selected Slack user.
