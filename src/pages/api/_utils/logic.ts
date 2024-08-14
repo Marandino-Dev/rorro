@@ -7,11 +7,6 @@ type SlackUser = {
   backup: boolean;
 };
 
-//SlackUser = object with 1 user
-//users = query result from the database with all users
-
-
-
 /**
  * Retrieves the highest count from a list of Slack users.
  *
@@ -22,7 +17,6 @@ export function getHighestCount(users: SlackUser[]): number {
   const highestCount = Math.max(...users.map((user) => user.count));
   return highestCount;
 }
-
 
 /**
  * Retrieves the Slack user who is currently on duty.
@@ -38,9 +32,16 @@ export function getCurrentSlackUser(users: SlackUser[]): SlackUser {
   return userOnDuty;
 }
 
-
 /**
  * Filters an array of Slack users based on the highest count.
+ *
+ * @param {SlackUser[]} users - The array of Slack users to filter.
+ * @param {number} highestCount - The highest count to filter by.
+ * @return {SlackUser[]} The filtered array of Slack users.
+ */
+
+/**
+ * Filters an array of Slack users based on the highest count, returning all users if no users have a lower count.
  *
  * @param {SlackUser[]} users - The array of Slack users to filter.
  * @param {number} highestCount - The highest count to filter by.
@@ -53,7 +54,6 @@ export function filterSlackUsers(users: SlackUser[], highestCount: number): Slac
   }
   return filteredSlackUsers;
 }
-
 
 /**
  * Selects a random Slack user from the provided list, excluding users with the highest count.
