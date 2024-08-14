@@ -2,7 +2,7 @@ import { sql } from '@vercel/postgres';
 
 /** These are the local names for the table private values inside the PosttgreClient */
 export enum TableName {
-  Logs = '_logsTable',// TODO: refactor this, it's misleading
+  Logs = '_logsTable',
   Users = '_usersTable',
 }
 
