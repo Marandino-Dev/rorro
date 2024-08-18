@@ -21,17 +21,23 @@
         "./src/*"
       ],
       "utils/*": [
-        "./src/pages/api/_utils/*"
+        "src/app/api/_utils/*"
       ],
       "types": [
         "./src/_types"
-      ],
-    }
+      ]
+    },
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ]
   },
   "include": [
     "next-env.d.ts",
     "**/*.ts",
-    "**/*.tsx"
+    "**/*.tsx",
+    ".next/types/**/*.ts"
   ],
   "exclude": [
     "node_modules"
