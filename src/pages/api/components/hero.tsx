@@ -8,7 +8,7 @@ const Hero = () => {
           {/* Text content */}
           <div className="w-full md:w-1/2 mb-8 md:mb-0">
             <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-              RORRO: Simplify Your Team's Turnover
+              RORRO: Simplify Your Team&apos;s Turnover
             </h1>
             <p className="text-xl text-gray-600 mb-6">
               Revolutionize user rotations in Slack with RORRO.
@@ -16,7 +16,7 @@ const Hero = () => {
             </p>
             <p className='text-xl text-gray-600 mb-6'> 
               Designed for teams of all sizes
-              Wheters you're managing shifts, task assignments, or rotating team roles, RORRO makes the process smooth and efficient.
+              Wheters you&apos;re managing shifts, task assignments, or rotating team roles, RORRO makes the process smooth and efficient.
             </p>
             <button className="bg-primary-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-primary-700 transition duration-300">
               Get Started
