@@ -38,6 +38,13 @@ export class PostgresClient {
     return rows as T[]
   }
 
+  public async queryLatestLog<T>(table: TableName): Promise<T | null> {
+    console.log("I'm trying to query the latest from:", this._logsTable);
+    const { rows } = await sql`SELECT * FROM ${this[table]} ORDER BY date DESC LIMIT 1;`;
+    return rows.length > 0 ? (rows[0] as T) : null;
+  }
+
+
   public async putItem<T extends Record<string, unknown>>(item: T, table: TableName): Promise<void> {
     console.log("I'm trying to put an item into:", this[table]);
 

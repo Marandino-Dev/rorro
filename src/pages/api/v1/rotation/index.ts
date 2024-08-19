@@ -1,27 +1,29 @@
-import type { NextApiRequest, NextApiResponse } from "next";
+import { PostgresClient, TableName } from "utils/database";
 import { logRequest, returnInvalidRequest } from "utils/server-helper";
+
+import type { NextApiRequest, NextApiResponse } from "next";
+
 import { getSlackMessage, SlackResponseType } from "utils/slack";
-import { sql } from "@vercel/postgres";
 
-async function getCurrentRotations(res: NextApiResponse) {
+async function getCurrentRotations(res: NextApiResponse, rotationName: string) {
   try {
-    const { rows: logs } = await sql`SELECT * FROM marandino_standup_logs ORDER BY date DESC LIMIT 1`;
-
-    if (!logs || logs.length === 0) {
+    const DbClient = new PostgresClient('marandino', rotationName);
+    //Todo change any for rotation in the future
+    //const lastLog = await DbClient.queryLatestLog<any>(TableName.Logs);
+    const lastLog = await DbClient.queryLatestLog<any>(TableName.Logs);
+    `Slack user on duty: <@${lastLog.current_deployer}> | Backup Slack user: <@${lastLog.backup_deployer}>.`;
+    if (!lastLog) {
       const errorMessage = getSlackMessage(SlackResponseType.Ephemeral, 'No logs found');
       return res.status(404).json(errorMessage);
     }
 
-    const lastLog = logs[0];
-
     const slackMessage = getSlackMessage(
       SlackResponseType.Ephemeral,
-      `Slack user on duty: <@${lastLog.current_deployer}> | Backup Slack user: <@${lastLog.backup_deployer}>.`
+      `Slack user on duty: <@${lastLog}> | Backup Slack user: <@${lastLog}>.`
     );
 
     return res.status(200).json(slackMessage);
-  }
-  catch (error) {
+  } catch (error) {
     console.error(JSON.stringify(error));
     const slackMessage = getSlackMessage(
       SlackResponseType.Ephemeral, 'Something went wrong, please try again.'
@@ -34,6 +36,12 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<unknown>,
 ) {
+  logRequest(req);
+
+  const { rotationName } = req.query;
+  if (!rotationName || typeof rotationName !== 'string') {
+    return res.status(400).json({ error: 'Rotation name is required' });
+  }
 
   logRequest(req);
 
@@ -45,8 +53,7 @@ export default async function handler(
       break;
 
     case "GET":
-      //TODO: add a handler for returning the current rotations for this user.
-      await getCurrentRotations(res);
+      await getCurrentRotations(res, rotationName);
       break;
 
     default:
