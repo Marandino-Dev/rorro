@@ -1,6 +1,8 @@
 import { Navbar } from "./api/components/navbar";
 import Head from "next/head";
 import Image from "next/image";
+import Hero from "./api/components/hero";
+import Pricing from "./api/components/pricing";
 
 export default function App() {
   return (
@@ -12,6 +14,8 @@ export default function App() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Navbar />
+      <Hero />
+      <Pricing />
     </>
   );
 }
