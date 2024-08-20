@@ -42,8 +42,6 @@ export async function POST(
     }, TableName.Users
   );
 
-  console.log(users)
-
   return NextResponse.json(
     getSlackMessage(
       SlackResponseType.InChannel,

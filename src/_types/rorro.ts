@@ -8,7 +8,7 @@ export type SlackUser = {
 }
 
 // https://api.slack.com/interactivity/slash-commands
-type SlackCommandPayload = {
+export type SlackCommandPayload = {
   /** The Request Token from Slack */
   token: string;
   team_id: string;
