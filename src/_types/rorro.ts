@@ -7,6 +7,34 @@ export type SlackUser = {
   backup: boolean;
 }
 
+// https://api.slack.com/interactivity/slash-commands
+type SlackCommandPayload = {
+  /** The Request Token from Slack */
+  token: string;
+  team_id: string;
+  /** The Unique string that Slack uses for the organization */
+  team_domain: string;
+  enterprise_id: string;
+  enterprise_name: string;
+  channel_id: string;
+  channel_name: string;
+  user_id: string;
+  /** The user name who invoked this */
+  user_name: string;
+  /** The exact command the user invoked, e.g: /rr*/
+  command: string;
+  /** The text after the command, usually the optional parameters */
+  text: string;
+  response_url: string;
+  trigger_id: string;
+  api_app_id: string;
+}
+
+
+export type SlackCommandRequest = {
+  body?: SlackCommandPayload
+}
+
 export type LogType = 'status' | 'rotation' | 'revert';
 
 export type Log = {
