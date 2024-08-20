@@ -51,8 +51,6 @@ export type Rotation = {
   organization: string;
   admin: string[]; // save the Slack user ids, just in case save at least the one who created the rotation
   configuration: RotationConfiguration;
-  onDuty: SlackUser;
-  backup: SlackUser;
 }
 
 type RotationConfiguration = {
