@@ -3,6 +3,7 @@ import Head from "next/head";
 import Image from "next/image";
 import Hero from "./api/components/hero";
 import Pricing from "./api/components/pricing";
+import FeaturesGrid from "./api/components/features";
 
 export default function App() {
   return (
@@ -15,6 +16,7 @@ export default function App() {
       </Head>
       <Navbar />
       <Hero />
+      <FeaturesGrid />
       <Pricing />
     </>
   );
