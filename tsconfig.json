@@ -21,7 +21,7 @@
         "./src/*"
       ],
       "utils/*": [
-        "src/app/api/_utils/*"
+        "./src/app/api/_utils/*"
       ],
       "types": [
         "./src/_types"
