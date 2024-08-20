@@ -1,45 +1,24 @@
 import { PostgresClient, TableName } from "utils/database";
-import { SlackUser } from "types";
+import { SlackCommandRequest, SlackUser } from "types";
 import { NextRequest, NextResponse } from "next/server";
-
-type SlackCommandPayload = {
-  /** The Request Token from Slack */
-  token: string;
-  team_id: string;
-  /** The Unique string that Slack uses for the organization */
-  team_domain: string;
-  enterprise_id: string;
-  enterprise_name: string;
-  channel_id: string;
-  channel_name: string;
-  user_id: string;
-  /** The user name who invoked this */
-  user_name: string;
-  /** The exact command the user invoked, e.g: /rr*/
-  command: string;
-  /** The text after the command, usually the optional parameters */
-  text: string;
-  response_url: string;
-  trigger_id: string;
-  api_app_id: string;
-}
+import { getSlackMessage, SlackResponseType } from "../../_utils/slack";
 
 
-interface SlackCommandRequest {
-  body?: SlackCommandPayload
-}
+
 
 /** Returns the input from the user, without spaces so the table doesn't break */
 function sanitizeSlackText(text: string) {
-  return text.trim().replaceAll(" ", "_")
+  return text.trim().toLowerCase().replaceAll(" ", "_")
 }
 
 export async function POST(
   req: NextRequest & SlackCommandRequest,
 ) {
 
-  console.debug(req)
-  const { body } = req;
+  const body = await req.json()
+
+  console.log(body)
+
   const organizationName = sanitizeSlackText(body.team_domain);
   const rotationName = sanitizeSlackText(body.text)
 
@@ -51,6 +30,7 @@ export async function POST(
 
   const DbClient = new PostgresClient(organizationName, rotationName)// TODO: softcode organization
 
+  //TODO: implement PUT Items instead, that should accept an array.
   const users = await DbClient.putItem<SlackUser>(
     {
       slackId: body.user_id,
@@ -59,10 +39,16 @@ export async function POST(
       holiday: false,
       onDuty: false,
       backup: false
-    }, TableName.Users);
+    }, TableName.Users
+  );
 
   console.log(users)
-  return NextResponse.json({ users }, { status: 200 })
 
+  return NextResponse.json(
+    getSlackMessage(
+      SlackResponseType.InChannel,
+      `Successfully created the ${rotationName} rotation.`
+    )
+  )
 }
 
