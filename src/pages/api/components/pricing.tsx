@@ -49,7 +49,7 @@ const Pricing: React.FC = () => {
     },
     {
       title: "Premium",
-      price: "$9.99/month",
+      price: "$1/month",
       features: [
         '-----',
         '-----',

@@ -1,8 +1,9 @@
 import { Navbar } from "./api/components/navbar";
 import Head from "next/head";
-import Image from "next/image";
 import Hero from "./api/components/hero";
 import Pricing from "./api/components/pricing";
+import FeaturesGrid from "./api/components/features";
+import AboutFooter from "./api/components/footer";
 
 export default function App() {
   return (
@@ -15,7 +16,9 @@ export default function App() {
       </Head>
       <Navbar />
       <Hero />
+      <FeaturesGrid />
       <Pricing />
+      <AboutFooter />
     </>
   );
 }
