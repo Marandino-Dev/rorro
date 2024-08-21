@@ -50,29 +50,32 @@ export async function POST(
   )
 }
 
-export async function GET(res: NextApiResponse, rotationName: string) {
+export async function GET(
+  req: NextRequest & SlackCommandRequest,
+) {
+
+  const body = await req.json()
+
+  const organizationName = sanitizeSlackText(body.team_domain);
+  const rotationName = sanitizeSlackText(body.text);
+
+  if (!rotationName || typeof rotationName !== 'string') return NextResponse.json({ error: 'rotationName is required' }, { status: 400 })
+
   try {
-    const DbClient = new PostgresClient('marandino', rotationName);
-    //Todo change any for rotation in the future
-    //const lastLog = await DbClient.queryLatestLog<any>(TableName.Logs);
-    const lastLog = await DbClient.queryLatestLog<any>(TableName.Logs);
-    `Slack user on duty: <@${lastLog.current_deployer}> | Backup Slack user: <@${lastLog.backup_deployer}>.`;
-    if (!lastLog) {
-      const errorMessage = getSlackMessage(SlackResponseType.Ephemeral, 'No logs found');
-      return res.status(404).json(errorMessage);
-    }
+    const DbClient = new PostgresClient(organizationName, rotationName)// TODO: softcode organization
+    const { userOnDuty, userOnBackup  } = await DbClient.queryCurrentActiveUsers();
 
     const slackMessage = getSlackMessage(
       SlackResponseType.Ephemeral,
-      `Slack user on duty: <@${lastLog}> | Backup Slack user: <@${lastLog}>.`
+      `Slack user on duty: <@${userOnDuty?.slackId}> | Backup Slack user: <@${userOnBackup?.slackId}>.`
     );
 
-    return res.status(200).json(slackMessage);
+    return NextResponse.json(slackMessage, { status: 200 });
   } catch (error) {
     console.error(JSON.stringify(error));
     const slackMessage = getSlackMessage(
       SlackResponseType.Ephemeral, 'Something went wrong, please try again.'
     );
-    return res.status(500).json(slackMessage);
+    return NextResponse.json(slackMessage, { status: 500 });
   }
 }

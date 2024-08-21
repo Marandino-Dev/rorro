@@ -1,9 +1,15 @@
+import { SlackUser } from 'types';
 import { sql } from '@vercel/postgres';
 
 /** These are the local names for the table private values inside the PosttgreClient */
 export enum TableName {
   Logs = '_logsTable',
   Users = '_usersTable',
+}
+
+type CurrentActiveUsers = {
+  userOnDuty: SlackUser;
+  userOnBackup: SlackUser;
 }
 
 export class PostgresClient {
@@ -38,12 +44,20 @@ export class PostgresClient {
     return rows as T[]
   }
 
-  public async queryLatestLog<T>(table: TableName): Promise<T | null> {
-    console.log("I'm trying to query the latest from:", this._logsTable);
-    const { rows } = await sql`SELECT * FROM ${this[table]} ORDER BY date DESC LIMIT 1;`;
-    return rows.length > 0 ? (rows[0] as T) : null;
-  }
+  public async queryCurrentActiveUsers(): Promise<CurrentActiveUsers> {
+    console.log(
+      "Querying the user on duty and their backup in order from:",
+      this._usersTable
+    );
+    const queryString = `
+      SELECT * FROM ${this._usersTable}
+      WHERE onDuty = true OR backup = true
+      ORDER BY onDuty DESC;
+    `;
+    const { rows } = await sql.query(queryString);
 
+    return { userOnDuty: rows[0], userOnBackup: rows[1] };
+  }
 
   public async putItem<T extends Record<string, unknown>>(item: T, table: TableName): Promise<void> {
     console.log("I'm trying to put an item into:", this[table]);
