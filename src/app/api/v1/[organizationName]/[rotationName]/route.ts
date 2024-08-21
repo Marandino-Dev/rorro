@@ -1,20 +1,28 @@
 import { type NextRequest, NextResponse } from 'next/server';
+import { PostgresClient } from "utils/database";
 
-export function GET(
-  request: NextRequest,
-  { params }: { params: { organizationName: string; rotationName: string } }
+export async function GET(
+    _: NextRequest,
+    { params }: { params: { organizationName: string; rotationName: string; }; }
 ) {
-  const { organizationName, rotationName } = params;
+    const { organizationName, rotationName } = params;
+    console.log(`Organization: ${organizationName}, Rotation: ${rotationName} requested all the user on the rotation`);
+    const DbClient = new PostgresClient(organizationName, rotationName);
 
-  const searchParams = request.nextUrl.searchParams;
-  const query = searchParams.get('query');
+    try {
+        const user = await DbClient.queryUsersForOrganizationAndRotation(organizationName, rotationName);
 
-  console.log('Organization Name:', organizationName);
-  console.log('Rotation Name:', rotationName);
-  console.log('Query parameter:', query);
+        return NextResponse.json(
+            { user },
+            { status: 200 }
+        );
+    } catch (error) {
+        console.error('Error querying database:', error);
 
-  return NextResponse.json(
-    { organizationName, rotationName, query },
-    { status: 200 }
-  );
+        // Return an error response if something goes wrong
+        return NextResponse.json(
+            { error: 'Failed to query users' },
+            { status: 500 }
+        );
+    }
 }

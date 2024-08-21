@@ -1,10 +1,18 @@
+import { SlackUser } from 'types';
 import { sql } from '@vercel/postgres';
+
+
 
 /** These are the local names for the table private values inside the PosttgreClient */
 export enum TableName {
   Logs = '_logsTable',
   Users = '_usersTable',
 }
+
+type CurrentActiveUsers = {
+  userOnDuty: SlackUser;
+  userOnBackup: SlackUser;
+};
 
 export class PostgresClient {
 
@@ -29,13 +37,25 @@ export class PostgresClient {
     const tableName = this._organizationId + '_' + this._rotationName; // marandino_standup
     this._usersTable = tableName + '_users';//marandino_standup_users
     this._logsTable = tableName + '_logs';//marandino_standup_logs
-  }
+  };
 
 
   public async queryAll<T>(table: TableName): Promise<T[]> {
-    console.log("I'm trying to query everything from:", this._logsTable, this._usersTable)
+    console.log("I'm trying to query everything from:", this._logsTable, this._usersTable);
     const { rows } = await sql` SELECT * FROM ${this[table]};`;
-    return rows as T[]
+    return rows as T[];
+  }
+
+  public async queryUsersForOrganizationAndRotation(organizationName: string, rotationName: string): Promise<SlackUser[]> {
+    console.log(`Querying all users for organization: ${organizationName}, rotation: ${rotationName} from:`,
+      this._usersTable
+    );
+    const queryString = `
+    SELECT * FROM ${this._usersTable}
+  `;
+
+    const { rows } = await sql.query(queryString, []);
+    return rows;
   }
 
   public async putItem<T extends Record<string, unknown>>(item: T, table: TableName): Promise<void> {
@@ -57,7 +77,7 @@ export class PostgresClient {
 
 
       // TODO: make this support an array of items being inserted, it should be supported by just doing multiple (value1), (value2), (value3)
-      const putQuery = `INSERT INTO ${this[table]} (${columnString}) VALUES (${valueParams});`
+      const putQuery = `INSERT INTO ${this[table]} (${columnString}) VALUES (${valueParams});`;
       await sql.query(putQuery);
       console.log(putQuery);
     } catch (error) {
@@ -68,8 +88,8 @@ export class PostgresClient {
 
   /** This function will confirm that the table exists prior to inserting a new item */
   private async createTableIfNotExists(table: TableName, columns: string[], values: unknown[]) {
-    const queryString = this.createSqlQuery(table, columns, values)
-    await sql.query(queryString)
+    const queryString = this.createSqlQuery(table, columns, values);
+    await sql.query(queryString);
   }
 
 
@@ -80,7 +100,7 @@ export class PostgresClient {
       columns.map((column, index) => {
         return column + ' ' + this.getValueType(values[index]);
       }
-      ).join(', ') + ');'
+      ).join(', ') + ');';
   }
 
   // TODO: refactor this
