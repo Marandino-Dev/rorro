@@ -18,7 +18,6 @@ const AboutFooter: React.FC = () => {
       title: "Company",
       links: [
         { text: "About Us", href: "/about" },
-        { text: "Careers", href: "/careers" },
         { text: "Press", href: "/press" },
       ]
     },
@@ -56,7 +55,7 @@ const AboutFooter: React.FC = () => {
           <div className="lg:col-span-2">
             <h2 className="text-2xl font-bold mb-4">RORRO</h2>
             <p className="mb-4">
-              Empowering users with innovative solutions. RORRO is committed to creating cutting-edge technology that simplifies your life and boosts productivity.
+            RORRO: Effortlessly Rotate and Assign Tasks, Ensuring Fair and Balanced Work Distribution Every Time.
             </p>
             <div className="flex space-x-4">
               <a href="#" className="hover:text-gray-300">

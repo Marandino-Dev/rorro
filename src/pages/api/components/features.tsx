@@ -1,7 +1,10 @@
 import React from 'react';
+import { FaSlack, FaClock, FaSuitcase, FaAddressCard, FaSlidersH, } from 'react-icons/fa';
+import { GiIsland, GiPadlock, GiPlanetConquest } from 'react-icons/gi';
+
 
 interface Feature {
-  icon: string;
+  icon: React.ReactNode;
   title: string;
   description: string;
 }
@@ -20,14 +23,14 @@ const FeatureBox: React.FC<FeatureBoxProps> = ({ feature }) => (
 
 const FeaturesGrid: React.FC = () => {
   const features: Feature[] = [
-    { icon: '🚀', title: 'Fast Performance', description: 'Lightning-fast load times for a smooth user experience.' },
-    { icon: '🔒', title: 'Secure', description: 'Top-notch security to keep your data safe and protected.' },
-    { icon: '📱', title: 'Responsive', description: 'Looks great on any device, from mobile to desktop.' },
-    { icon: '🔍', title: 'SEO Optimized', description: 'Boost your visibility with our SEO-friendly design.' },
-    { icon: '🔧', title: 'Customizable', description: 'Easily adapt the app to fit your specific needs.' },
-    { icon: '🔄', title: 'Regular Updates', description: 'Constant improvements and new features added regularly.' },
-    { icon: '💬', title: '24/7 Support', description: 'Our team is always here to help you succeed.' },
-    { icon: '📊', title: 'Analytics', description: 'Gain insights with comprehensive analytics and reporting.' },
+    { icon: <FaSlack />, title: 'All in Slack', description: 'Do everything in Slack, no need to leave the app.' },
+    { icon: <FaClock />, title: 'Scheduled rotations', description: 'Scheduled rotations for automatic assignements.' },
+    { icon: <FaSuitcase />, title: 'Workday rotations', description: 'Rotate on a per workday basis, for example, Monday to Friday.' },
+    { icon: <FaAddressCard />, title: 'Holidays and weekends', description: 'Full holidays and festivals support, to skip duty when you should rest!' },
+    { icon: <FaSlidersH />, title: 'Multi-duty rotations', description: 'Set multiple users on duty at the same time.' },
+    { icon: <GiIsland />, title: 'Vacation mode', description: 'Skip duty based on your status. For example, when you are on vacation.' },
+    { icon: <GiPadlock />, title: 'Privacy and control', description: 'Control access to rotations, and keep your data private.' },
+    { icon: <GiPlanetConquest />, title: 'Timezones', description: 'Full support for timezones to rotate always at the right time.' },
   ];
 
   return (
