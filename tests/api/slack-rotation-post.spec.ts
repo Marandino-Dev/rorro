@@ -3,8 +3,8 @@
  */
 import { describe, it, jest, expect } from '@jest/globals'
 import { SlackCommandPayload, SlackCommandRequest } from 'types'
-import { POST } from '@/app/api/v1/rotation/route'
-import { PostgresClient, TableName } from '@/app/api/_utils/database'
+import { POST } from '@/app/api/v1/slack/rotation-post/route'
+import { PostgresClient, TableName } from 'utils/database'
 import { NextRequest } from 'next/server'
 
 function mockSlackCommand(optional: string): SlackCommandPayload {

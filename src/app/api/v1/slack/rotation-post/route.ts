@@ -1,7 +1,7 @@
 import { PostgresClient, TableName } from "utils/database";
 import { SlackCommandRequest, SlackUser } from "types";
 import { NextRequest, NextResponse } from "next/server";
-import { getSlackMessage, SlackResponseType } from "../../_utils/slack";
+import { getSlackMessage, SlackResponseType } from "utils/slack";
 
 
 
