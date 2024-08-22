@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Card,
   Table,
@@ -10,23 +10,56 @@ import {
 } from '@tremor/react';
 
 // Database
-const data = [
+const initialData = [
   {
-    name: 'Viola Amherd',
-    slackId: 'Federal Councillor',
+    name: 'Chiyen Venegas',
+    slackId: 'NKCRKENUI',
     onDuty: 'True',
     count: '1',
-    lastTime: 'August 22 2024',
+    lastTime: 'July 22 2024',
     availability: true,
   },
   {
-    name: 'Albert Rösti',
-    slackId: 'Federal Councillor',
+    name: 'Deyner Cruz',
+    slackId: 'I90JY7H4G',
     onDuty: 'False',
-    count: '0',
-    lastTime: 'August 22 2024',
+    count: '3',
+    lastTime: 'April 22 2024',
     availability: false,
   },
+  {
+    name: 'Kedwin Araya',
+    slackId: '69RJHDQN3',
+    onDuty: 'False',
+    count: '7',
+    lastTime: 'January 22 2024',
+    availability: false,
+  },
+  {
+    name: 'Celeste Vargas',
+    slackId: 'IZ319BL01',
+    onDuty: 'True',
+    count: '2',
+    lastTime: 'August 15 2024',
+    availability: true,
+  },
+  {
+    name: 'Bolivar Mora (Sir Cachiflin)',
+    slackId: '8FBV6JXA6',
+    onDuty: 'False',
+    count: '1',
+    lastTime: 'June 22 2024',
+    availability: false,
+  },
+  {
+    name: 'Ian Xiaomi Monopatin',
+    slackId: 'ZLRSRUKFK',
+    onDuty: 'True',
+    count: '0',
+    lastTime: 'August 22 2024',
+    availability: true,
+  },
+  
 ];
 
 // Availability Button
@@ -44,6 +77,59 @@ const AvailabilityButton: React.FC<{ available: boolean }> = ({ available }) => 
 
 // TableHero
 export function TableHero() {
+  const [data, setData] = useState(initialData);
+  const [sortColumn, setSortColumn] = useState<string | null>('availability');
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
+
+  // Sort data by the default column on component mount
+  useEffect(() => {
+    handleSort('availability');
+  }, []);
+
+  const handleSort = (column: string) => {
+    const newSortDirection = sortColumn === column && sortDirection === 'asc' ? 'desc' : 'asc';
+    setSortColumn(column);
+    setSortDirection(newSortDirection);
+
+    const sortedData = [...initialData].sort((a, b) => {
+      const aValue = a[column as keyof typeof a];
+      const bValue = b[column as keyof typeof b];
+
+      if (column === 'lastTime') {
+        if (typeof aValue === 'string' && typeof bValue === 'string') {
+          const aDate = new Date(aValue);
+          const bDate = new Date(bValue);
+          if (!isNaN(aDate.getTime()) && !isNaN(bDate.getTime())) {
+            return newSortDirection === 'desc'
+              ? aDate.getTime() - bDate.getTime()
+              : bDate.getTime() - aDate.getTime();
+          }
+        }
+        return 0;
+      }
+
+      if (typeof aValue === 'string' && typeof bValue === 'string') {
+        return newSortDirection === 'desc'
+          ? aValue.localeCompare(bValue)
+          : bValue.localeCompare(aValue);
+      }
+
+      if (typeof aValue === 'number' && typeof bValue === 'number') {
+        return newSortDirection === 'desc'
+          ? aValue - bValue
+          : bValue - aValue;
+      }
+      if (column === 'availability') {
+        const aBool = aValue === true ? 1 : 0;
+        const bBool = bValue === true ? 1 : 0;
+        return newSortDirection === 'desc' ? aBool - bBool : bBool - aBool;
+      }
+
+      return 0; // If types are different or undefined, no sorting
+    });
+
+    setData(sortedData);
+  };
   return (
     <div className="p-4 md:p-10 rounded-2xl bg-white">
       <Card className="bg-gray-200 bg-opacity-50 overflow-hidden">
@@ -54,12 +140,42 @@ export function TableHero() {
           <Table className="text-white text-sm my-4 mx-8 border-separate border-spacing-0">
             <TableHead>
               <TableRow className="bg-orange-900 bg-opacity-60">
-                <TableHeaderCell className="text-white py-5 border-b border-gray-300">Name</TableHeaderCell>
-                <TableHeaderCell className="text-white py-5 border-b border-gray-300">Slack ID</TableHeaderCell>
-                <TableHeaderCell className="text-white py-5 border-b border-gray-300">On Duty</TableHeaderCell>
-                <TableHeaderCell className="text-white py-5 border-b border-gray-300">Count</TableHeaderCell>
-                <TableHeaderCell className="text-white py-5 border-b border-gray-300">Last Time As Current</TableHeaderCell>
-                <TableHeaderCell className="text-white py-5 border-b border-gray-300">Availability</TableHeaderCell>
+                <TableHeaderCell
+                  className="text-white py-5 border-b border-gray-300 cursor-pointer"
+                  onClick={() => handleSort('name')}
+                >
+                  Name {sortColumn === 'name' && (sortDirection === 'asc' ? '↑' : '↓')}
+                </TableHeaderCell>
+                <TableHeaderCell
+                  className="text-white py-5 border-b border-gray-300 cursor-pointer"
+                  onClick={() => handleSort('slackId')}
+                >
+                  Slack ID {sortColumn === 'slackId' && (sortDirection === 'asc' ? '↑' : '↓')}
+                </TableHeaderCell>
+                <TableHeaderCell
+                  className="text-white py-5 border-b border-gray-300 cursor-pointer"
+                  onClick={() => handleSort('onDuty')}
+                >
+                  On Duty {sortColumn === 'onDuty' && (sortDirection === 'asc' ? '↑' : '↓')}
+                </TableHeaderCell>
+                <TableHeaderCell
+                  className="text-white py-5 border-b border-gray-300 cursor-pointer"
+                  onClick={() => handleSort('count')}
+                >
+                  Count {sortColumn === 'count' && (sortDirection === 'asc' ? '↑' : '↓')}
+                </TableHeaderCell>
+                <TableHeaderCell
+                  className="text-white py-5 border-b border-gray-300 cursor-pointer"
+                  onClick={() => handleSort('lastTime')}
+                >
+                  Last Time As Current {sortColumn === 'lastTime' && (sortDirection === 'asc' ? '↑' : '↓')}
+                </TableHeaderCell>
+                <TableHeaderCell
+                  className="text-white py-5 border-b border-gray-300 cursor-pointer"
+                  onClick={() => handleSort('availability')}
+                >
+                  Availability {sortColumn === 'availability' && (sortDirection === 'asc' ? '↑' : '↓')}
+                </TableHeaderCell>
               </TableRow>
             </TableHead>
             <TableBody>
