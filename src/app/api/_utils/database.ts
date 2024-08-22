@@ -1,4 +1,3 @@
-import { SlackUser } from 'types';
 import { sql } from '@vercel/postgres';
 
 /** These are the local names for the table private values inside the PosttgreClient */
@@ -7,11 +6,6 @@ export enum TableName {
   Logs = '_logsTable',
   Users = '_usersTable',
 }
-
-type CurrentActiveUsers = {
-  userOnDuty: SlackUser;
-  userOnBackup: SlackUser;
-};
 
 export class PostgresClient {
 
