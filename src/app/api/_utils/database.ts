@@ -1,8 +1,6 @@
 import { SlackUser } from 'types';
 import { sql } from '@vercel/postgres';
 
-
-
 /** These are the local names for the table private values inside the PosttgreClient */
 export enum TableName {
   Logs = '_logsTable',
@@ -30,7 +28,6 @@ export class PostgresClient {
 
     console.log('The PostgresClient is ready to be used.');
     console.debug(this._logsTable, this._rotationName, this._organizationId, this._usersTable);
-
   }
 
   private constructTableNames = () => {
@@ -39,23 +36,37 @@ export class PostgresClient {
     this._logsTable = tableName + '_logs';//marandino_standup_logs
   };
 
-
   public async queryAll<T>(table: TableName): Promise<T[]> {
     console.log("I'm trying to query everything from:", this._logsTable, this._usersTable);
     const { rows } = await sql` SELECT * FROM ${this[table]};`;
     return rows as T[];
   }
 
-  public async queryUsersForOrganizationAndRotation(organizationName: string, rotationName: string): Promise<SlackUser[]> {
-    console.log(`Querying all users for organization: ${organizationName}, rotation: ${rotationName} from:`,
+  public async queryUsersForOrganizationAndRotation(
+    organizationName: string,
+    rotationName: string
+  ): Promise<{ columns: string[], rows: any[] }> {
+    console.log(
+      `Querying all users for organization: ${organizationName}, rotation: ${rotationName} from:`,
       this._usersTable
     );
     const queryString = `
-    SELECT * FROM ${this._usersTable}
-  `;
-
+      SELECT * FROM ${this._usersTable}
+    `;
     const { rows } = await sql.query(queryString, []);
-    return rows;
+
+    // Handle case where no rows are returned
+    if (rows.length === 0) {
+      return { columns: [], rows: [] };
+    }
+
+    // Extract column names from the first row
+    const columns = Object.keys(rows[0]);
+
+    // Extract only data from each row
+    const userData = rows.map(row => Object.values(row));
+
+    return { columns, rows: userData };
   }
 
   public async putItem<T extends Record<string, unknown>>(item: T, table: TableName): Promise<void> {
@@ -91,8 +102,6 @@ export class PostgresClient {
     const queryString = this.createSqlQuery(table, columns, values);
     await sql.query(queryString);
   }
-
-
 
   // TODO: make it just destructure the values, and make it accept a custom string for the action
   private createSqlQuery(table: TableName, columns: string[], values: unknown[]) {

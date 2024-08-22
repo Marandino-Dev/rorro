@@ -10,10 +10,10 @@ export async function GET(
     const DbClient = new PostgresClient(organizationName, rotationName);
 
     try {
-        const user = await DbClient.queryUsersForOrganizationAndRotation(organizationName, rotationName);
+        const users = await DbClient.queryUsersForOrganizationAndRotation(organizationName, rotationName);
 
         return NextResponse.json(
-            { user },
+            { users },
             { status: 200 }
         );
     } catch (error) {
