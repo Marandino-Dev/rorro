@@ -1,10 +1,11 @@
-import { Navbar } from "./api/components/navbar";
 import Head from "next/head";
 import Hero from "./api/components/hero";
 import Pricing from "./api/components/pricing";
 import FeaturesGrid from "./api/components/features";
 import AboutFooter from "./api/components/footer";
-import DeployerTable from "./api/components/dashboard";
+import Link from 'next/link';
+import { Navbar } from "./api/components/navbar";
+
 
 export default function App() {
   return (
@@ -20,7 +21,8 @@ export default function App() {
       <FeaturesGrid />
       <Pricing />
       <AboutFooter />
-      <DeployerTable />
+      <Link href="/dashboard"></Link>
     </>
   );
 }
+
