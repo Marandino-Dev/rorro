@@ -4,6 +4,7 @@ import Hero from "./api/components/hero";
 import Pricing from "./api/components/pricing";
 import FeaturesGrid from "./api/components/features";
 import AboutFooter from "./api/components/footer";
+import DeployerTable from "./api/components/dashboard";
 
 export default function App() {
   return (
@@ -19,6 +20,7 @@ export default function App() {
       <FeaturesGrid />
       <Pricing />
       <AboutFooter />
+      <DeployerTable />
     </>
   );
 }
