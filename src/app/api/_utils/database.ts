@@ -1,8 +1,7 @@
-import { SlackUser } from '@/_types';
 import { sql } from '@vercel/postgres';
-import { headers } from 'next/headers';
 
 /** These are the local names for the table private values inside the PosttgreClient */
+//eslint-disable-next-line
 export enum TableName {
   Logs = '_logsTable',
   Users = '_usersTable',
