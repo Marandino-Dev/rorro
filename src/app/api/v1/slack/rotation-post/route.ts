@@ -1,46 +1,44 @@
 import { PostgresClient, TableName } from "utils/database";
 import { SlackCommandRequest, SlackUser } from "types";
 import { NextRequest, NextResponse } from "next/server";
-import { getSlackMessage, SlackResponseType } from "utils/slack";
-
-
-
-
-/** Returns the input from the user, without spaces so the table doesn't break */
-function sanitizeSlackText(text: string) {
-  return text.trim().toLowerCase().replaceAll(" ", "_")
-}
+import {
+  getSlackMessage,
+  getSlackUsersFromChannel,
+  SlackResponseType,
+  sanitizeSlackText,
+  parsePayloadFromRequest
+} from "utils/slack";
 
 export async function POST(
-  req: NextRequest & SlackCommandRequest,
+  req: NextRequest
 ) {
 
-  const body = await req.json()
+  const parsedPayload = await parsePayloadFromRequest(req);
 
-  console.log(body)
+  //TODO: add proper types
+  const { text, team_domain, channel_id } = parsedPayload
+  console.log(parsedPayload)
 
-  const organizationName = sanitizeSlackText(body.team_domain);
-  const rotationName = sanitizeSlackText(body.text)
+  const command: string = text.replace(/<[^>]+>/g, ''); //cleanup the command
 
-  // TODO: use the data that we gathered, to retrieve all the users on that slack channel this command was executed at.
+  const organizationName = sanitizeSlackText(team_domain)
+  const rotationName = sanitizeSlackText(command)
+  const channelId = channel_id.trim(); //this data needs to be uppercase just as slack sends it to us.
 
-  if (!rotationName || typeof rotationName !== 'string') return NextResponse.json({ error: 'rotationName is required' }, { status: 400 })
+  const newUsers = await getSlackUsersFromChannel(channelId)
+  console.debug(`These are the new users that have been created: ${JSON.stringify(newUsers, null, ' ')}`)
 
-  // TODO: fetch the users in the channel this was created on.
+  if (!rotationName || typeof rotationName !== 'string') {
+    return NextResponse.json({ error: 'rotationName is required' }, { status: 400 })
+  }
 
-  const DbClient = new PostgresClient(organizationName, rotationName)// TODO: softcode organization
+  const DbClient = new PostgresClient(organizationName, rotationName);
 
-  //TODO: implement PUT Items instead, that should accept an array.
-  const users = await DbClient.putItem<SlackUser>(
-    {
-      slackId: body.user_id,
-      fullName: body.user_name,
-      count: 0, // TODO: get an average if the rotation already exists
-      holiday: false,
-      onDuty: false,
-      backup: false
-    }, TableName.Users
+  const users = await DbClient.putItems<SlackUser>(
+    newUsers, TableName.Users
   );
+
+  console.debug(users)
 
   return NextResponse.json(
     getSlackMessage(
