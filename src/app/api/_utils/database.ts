@@ -50,9 +50,7 @@ export class PostgresClient {
       `Querying all users for organization: ${organizationName}, rotation: ${rotationName} from:`,
       this._usersTable
     );
-    const queryString = `
-      SELECT * FROM ${this._usersTable}
-    `;
+    const queryString = `SELECT * FROM ${this._usersTable}`;
     const { rows } = await sql.query(queryString, []);
 
     // Handle case where no rows are returned
