@@ -28,13 +28,37 @@ export class PostgresClient {
     const tableName = this._organizationId + '_' + this._rotationName; // marandino_standup
     this._usersTable = tableName + '_users';//marandino_standup_users
     this._logsTable = tableName + '_logs';//marandino_standup_logs
-  }
-
+  };
 
   public async queryAll<T>(table: TableName): Promise<T[]> {
-    console.log("I'm trying to query everything from:", this._logsTable, this._usersTable)
+    console.log("I'm trying to query everything from:", this._logsTable, this._usersTable);
     const { rows } = await sql` SELECT * FROM ${this[table]};`;
-    return rows as T[]
+    return rows as T[];
+  }
+
+  public async queryUsersForOrganizationAndRotation(
+    organizationName: string,
+    rotationName: string
+  ): Promise<{ columns: string[], rows: any[] }> {
+    console.log(
+      `Querying all users for organization: ${organizationName}, rotation: ${rotationName} from:`,
+      this._usersTable
+    );
+    const queryString = `SELECT * FROM ${this._usersTable}`;
+    const { rows } = await sql.query(queryString, []);
+
+    // Handle case where no rows are returned
+    if (rows.length === 0) {
+      return { columns: [], rows: [] };
+    }
+
+    // Extract column names from the first row
+    const columns = Object.keys(rows[0]);
+
+    // Extract only data from each row
+    const userData = rows.map(row => Object.values(row));
+
+    return { columns, rows: userData };
   }
 
 
@@ -58,8 +82,8 @@ export class PostgresClient {
 
   /** This function will confirm that the table exists prior to inserting a new item */
   private async createTableIfNotExists(table: TableName, columns: string[], values: unknown[]) {
-    const queryString = this.createSqlQuery(table, columns, values)
-    await sql.query(queryString)
+    const queryString = this.createSqlQuery(table, columns, values);
+    await sql.query(queryString);
   }
 
 
@@ -87,7 +111,7 @@ export class PostgresClient {
       columns.map((column, index) => {
         return column + ' ' + this.getValueType(values[index]);
       }
-      ).join(', ') + ');'
+      ).join(', ') + ');';
   }
 
   // TODO: refactor this
