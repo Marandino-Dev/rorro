@@ -2,6 +2,7 @@ import { SlackUser } from 'types';
 import { sql } from '@vercel/postgres';
 
 /** These are the local names for the table private values inside the PosttgreClient */
+//eslint-disable-next-line
 export enum TableName {
   Logs = '_logsTable',
   Users = '_usersTable',
@@ -26,8 +27,7 @@ export class PostgresClient {
 
     this.constructTableNames();
 
-    console.log('The PostgresClient is ready to be used.');
-    console.debug(this._logsTable, this._rotationName, this._organizationId, this._usersTable);
+    console.debug('The PostgresClient is ready to be used.');
   }
 
   private constructTableNames = () => {
@@ -69,32 +69,23 @@ export class PostgresClient {
     return { columns, rows: userData };
   }
 
-  public async putItem<T extends Record<string, unknown>>(item: T, table: TableName): Promise<void> {
-    console.log("I'm trying to put an item into:", this[table]);
 
-    const columns = Object.keys(item);
-    const values = Object.values(item);
-    //TODO: sanitize the data here
+  public async putItems<T extends Record<string, unknown>>(items: T[], table: TableName): Promise<T[]> {
 
+    console.debug(`Writing ${items.length} item(s) into: ${this[table]}`);
 
-    try {
-      await this.createTableIfNotExists(table, columns, values);
+    const columns = Object.keys(items[0]);
+    const values = Object.values(items[0]);
 
-      //TODO: make this into a function
-      //
-      const columnString = columns.join(', ');
-      const valueParams = values.map((value) => `'${value}'`).join(', ');
+    await this.createTableIfNotExists(table, columns, values);
 
+    // prepare the query
+    const columnString = columns.join(', ');
+    const userValuesString = this.getValuesForUpdate<T>(items)
 
-
-      // TODO: make this support an array of items being inserted, it should be supported by just doing multiple (value1), (value2), (value3)
-      const putQuery = `INSERT INTO ${this[table]} (${columnString}) VALUES (${valueParams});`;
-      await sql.query(putQuery);
-      console.log(putQuery);
-    } catch (error) {
-      console.error("Error inserting item:", error);
-      throw error;
-    }
+    const putQuery = `INSERT INTO ${this[table]} (${columnString}) VALUES ${userValuesString};`
+    const { rows } = await sql.query<T>(putQuery);
+    return rows
   }
 
   /** This function will confirm that the table exists prior to inserting a new item */
@@ -102,6 +93,25 @@ export class PostgresClient {
     const queryString = this.createSqlQuery(table, columns, values);
     await sql.query(queryString);
   }
+
+
+  /**
+   * Formats multiple json objects in a way where the whole array can be inserted
+   * to a table.
+   * @return A string where all the elements are within parenthesis
+   * @example `('name', 'true', 'false'), ('second name', 'false', 'true')`
+   */
+  private getValuesForUpdate<T extends Record<string, unknown>>(items: T[]) {
+    const itemsArray: string[] = []
+    items.forEach(item => {
+      const userValues = Object.values(item);
+      const currentUserValues = userValues.map(value => `'${value}'`).join(', ')
+      itemsArray.push(`(${currentUserValues})`)
+    });
+
+    return itemsArray.join(', ')
+  }
+
 
   // TODO: make it just destructure the values, and make it accept a custom string for the action
   private createSqlQuery(table: TableName, columns: string[], values: unknown[]) {
