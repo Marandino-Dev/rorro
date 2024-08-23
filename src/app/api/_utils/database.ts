@@ -11,7 +11,7 @@ export enum TableName {
 type CurrentActiveUsers = {
   userOnDuty: SlackUser;
   userOnBackup: SlackUser;
-}
+};
 
 export class PostgresClient {
 
@@ -42,10 +42,30 @@ export class PostgresClient {
     return rows as T[];
   }
 
+  public async queryCurrentActiveUsers(): Promise<CurrentActiveUsers> {
+    console.log(
+      "Querying the user on duty and their backup in order from:",
+      this._usersTable
+    );
+
+    const queryString = `
+      SELECT * FROM ${this._usersTable}
+      WHERE onDuty = true OR backup = true
+      ORDER BY onDuty DESC;
+    `;
+
+    const { rows } = await sql.query(queryString);
+
+    return {
+      userOnDuty: rows[0],
+      userOnBackup: rows[1]
+    };
+  }
+
   public async queryUsersForOrganizationAndRotation(
     organizationName: string,
     rotationName: string
-  ): Promise<{ columns: string[], rows: any[] }> {
+  ): Promise<{ columns: string[], rows: any[]; }> {
     console.log(
       `Querying all users for organization: ${organizationName}, rotation: ${rotationName} from:`,
       this._usersTable
@@ -79,11 +99,11 @@ export class PostgresClient {
 
     // prepare the query
     const columnString = columns.join(', ');
-    const userValuesString = this.getValuesForUpdate<T>(items)
+    const userValuesString = this.getValuesForUpdate<T>(items);
 
-    const putQuery = `INSERT INTO ${this[table]} (${columnString}) VALUES ${userValuesString};`
+    const putQuery = `INSERT INTO ${this[table]} (${columnString}) VALUES ${userValuesString};`;
     const { rows } = await sql.query<T>(putQuery);
-    return rows
+    return rows;
   }
 
   /** This function will confirm that the table exists prior to inserting a new item */
@@ -100,14 +120,14 @@ export class PostgresClient {
    * @example `('name', 'true', 'false'), ('second name', 'false', 'true')`
    */
   private getValuesForUpdate<T extends Record<string, unknown>>(items: T[]) {
-    const itemsArray: string[] = []
+    const itemsArray: string[] = [];
     items.forEach(item => {
       const userValues = Object.values(item);
-      const currentUserValues = userValues.map(value => `'${value}'`).join(', ')
-      itemsArray.push(`(${currentUserValues})`)
+      const currentUserValues = userValues.map(value => `'${value}'`).join(', ');
+      itemsArray.push(`(${currentUserValues})`);
     });
 
-    return itemsArray.join(', ')
+    return itemsArray.join(', ');
   }
 
 
