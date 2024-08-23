@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
 
         const slackMessage = getSlackMessage(
             SlackResponseType.Ephemeral,
-            `Slack user on duty: <@${activeUsers.userOnDuty.slackid}> | Backup Slack user: <@${activeUsers.userOnBackup.slackid}>.`
+            `Slack user on duty: <@${activeUsers.userOnDuty.slack_id}> | Backup Slack user: <@${activeUsers.userOnBackup.slack_id}>.`
         );
 
         return NextResponse.json(slackMessage, { status: 200 });
