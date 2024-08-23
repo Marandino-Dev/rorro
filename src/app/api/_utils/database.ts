@@ -50,8 +50,8 @@ export class PostgresClient {
 
     const queryString = `
       SELECT * FROM ${this._usersTable}
-      WHERE onDuty = true OR backup = true
-      ORDER BY onDuty DESC;
+      WHERE on_duty = true OR on_backup = true
+      ORDER BY on_duty DESC;
     `;
 
     const { rows } = await sql.query(queryString);

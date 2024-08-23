@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
 
         const activeUsers = await DbClient.queryCurrentActiveUsers();
 
-        if (!activeUsers || !activeUsers.userOnDuty || !activeUsers.userOnBackup) {
+        if (!activeUsers || !activeUsers.userOnDuty) {
             const errorMessage = getSlackMessage(
                 SlackResponseType.Ephemeral,
                 'No active users found or incomplete data.'
@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
 
         const slackMessage = getSlackMessage(
             SlackResponseType.Ephemeral,
-            `Slack user on duty: <@${activeUsers.userOnDuty.slack_id}> | Backup Slack user: <@${activeUsers.userOnBackup.slack_id}>.`
+            `Slack user on duty: <@${activeUsers.userOnDuty.slack_id}> | Backup Slack user: <@${activeUsers.userOnBackup?.slack_id}>.`
         );
 
         return NextResponse.json(slackMessage, { status: 200 });
