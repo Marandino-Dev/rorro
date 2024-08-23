@@ -21,19 +21,11 @@ export function getSlackMessage(responseType: SlackResponseType, responseText: s
 
 }
 
-
-export async function getSlackUsersFromChannel(channel: string): Promise<SlackUser[]> {
-  //testing <@U07F36MJVFH|dcruz> <!here> <!subteam^S07JMHLTDHN|@backend>
-  // const regex = /<!subteam\^([^|]+)/;
-  // const userGroupId = text.match(regex)?.[1]
-  //
-
-  //TODO: make it accept an user group
-  if (!channel) return []
+async function fetchSlackApi(slackApiString: string) {
 
   const token = process.env.SLACK_TEST_TOKEN;
   // const res = await fetch('https://slack.com/api/usergroups.users.list?usergroup=' + userGroupId,
-  const res = await fetch('https://slack.com/api/conversations.members?channel=' + channel,
+  const res = await fetch('https://slack.com/api/' + slackApiString,
     {
       method: 'GET',
       headers: {
@@ -42,24 +34,46 @@ export async function getSlackUsersFromChannel(channel: string): Promise<SlackUs
     }
   )
 
-  const responseData = await res.json()// this should be able to return just that. slackId[]
-  const { members: slackUserIds } = responseData;
-
-  console.debug(slackUserIds)
-  if (slackUserIds?.length < 0) return []
-  return slackUserIds.map((slackId: string) => createUser(slackId));
+  return await res.json()
 }
 
-function createUser(slackId: string): SlackUser {
-  const user: SlackUser = {
-    slackId,
-    fullName: '', //TODO: add the fullname.
-    count: 0,
-    onDuty: false,
-    backup: false,
-    holiday: false,
+
+export async function getSlackUsersFromChannel(channel: string): Promise<SlackUser[]> {
+
+  //TODO: make it accept an user group
+  if (!channel) return []
+
+  const { members } = await fetchSlackApi(`conversations.members?channel=${channel}`)
+
+  console.info('These are the members in this channel: ', members)
+
+  if (members?.length < 0) return []
+  const newUsersArray: SlackUser[] = []
+
+  // create the new users based on that.
+  for (let i = 0; i < members.length; i++) {
+    const member = members[i];// this should be a slackId
+    const { user } = await fetchSlackApi('users.info?user=' + member);
+
+    const newUser = createUser(member, user?.profile?.real_name_normalized || '')
+    newUsersArray.push(newUser)
   }
-  console.debug('The user has been created for: ', slackId)
+
+  return newUsersArray
+}
+
+function createUser(slack_id: string, full_name: string): SlackUser {
+
+  //TODO: add an average for users that are added to a rotation mid-way
+  const user: SlackUser = {
+    slack_id,
+    full_name,
+    count: 0,
+    on_duty: false,
+    on_backup: false,
+    on_holiday: false,
+  }
+  console.debug('The user has been created for: ', slack_id)
   return user
 }
 
