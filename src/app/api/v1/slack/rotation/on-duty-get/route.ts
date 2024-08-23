@@ -1,11 +1,11 @@
-import { PostgresClient, TableName } from "utils/database";
-import { NextRequest, NextResponse } from "next/server";
+import { PostgresClient } from 'utils/database';
+import { NextRequest, NextResponse } from 'next/server';
 import {
     getSlackMessage,
     SlackResponseType,
     sanitizeSlackText,
     parsePayloadFromRequest,
-} from "utils/slack";
+} from 'utils/slack';
 
 export async function POST(req: NextRequest) {
     try {
@@ -14,13 +14,13 @@ export async function POST(req: NextRequest) {
         const { text, team_domain } = parsedPayload;
         console.log(parsedPayload);
 
-        const command: string = text.replace(/<[^>]+>/g, ""); // Cleanup the command
+        const command: string = text.replace(/<[^>]+>/g, ''); // Cleanup the command
         const organizationName = sanitizeSlackText(team_domain);
         const rotationName = sanitizeSlackText(command);
 
-        if (!rotationName || typeof rotationName !== "string") {
+        if (!rotationName || typeof rotationName !== 'string') {
             return NextResponse.json(
-                { error: "rotationName is required" },
+                { error: 'rotationName is required' },
                 { status: 400 }
             );
         }
@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
         if (!activeUsers || !activeUsers.userOnDuty || !activeUsers.userOnBackup) {
             const errorMessage = getSlackMessage(
                 SlackResponseType.Ephemeral,
-                "No active users found or incomplete data."
+                'No active users found or incomplete data.'
             );
             return NextResponse.json(errorMessage, { status: 404 });
         }
@@ -47,7 +47,7 @@ export async function POST(req: NextRequest) {
         console.error(JSON.stringify(error));
         const slackMessage = getSlackMessage(
             SlackResponseType.Ephemeral,
-            "Something went wrong, please try again."
+            'Something went wrong, please try again.'
         );
         return NextResponse.json(slackMessage, { status: 500 });
     }
