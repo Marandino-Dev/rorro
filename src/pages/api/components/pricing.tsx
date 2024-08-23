@@ -11,9 +11,9 @@ interface PricingPlan {
 interface PricingCardProps extends PricingPlan {}
 
 const PricingCard: React.FC<PricingCardProps> = ({ title, price, features, buttonText, isPremium }) => (
-  <div className={`bg-white rounded-lg shadow-lg p-6 ${!isPremium ? 'border-2 border-primary-500' : ''}`}>
+  <div className={`bg-white rounded-lg shadow-lg p-6 ${!isPremium ? 'border-2 border-primary' : ''}`}>
     <h2 className="text-2xl font-bold text-gray-800 mb-4">{title}</h2>
-    <p className="text-4xl font-bold text-primary-600 mb-6">{price}</p>
+    <p className="text-4xl font-bold text-primary mb-6">{price}</p>
     <ul className="mb-6">
       {features.map((feature, index) => (
         <li key={index} className="flex items-center mb-2">
@@ -24,11 +24,10 @@ const PricingCard: React.FC<PricingCardProps> = ({ title, price, features, butto
         </li>
       ))}
     </ul>
-    <button className={`w-full py-2 px-4 rounded-lg font-bold transition duration-300 ${
-      isPremium 
-        ? 'bg-primary-600 text-white hover:bg-primary-700' 
-        : 'bg-gray-200 text-gray-800 hover:bg-gray-300'
-    }`}>
+    <button className={`w-full py-2 px-4 rounded-lg font-bold transition duration-300 ${isPremium
+      ? 'bg-primary text-white hover:bg-primary'
+      : 'bg-gray-200 text-gray-800 hover:bg-gray-300'
+      }`}>
       {buttonText}
     </button>
   </div>

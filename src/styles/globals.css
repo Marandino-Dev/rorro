@@ -14,8 +14,8 @@ body {
   .btn:hover {
     @apply outline outline-2 outline-white
   }
-  
+
   .btn:focus {
-    @apply outline-none ring-2 ring-white ring-offset-2 ring-offset-primary-900
+    @apply outline-none ring-2 ring-white ring-offset-2 ring-offset-primary
   }
 }

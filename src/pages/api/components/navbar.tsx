@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 
 export const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  
+
   return (
-    <nav className="bg-primary-900 text-white fixed w-full">
+    <nav className="fixed w-full">
       <div className="px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}

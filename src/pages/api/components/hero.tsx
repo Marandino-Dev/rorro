@@ -2,7 +2,7 @@ import React from 'react';
 
 const Hero = () => {
   return (
-    <div className="bg-primary-900">
+    <div className="bg-primary">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col md:flex-row items-center justify-between py-12 md:py-24">
           {/* Text content */}
@@ -18,7 +18,7 @@ const Hero = () => {
               Designed for teams of all sizes
               Wheters you&apos;re managing shifts, task assignments, or rotating team roles, RORRO makes the process smooth and efficient.
             </p>
-            <button className="bg-primary-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-primary-700 transition duration-300">
+            <button className="bg-primary text-white font-bold py-3 px-6 rounded-lg hover:bg-primary transition duration-300">
               Get Started
             </button>
           </div>
