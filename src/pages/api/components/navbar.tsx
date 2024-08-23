@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-export const Navbar = () => {
+export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -10,7 +10,7 @@ export const Navbar = () => {
           {/* Logo */}
           <div className="flex-shrink-0">
             <button className={`flex items-center space-x-2 text-xl font-bold $"btn"`}>
-              <img className='h-10' src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS8YjHt4SPnWQ0zR4IKTa9jQknRHtrvsCOoUg&s"/>
+              <img className='h-10' src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS8YjHt4SPnWQ0zR4IKTa9jQknRHtrvsCOoUg&s" />
               <h1>RORRO</h1>
             </button>
           </div>
@@ -27,7 +27,7 @@ export const Navbar = () => {
           <div className="md:hidden">
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className={`inline-flex items-center justify-center p-2 rounded-md text-white hover:bg-primary-800 $"btn"`}
+              className={`inline-flex items-center justify-center p-2 rounded-md text-white hover:bg-primary $"btn"`}
             >
               <span className="sr-only">Open main menu</span>
               {isOpen ? (
@@ -57,5 +57,5 @@ export const Navbar = () => {
       )}
     </nav>
   );
-};
+}
 

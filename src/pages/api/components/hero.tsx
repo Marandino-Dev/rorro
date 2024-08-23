@@ -14,7 +14,7 @@ const Hero = () => {
               Revolutionize user rotations in Slack with RORRO.
               Your ultimate tool for seamless team scheduling.
             </p>
-            <p className='text-xl text-white mb-6'> 
+            <p className='text-xl text-white mb-6'>
               Designed for teams of all sizes
               Wheters you&apos;re managing shifts, task assignments, or rotating team roles, RORRO makes the process smooth and efficient.
             </p>
@@ -25,9 +25,9 @@ const Hero = () => {
 
           {/* Image */}
           <div className="w-full md:w-1/2">
-            <img 
-              src="https://w7.pngwing.com/pngs/101/158/png-transparent-laptop-logo-show-logo-wanted-computer-50-electronics-computer-logo.png" 
-              alt="RORRO App Interface" 
+            <img
+              src="https://w7.pngwing.com/pngs/101/158/png-transparent-laptop-logo-show-logo-wanted-computer-50-electronics-computer-logo.png"
+              alt="RORRO App Interface"
               className="rounded-lg shadow-xl"
             />
           </div>

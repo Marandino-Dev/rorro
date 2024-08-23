@@ -8,7 +8,7 @@ interface PricingPlan {
   isPremium: boolean;
 }
 
-interface PricingCardProps extends PricingPlan {}
+interface PricingCardProps extends PricingPlan { }
 
 const PricingCard: React.FC<PricingCardProps> = ({ title, price, features, buttonText, isPremium }) => (
   <div className={`bg-white rounded-lg shadow-lg p-6 ${!isPremium ? 'border-2 border-primary' : ''}`}>

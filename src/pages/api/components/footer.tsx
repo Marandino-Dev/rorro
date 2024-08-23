@@ -10,7 +10,7 @@ interface FooterColumn {
   links: FooterLink[];
 }
 
-const AboutFooter: React.FC = () => {
+export default function Footer() {
   const currentYear = new Date().getFullYear();
 
   const footerColumns: FooterColumn[] = [
@@ -55,7 +55,7 @@ const AboutFooter: React.FC = () => {
           <div className="lg:col-span-2">
             <h2 className="text-2xl font-bold mb-4">RORRO</h2>
             <p className="mb-4">
-            RORRO: Effortlessly Rotate and Assign Tasks, Ensuring Fair and Balanced Work Distribution Every Time.
+              RORRO: Effortlessly Rotate and Assign Tasks, Ensuring Fair and Balanced Work Distribution Every Time.
             </p>
             <div className="flex space-x-4">
               <a href="#" className="hover:text-gray-300">
@@ -103,6 +103,4 @@ const AboutFooter: React.FC = () => {
       </div>
     </footer>
   );
-};
-
-export default AboutFooter;
+}
