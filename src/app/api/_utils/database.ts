@@ -44,7 +44,7 @@ export class PostgresClient {
 
   public async queryCurrentActiveUsers(): Promise<CurrentActiveUsers> {
     console.log(
-      "Querying the user on duty and their backup in order from:",
+      `Querying the user on duty and their backup for: ${this._organizationId}, rotation: ${this._rotationName} from:`,
       this._usersTable
     );
 
