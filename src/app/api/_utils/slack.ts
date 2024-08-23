@@ -42,24 +42,24 @@ export async function getSlackUsersFromChannel(channel: string): Promise<SlackUs
     }
   )
 
-  const responseData = await res.json()// this should be able to return just that. slackId[]
+  const responseData = await res.json()// this should be able to return just that. slack_id[]
   const { members: slackUserIds } = responseData;
 
   console.debug(slackUserIds)
   if (slackUserIds?.length < 0) return []
-  return slackUserIds.map((slackId: string) => createUser(slackId));
+  return slackUserIds.map((slack_id: string) => createUser(slack_id));
 }
 
-function createUser(slackId: string): SlackUser {
+function createUser(slack_id: string): SlackUser {
   const user: SlackUser = {
-    slackId,
-    fullName: '', //TODO: add the fullname.
+    slack_id,
+    full_name: '', //TODO: add the fullname.
     count: 0,
-    onDuty: false,
-    backup: false,
-    holiday: false,
+    on_duty: false,
+    on_backup: false,
+    on_holiday: false,
   }
-  console.debug('The user has been created for: ', slackId)
+  console.debug('The user has been created for: ', slack_id)
   return user
 }
 
