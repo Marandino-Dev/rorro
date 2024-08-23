@@ -11,7 +11,7 @@ export function getHighestCount(users: SlackUser[]): number {
  * Retrieves the Slack user who is currently on duty.
  */
 export function getUserOnDuty(users: SlackUser[]): SlackUser {
-  const userOnDuty = users.find((user) => user.onDuty);
+  const userOnDuty = users.find((user) => user.on_duty);
   if (!userOnDuty) {
     throw new Error('On duty user not found');
   }
@@ -20,7 +20,7 @@ export function getUserOnDuty(users: SlackUser[]): SlackUser {
 
 export function filterUserOnDuty(users: SlackUser[]): SlackUser[] {
   return users.filter(
-    user => !user.onDuty
+    user => !user.on_duty
   )
 }
 
