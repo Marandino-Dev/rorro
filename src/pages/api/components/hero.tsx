@@ -2,19 +2,19 @@ import React from 'react';
 
 const Hero = () => {
   return (
-    <div className="bg-gray-100">
+    <div className="bg-primary-900">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col md:flex-row items-center justify-between py-12 md:py-24">
           {/* Text content */}
           <div className="w-full md:w-1/2 mb-8 md:mb-0">
-            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+            <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
               RORRO: Simplify Your Team&apos;s Turnover
             </h1>
-            <p className="text-xl text-gray-600 mb-6">
+            <p className="text-xl text-white mb-6">
               Revolutionize user rotations in Slack with RORRO.
               Your ultimate tool for seamless team scheduling.
             </p>
-            <p className='text-xl text-gray-600 mb-6'> 
+            <p className='text-xl text-white mb-6'> 
               Designed for teams of all sizes
               Wheters you&apos;re managing shifts, task assignments, or rotating team roles, RORRO makes the process smooth and efficient.
             </p>
