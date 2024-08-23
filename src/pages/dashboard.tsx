@@ -29,7 +29,7 @@ import { SlackUser } from 'types';
 // TableHero
 export function TableHero() {
   const [users, setUsers] = useState<SlackUser[]>([]);
-  const [userColumns, setUserColumns] = useState<string[]>([]);
+  const [userColumns, setUserColumns] = useState<(keyof SlackUser)[]>([]);
   const [loading, setLoading] = useState(true);
   // const [sortColumn, setSortColumn] = useState<string | null>("on_holiday");
   // const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
@@ -59,7 +59,7 @@ export function TableHero() {
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
-      const { rows: users, columns }: { rows: SlackUser[], columns: string[] } = await response.json();
+      const { rows: users, columns }: { rows: SlackUser[], columns: (keyof SlackUser)[] } = await response.json();
       // Transform the data
 
       setUsers(users);
@@ -97,7 +97,7 @@ export function TableHero() {
                   className="text-gray-300 hover:bg-gray-200 hover:bg-opacity-50 transition-colors duration-200 border-b border-gray-300"
                 >
                   {
-                    (Object.keys(user) as Array<keyof SlackUser>).map((keyName, i) =>
+                    userColumns.map((keyName, i) =>
                       <TableCell key={keyName + i} className="bg-gray-600 px-4 py-2 text-sm">
                         {user[keyName].toString()}
                       </TableCell>
