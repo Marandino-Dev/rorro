@@ -1,8 +1,8 @@
-import { NextApiResponse } from "next";
-import { NextRequest } from "next/server";
+import { NextApiResponse } from 'next';
+import { NextRequest } from 'next/server';
 
 export function returnInvalidRequest(res: NextApiResponse) {
-  return res.status(400).json({ message: "Invalid Request" })
+  return res.status(400).json({ message: 'Invalid Request' });
 }
 
 export function logRequest(req: NextRequest) {

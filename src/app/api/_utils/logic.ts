@@ -1,4 +1,4 @@
-import { SlackUser } from "types";
+import { SlackUser } from 'types';
 
 /**
  * @return The max amount of times an user has been selected.
@@ -21,7 +21,7 @@ export function getUserOnDuty(users: SlackUser[]): SlackUser {
 export function filterUserOnDuty(users: SlackUser[]): SlackUser[] {
   return users.filter(
     user => !user.on_duty
-  )
+  );
 }
 
 /**

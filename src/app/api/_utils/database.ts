@@ -1,3 +1,4 @@
+import { SlackUser } from 'types';
 import { sql } from '@vercel/postgres';
 
 /** These are the local names for the table private values inside the PosttgreClient */
@@ -31,7 +32,7 @@ export class PostgresClient {
   };
 
   public async queryAll<T>(table: TableName): Promise<T[]> {
-    console.log("I'm trying to query everything from:", this._logsTable, this._usersTable);
+    console.log('I\'m trying to query everything from:', this._logsTable, this._usersTable);
     const { rows } = await sql` SELECT * FROM ${this[table]};`;
     return rows as T[];
   }
@@ -39,26 +40,16 @@ export class PostgresClient {
   public async queryUsersForOrganizationAndRotation(
     organizationName: string,
     rotationName: string
-  ): Promise<{ columns: string[], rows: any[] }> {
-    console.log(
-      `Querying all users for organization: ${organizationName}, rotation: ${rotationName} from:`,
-      this._usersTable
-    );
+  ): Promise<{ columns: string[], rows: SlackUser[] }> {
+
+    console.info(`Querying users from: ${organizationName}, ${rotationName}`);
+
     const queryString = `SELECT * FROM ${this._usersTable}`;
-    const { rows } = await sql.query(queryString, []);
+    const { rows } = await sql.query<SlackUser>(queryString, []);
 
-    // Handle case where no rows are returned
-    if (rows.length === 0) {
-      return { columns: [], rows: [] };
-    }
-
-    // Extract column names from the first row
     const columns = Object.keys(rows[0]);
 
-    // Extract only data from each row
-    const userData = rows.map(row => Object.values(row));
-
-    return { columns, rows: userData };
+    return { columns, rows };
   }
 
 
@@ -73,11 +64,11 @@ export class PostgresClient {
 
     // prepare the query
     const columnString = columns.join(', ');
-    const userValuesString = this.getValuesForUpdate<T>(items)
+    const userValuesString = this.getValuesForUpdate<T>(items);
 
-    const putQuery = `INSERT INTO ${this[table]} (${columnString}) VALUES ${userValuesString};`
+    const putQuery = `INSERT INTO ${this[table]} (${columnString}) VALUES ${userValuesString};`;
     const { rows } = await sql.query<T>(putQuery);
-    return rows
+    return rows;
   }
 
   /** This function will confirm that the table exists prior to inserting a new item */
@@ -94,20 +85,20 @@ export class PostgresClient {
    * @example `('name', 'true', 'false'), ('second name', 'false', 'true')`
    */
   private getValuesForUpdate<T extends Record<string, unknown>>(items: T[]) {
-    const itemsArray: string[] = []
+    const itemsArray: string[] = [];
     items.forEach(item => {
       const userValues = Object.values(item);
-      const currentUserValues = userValues.map(value => `'${value}'`).join(', ')
-      itemsArray.push(`(${currentUserValues})`)
+      const currentUserValues = userValues.map(value => `'${value}'`).join(', ');
+      itemsArray.push(`(${currentUserValues})`);
     });
 
-    return itemsArray.join(', ')
+    return itemsArray.join(', ');
   }
 
 
   // TODO: make it just destructure the values, and make it accept a custom string for the action
   private createSqlQuery(table: TableName, columns: string[], values: unknown[]) {
-    return "CREATE TABLE IF NOT EXISTS " + this[table] + " (" +
+    return 'CREATE TABLE IF NOT EXISTS ' + this[table] + ' (' +
       columns.map((column, index) => {
         return column + ' ' + this.getValueType(values[index]);
       }
