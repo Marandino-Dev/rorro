@@ -21,7 +21,7 @@ export function getUserOnDuty(users: SlackUser[]): SlackUser {
 export function filterUserOnDuty(users: SlackUser[]): SlackUser[] {
   return users.filter(
     user => !user.on_duty
-  )
+  );
 }
 
 /**

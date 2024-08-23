@@ -1,4 +1,4 @@
-import type { NextApiRequest, NextApiResponse } from "next";
+import  { type NextApiRequest, type NextApiResponse } from "next";
 
 import { sql } from "@vercel/postgres";
 
@@ -58,14 +58,14 @@ const listHandler = async function (
   } catch (error) {
     return res.status(500).json({ message: 'Internal server error', error: JSON.stringify(error) });
   }
-}
+};
 
 
 export async function assignHandler(
   req: NextApiRequest,
   res: NextApiResponse<unknown>,
 ) {
-  const authorizedUsers = ["U0467DXP7D5", "U065JMM3WEB"]
+  const authorizedUsers = ["U0467DXP7D5", "U065JMM3WEB"];
   if (!authorizedUsers.includes(req.body.user_id))
     return res.status(200).json({ text: 'You are not authorized to run this command.' });
   try {
@@ -77,11 +77,11 @@ export async function assignHandler(
 
     const currentDeveloper = developers.find((developer) => developer.current);
 
-    const filteredDevelopers = developers.filter((developer) => developer.count < highestCount)
+    const filteredDevelopers = developers.filter((developer) => developer.count < highestCount);
     if (filteredDevelopers.length === 0) filteredDevelopers.push(...developers);
 
     const selectedDeveloper = filteredDevelopers[Math.floor(Math.random() * filteredDevelopers.length)];
-    console.log("selected: ", selectedDeveloper?.name)
+    console.log("selected: ", selectedDeveloper?.name);
 
     const currentDate = new Date().toISOString();
     // Insert the log into the database
@@ -118,7 +118,7 @@ const revertHandler = async function (
   res: NextApiResponse<unknown>,
 ) {
   // TODO: refactor this and mix it
-  const authorizedUsers = ["U0467DXP7D5", "U065JMM3WEB"]
+  const authorizedUsers = ["U0467DXP7D5", "U065JMM3WEB"];
   if (!authorizedUsers.includes(req.body.user_id))
     return res.status(200).json({ text: 'You are not authorized to run this command.' });
   try {
@@ -130,7 +130,7 @@ const revertHandler = async function (
 
     const lastLog = logs[0];
     const previousLog = logs[1];
-    console.log("lastLog: ", lastLog, "previousLog: ", previousLog, "logs", logs)
+    console.log("lastLog: ", lastLog, "previousLog: ", previousLog, "logs", logs);
     if (!lastLog) return res.status(404).json({ message: 'No logs found' });
 
     const currentDate = new Date().toISOString();
@@ -153,7 +153,7 @@ const revertHandler = async function (
     return res.status(500).json({ message: 'Internal server error', error: JSON.stringify(error) });
   }
 
-}
+};
 
 const currentHandler = async function (
   req: NextApiRequest,
@@ -165,7 +165,7 @@ const currentHandler = async function (
     // if (!developers) return res.status(404).json({ message: 'No developers found' });
     // const currentDeveloper = developers.find((developer) => developer.current);
 
-    if (!logs) return res.status(404).json({ message: 'No logs found' })
+    if (!logs) return res.status(404).json({ message: 'No logs found' });
     const lastLog = logs[0];
 
     // if(!currentDeveloper) return res.status(404).json({ message: 'No current developer found' })
@@ -180,4 +180,4 @@ const currentHandler = async function (
   } catch (error) {
     return res.status(500).json({ message: 'Internal server error', error: JSON.stringify(error) });
   }
-}
+};

@@ -64,11 +64,11 @@ export class PostgresClient {
 
     // prepare the query
     const columnString = columns.join(', ');
-    const userValuesString = this.getValuesForUpdate<T>(items)
+    const userValuesString = this.getValuesForUpdate<T>(items);
 
-    const putQuery = `INSERT INTO ${this[table]} (${columnString}) VALUES ${userValuesString};`
+    const putQuery = `INSERT INTO ${this[table]} (${columnString}) VALUES ${userValuesString};`;
     const { rows } = await sql.query<T>(putQuery);
-    return rows
+    return rows;
   }
 
   /** This function will confirm that the table exists prior to inserting a new item */
@@ -85,14 +85,14 @@ export class PostgresClient {
    * @example `('name', 'true', 'false'), ('second name', 'false', 'true')`
    */
   private getValuesForUpdate<T extends Record<string, unknown>>(items: T[]) {
-    const itemsArray: string[] = []
+    const itemsArray: string[] = [];
     items.forEach(item => {
       const userValues = Object.values(item);
-      const currentUserValues = userValues.map(value => `'${value}'`).join(', ')
-      itemsArray.push(`(${currentUserValues})`)
+      const currentUserValues = userValues.map(value => `'${value}'`).join(', ');
+      itemsArray.push(`(${currentUserValues})`);
     });
 
-    return itemsArray.join(', ')
+    return itemsArray.join(', ');
   }
 
 

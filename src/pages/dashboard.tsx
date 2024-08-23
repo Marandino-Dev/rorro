@@ -9,7 +9,7 @@ import {
   TableRow,
 } from "@tremor/react";
 
-import { SlackUser } from 'types'
+import { SlackUser } from 'types';
 
 // Availability Button
 // const AvailabilityButton: React.FC<{ available: boolean }> = ({
@@ -47,10 +47,10 @@ export function TableHero() {
           (sortDirection === "asc" ? "↑" : "↓")}
       */}
     </TableHeaderCell>
-  )
+  );
 
   const fetchData = async () => {
-    const BASE_API_URL = 'http://localhost:3000/api/v1'
+    const BASE_API_URL = 'http://localhost:3000/api/v1';
     try {
       setLoading(true);
       const response = await fetch(
@@ -63,7 +63,7 @@ export function TableHero() {
       // Transform the data
 
       setUsers(users);
-      setUserColumns(columns)
+      setUserColumns(columns);
     } catch (error) {
       console.error("Error fetching data:", error);
     } finally {
