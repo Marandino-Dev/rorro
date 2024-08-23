@@ -1,13 +1,13 @@
-import { PostgresClient, TableName } from "utils/database";
-import { SlackUser } from "types";
-import { NextRequest, NextResponse } from "next/server";
+import { PostgresClient, TableName } from 'utils/database';
+import { SlackUser } from 'types';
+import { NextRequest, NextResponse } from 'next/server';
 import {
   getSlackMessage,
   getSlackUsersFromChannel,
   SlackResponseType,
   sanitizeSlackText,
   parsePayloadFromRequest
-} from "utils/slack";
+} from 'utils/slack';
 
 export async function POST(
   req: NextRequest

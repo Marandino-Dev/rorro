@@ -1,4 +1,4 @@
-import { SlackUser } from "types";
+import { SlackUser } from 'types';
 
 /**
  * @return The max amount of times an user has been selected.

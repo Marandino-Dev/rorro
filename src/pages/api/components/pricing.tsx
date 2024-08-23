@@ -36,19 +36,19 @@ const PricingCard: React.FC<PricingCardProps> = ({ title, price, features, butto
 const Pricing: React.FC = () => {
   const pricingPlans: PricingPlan[] = [
     {
-      title: "Free",
-      price: "$0/month",
+      title: 'Free',
+      price: '$0/month',
       features: [
         '-----',
         '-----',
         '-----',
       ],
-      buttonText: "Get Started",
+      buttonText: 'Get Started',
       isPremium: false
     },
     {
-      title: "Premium",
-      price: "$1/month",
+      title: 'Premium',
+      price: '$1/month',
       features: [
         '-----',
         '-----',
@@ -56,7 +56,7 @@ const Pricing: React.FC = () => {
         '-----',
         '-----',
       ],
-      buttonText: "Upgrade Now",
+      buttonText: 'Upgrade Now',
       isPremium: true
     }
   ];

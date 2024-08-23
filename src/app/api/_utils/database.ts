@@ -32,7 +32,7 @@ export class PostgresClient {
   };
 
   public async queryAll<T>(table: TableName): Promise<T[]> {
-    console.log("I'm trying to query everything from:", this._logsTable, this._usersTable);
+    console.log('I\'m trying to query everything from:', this._logsTable, this._usersTable);
     const { rows } = await sql` SELECT * FROM ${this[table]};`;
     return rows as T[];
   }
@@ -98,7 +98,7 @@ export class PostgresClient {
 
   // TODO: make it just destructure the values, and make it accept a custom string for the action
   private createSqlQuery(table: TableName, columns: string[], values: unknown[]) {
-    return "CREATE TABLE IF NOT EXISTS " + this[table] + " (" +
+    return 'CREATE TABLE IF NOT EXISTS ' + this[table] + ' (' +
       columns.map((column, index) => {
         return column + ' ' + this.getValueType(values[index]);
       }

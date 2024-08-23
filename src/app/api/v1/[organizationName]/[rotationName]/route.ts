@@ -1,5 +1,5 @@
 import { type NextRequest, NextResponse } from 'next/server';
-import { PostgresClient } from "utils/database";
+import { PostgresClient } from 'utils/database';
 
 export async function GET(
   _: NextRequest,

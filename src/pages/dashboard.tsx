@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
 import {
   // Card, we will be using this the moment we implement a proper dashboard
   Table,
@@ -7,7 +7,7 @@ import {
   TableHead,
   TableHeaderCell,
   TableRow,
-} from "@tremor/react";
+} from '@tremor/react';
 
 import { SlackUser } from 'types';
 
@@ -54,10 +54,10 @@ export function TableHero() {
     try {
       setLoading(true);
       const response = await fetch(
-        BASE_API_URL + "/marandino_workspace/rotation"
+        BASE_API_URL + '/marandino_workspace/rotation'
       );
       if (!response.ok) {
-        throw new Error("Network response was not ok");
+        throw new Error('Network response was not ok');
       }
       const { rows: users, columns }: { rows: SlackUser[], columns: string[] } = await response.json();
       // Transform the data
@@ -65,7 +65,7 @@ export function TableHero() {
       setUsers(users);
       setUserColumns(columns);
     } catch (error) {
-      console.error("Error fetching data:", error);
+      console.error('Error fetching data:', error);
     } finally {
       setLoading(false);
     }

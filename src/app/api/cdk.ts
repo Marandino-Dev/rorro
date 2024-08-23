@@ -1,6 +1,6 @@
-import  { type NextApiRequest, type NextApiResponse } from "next";
+import  { type NextApiRequest, type NextApiResponse } from 'next';
 
-import { sql } from "@vercel/postgres";
+import { sql } from '@vercel/postgres';
 
 
 export const runtime = 'nodejs';
@@ -20,15 +20,15 @@ export default async function handler(
         return listHandler(req, res);
       case 'assign':
         return assignHandler(req, res);
-      case "current":
+      case 'current':
         return currentHandler(req, res);
-      case "revert":
+      case 'revert':
         return revertHandler(req, res);
       default:
         return res.status(200).json(
           {
             response_type: 'ephemeral',
-            text: "Please provide a valid command. \n Available commands: `/cdk list`, `/cdk assign`, `/cdk revert`, `/cdk current`"
+            text: 'Please provide a valid command. \n Available commands: `/cdk list`, `/cdk assign`, `/cdk revert`, `/cdk current`'
           }
         );
     }
@@ -65,7 +65,7 @@ export async function assignHandler(
   req: NextApiRequest,
   res: NextApiResponse<unknown>,
 ) {
-  const authorizedUsers = ["U0467DXP7D5", "U065JMM3WEB"];
+  const authorizedUsers = ['U0467DXP7D5', 'U065JMM3WEB'];
   if (!authorizedUsers.includes(req.body.user_id))
     return res.status(200).json({ text: 'You are not authorized to run this command.' });
   try {
@@ -81,13 +81,13 @@ export async function assignHandler(
     if (filteredDevelopers.length === 0) filteredDevelopers.push(...developers);
 
     const selectedDeveloper = filteredDevelopers[Math.floor(Math.random() * filteredDevelopers.length)];
-    console.log("selected: ", selectedDeveloper?.name);
+    console.log('selected: ', selectedDeveloper?.name);
 
     const currentDate = new Date().toISOString();
     // Insert the log into the database
     await sql`
   INSERT INTO logs (backup_deployer, current_deployer, date, executed_by)
-  VALUES (${currentDeveloper?.slack_id || "not applicable"}, ${selectedDeveloper.slack_id}, ${currentDate}, ${req.body.user_name})`;
+  VALUES (${currentDeveloper?.slack_id || 'not applicable'}, ${selectedDeveloper.slack_id}, ${currentDate}, ${req.body.user_name})`;
 
     // up the count on the selected developer on the developers file and write it down with qsl
 
@@ -118,7 +118,7 @@ const revertHandler = async function (
   res: NextApiResponse<unknown>,
 ) {
   // TODO: refactor this and mix it
-  const authorizedUsers = ["U0467DXP7D5", "U065JMM3WEB"];
+  const authorizedUsers = ['U0467DXP7D5', 'U065JMM3WEB'];
   if (!authorizedUsers.includes(req.body.user_id))
     return res.status(200).json({ text: 'You are not authorized to run this command.' });
   try {
@@ -130,14 +130,14 @@ const revertHandler = async function (
 
     const lastLog = logs[0];
     const previousLog = logs[1];
-    console.log("lastLog: ", lastLog, "previousLog: ", previousLog, "logs", logs);
+    console.log('lastLog: ', lastLog, 'previousLog: ', previousLog, 'logs', logs);
     if (!lastLog) return res.status(404).json({ message: 'No logs found' });
 
     const currentDate = new Date().toISOString();
     // Insert the log into the database
     await sql`
     INSERT INTO logs (backup_deployer, current_deployer, date, executed_by)
-    VALUES (${previousLog.backup_deployer}, ${previousLog.current_deployer}, ${currentDate}, ${"reverted by: " + req.body.user_name})`;
+    VALUES (${previousLog.backup_deployer}, ${previousLog.current_deployer}, ${currentDate}, ${'reverted by: ' + req.body.user_name})`;
 
     await sql`UPDATE developers SET count = count - 1 WHERE slack_id = ${lastLog.current_deployer}`;
     await sql`UPDATE developers SET current = false WHERE slack_id = ${lastLog.current_deployer}`;

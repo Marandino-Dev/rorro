@@ -1,5 +1,5 @@
-import  { type NextRequest } from "next/server";
-import { SlackUser, SlackCommandPayload } from "types";
+import  { type NextRequest } from 'next/server';
+import { SlackUser, SlackCommandPayload } from 'types';
 
 /** Slack Response Type in order to choose what type of display the return message will have */
 export enum SlackResponseType {
@@ -80,8 +80,8 @@ function createUser(slack_id: string, full_name: string): SlackUser {
 
 /** Returns the input from the user, without spaces so the table doesn't break */
 export function sanitizeSlackText(text: string) {
-  console.debug("I'm sanitizing the following text:", text);
-  return text.trim().toLowerCase().replaceAll(" ", "_").replaceAll('-', '_');
+  console.debug('I\'m sanitizing the following text:', text);
+  return text.trim().toLowerCase().replaceAll(' ', '_').replaceAll('-', '_');
 }
 
 export async function parsePayloadFromRequest(req: NextRequest): Promise<SlackCommandPayload> {
