@@ -10,39 +10,39 @@ interface FooterColumn {
   links: FooterLink[];
 }
 
-const AboutFooter: React.FC = () => {
+export default function Footer() {
   const currentYear = new Date().getFullYear();
 
   const footerColumns: FooterColumn[] = [
     {
-      title: "Company",
+      title: 'Company',
       links: [
-        { text: "About Us", href: "/about" },
-        { text: "Press", href: "/press" },
+        { text: 'About Us', href: '/about' },
+        { text: 'Press', href: '/press' },
       ]
     },
     {
-      title: "Product",
+      title: 'Product',
       links: [
-        { text: "Features", href: "/features" },
-        { text: "Pricing", href: "/pricing" },
-        { text: "FAQ", href: "/faq" },
+        { text: 'Features', href: '/features' },
+        { text: 'Pricing', href: '/pricing' },
+        { text: 'FAQ', href: '/faq' },
       ]
     },
     {
-      title: "Resources",
+      title: 'Resources',
       links: [
-        { text: "Blog", href: "/blog" },
-        { text: "Documentation", href: "/docs" },
-        { text: "Support", href: "/support" },
+        { text: 'Blog', href: '/blog' },
+        { text: 'Documentation', href: '/docs' },
+        { text: 'Support', href: '/support' },
       ]
     },
     {
-      title: "Legal",
+      title: 'Legal',
       links: [
-        { text: "Privacy Policy", href: "/privacy" },
-        { text: "Terms of Service", href: "/terms" },
-        { text: "Cookie Policy", href: "/cookie-policy" },
+        { text: 'Privacy Policy', href: '/privacy' },
+        { text: 'Terms of Service', href: '/terms' },
+        { text: 'Cookie Policy', href: '/cookie-policy' },
       ]
     },
   ];
@@ -55,7 +55,7 @@ const AboutFooter: React.FC = () => {
           <div className="lg:col-span-2">
             <h2 className="text-2xl font-bold mb-4">RORRO</h2>
             <p className="mb-4">
-            RORRO: Effortlessly Rotate and Assign Tasks, Ensuring Fair and Balanced Work Distribution Every Time.
+              RORRO: Effortlessly Rotate and Assign Tasks, Ensuring Fair and Balanced Work Distribution Every Time.
             </p>
             <div className="flex space-x-4">
               <a href="#" className="hover:text-gray-300">
@@ -103,6 +103,4 @@ const AboutFooter: React.FC = () => {
       </div>
     </footer>
   );
-};
-
-export default AboutFooter;
+}

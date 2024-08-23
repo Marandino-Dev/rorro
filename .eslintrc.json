@@ -1,10 +1,25 @@
 {
   "extends": [
     "next/core-web-vitals",
-    "next",
     "eslint:recommended"
   ],
   "rules": {
-    "no-unused-vars": "warn"
-  }
+    "no-unused-vars": "off",
+    "@typescript-eslint/no-unused-vars": "error",
+    "@next/next/no-img-element": "off",
+    "semi": "error",
+    "quotes": [
+      "error",
+      "single"
+    ],
+    "@typescript-eslint/no-explicit-any": "error",
+    "import/consistent-type-specifier-style": [
+      "error",
+      "prefer-inline"
+    ]
+  },
+  "parser": "@typescript-eslint/parser",
+  "plugins": [
+    "@typescript-eslint"
+  ]
 }

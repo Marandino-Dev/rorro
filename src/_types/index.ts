@@ -1,1 +1,1 @@
-export * from "./rorro"
+export * from './rorro';
