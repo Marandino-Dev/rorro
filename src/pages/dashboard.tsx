@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import {
-  Card,
+  // Card, we will be using this the moment we implement a proper dashboard
   Table,
   TableBody,
   TableCell,
@@ -9,15 +9,7 @@ import {
   TableRow,
 } from "@tremor/react";
 
-// Database
-interface User {
-  slackid: string;
-  fullname: string;
-  holiday: boolean;
-  onduty: boolean;
-  count: number;
-  backup: boolean;
-}
+import { SlackUser } from 'types'
 
 interface ApiResponse {
   users: {
@@ -31,11 +23,10 @@ const AvailabilityButton: React.FC<{ available: boolean }> = ({
   available,
 }) => (
   <button
-    className={`px-4 py-2 rounded-full font-semibold border-2 ${
-      available
-        ? "border-green-500 text-gray-300 bg-transparent hover:bg-green-500 hover:text-white"
-        : "border-red-500 text-gray-300 bg-transparent hover:bg-red-500 hover:text-white"
-    } transition-colors duration-200`}
+    className={`px-4 py-2 rounded-full font-semibold border-2 ${available
+      ? "border-green-500 text-gray-300 bg-transparent hover:bg-green-500 hover:text-white"
+      : "border-red-500 text-gray-300 bg-transparent hover:bg-red-500 hover:text-white"
+      } transition-colors duration-200`}
   >
     {available ? "Available" : "Unavailable"}
   </button>
@@ -43,16 +34,17 @@ const AvailabilityButton: React.FC<{ available: boolean }> = ({
 
 // TableHero
 export function TableHero() {
-  const [data, setData] = useState<User[]>([]);
+  const [data, setData] = useState<SlackUser[]>([]);
   const [loading, setLoading] = useState(true);
-  const [sortColumn, setSortColumn] = useState<string | null>("holiday");
+  const [sortColumn, setSortColumn] = useState<string | null>("on_holiday");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
 
   const fetchData = async () => {
+    const BASE_API_URL = 'http://localhost:3000/api/v1'
     try {
       setLoading(true);
       const response = await fetch(
-        "https://development-rorro.vercel.app/api/v1/marandino_workspace/pinga"
+        BASE_API_URL + "/marandino_workspace/rotation"
       );
       if (!response.ok) {
         throw new Error("Network response was not ok");
@@ -60,13 +52,13 @@ export function TableHero() {
       const result: ApiResponse = await response.json();
 
       // Transform the data
-      const users: User[] = result.users.rows.map((row) => ({
-        slackid: row[0] as string,
-        fullname: row[1] as string,
-        holiday: row[2] as boolean,
-        onduty: row[3] as boolean,
+      const users: SlackUser[] = result.users.rows.map((row) => ({
+        slack_id: row[0] as string,
+        full_name: row[1] as string,
+        on_holiday: row[2] as boolean,
+        on_duty: row[3] as boolean,
         count: row[4] as number,
-        backup: row[5] as boolean,
+        on_backup: row[5] as boolean,
       }));
 
       setData(users);
@@ -82,39 +74,39 @@ export function TableHero() {
 
   // Sort data by the default column on component mount
   useEffect(() => {
-    handleSort("holiday");
+    handleSort("on_duty");
   }, []);
 
-  const handleSort = (column: keyof User) => {
+  const handleSort = (column: keyof SlackUser) => {
     const newSortDirection = sortColumn === column && sortDirection === 'asc' ? 'desc' : 'asc';
     setSortColumn(column);
     setSortDirection(newSortDirection);
-  
+
     const sortedData = [...data].sort((a, b) => {
       const aValue = a[column];
       const bValue = b[column];
-  
+
       if (typeof aValue === 'string' && typeof bValue === 'string') {
         return newSortDirection === 'asc'
           ? aValue.localeCompare(bValue)
           : bValue.localeCompare(aValue);
       }
-  
+
       if (typeof aValue === 'number' && typeof bValue === 'number') {
         return newSortDirection === 'asc'
           ? aValue - bValue
           : bValue - aValue;
       }
-  
+
       if (typeof aValue === 'boolean' && typeof bValue === 'boolean') {
         return newSortDirection === 'asc'
           ? (aValue ? 1 : 0) - (bValue ? 1 : 0)
           : (bValue ? 1 : 0) - (aValue ? 1 : 0);
       }
-  
+
       return 0;
     });
-  
+
     setData(sortedData);
   };
 
@@ -132,26 +124,26 @@ export function TableHero() {
               <TableRow className="bg-gray-700">
                 <TableHeaderCell
                   className="text-gray-300 py-5 border-b border-gray-300 cursor-pointer"
-                  onClick={() => handleSort("fullname")}
+                  onClick={() => handleSort("full_name")}
                 >
                   Full Name{" "}
-                  {sortColumn === "fullname" &&
+                  {sortColumn === "full_name" &&
                     (sortDirection === "asc" ? "↑" : "↓")}
                 </TableHeaderCell>
                 <TableHeaderCell
                   className="text-gray-300 py-5 border-b border-gray-300 cursor-pointer"
-                  onClick={() => handleSort("slackid")}
+                  onClick={() => handleSort("slack_id")}
                 >
                   Slack ID{" "}
-                  {sortColumn === "slackid" &&
+                  {sortColumn === "slack_id" &&
                     (sortDirection === "asc" ? "↑" : "↓")}
                 </TableHeaderCell>
                 <TableHeaderCell
                   className="text-gray-300 py-5 border-b border-gray-300 cursor-pointer"
-                  onClick={() => handleSort("onduty")}
+                  onClick={() => handleSort("on_duty")}
                 >
                   On Duty{" "}
-                  {sortColumn === "onduty" &&
+                  {sortColumn === "on_duty" &&
                     (sortDirection === "asc" ? "↑" : "↓")}
                 </TableHeaderCell>
                 <TableHeaderCell
@@ -164,18 +156,18 @@ export function TableHero() {
                 </TableHeaderCell>
                 <TableHeaderCell
                   className="text-gray-300 py-5 border-b border-gray-300 cursor-pointer"
-                  onClick={() => handleSort("backup")}
+                  onClick={() => handleSort("on_backup")}
                 >
-                  Backup{" "}
-                  {sortColumn === "backup" &&
+                  on_backup{" "}
+                  {sortColumn === "on_backup" &&
                     (sortDirection === "asc" ? "↑" : "↓")}
                 </TableHeaderCell>
                 <TableHeaderCell
                   className="text-gray-300 py-5 border-b border-gray-300 cursor-pointer"
-                  onClick={() => handleSort("holiday")}
+                  onClick={() => handleSort("on_holiday")}
                 >
-                  Holiday{" "}
-                  {sortColumn === "holiday" &&
+                  on_holiday{" "}
+                  {sortColumn === "on_holiday" &&
                     (sortDirection === "asc" ? "↑" : "↓")}
                 </TableHeaderCell>
               </TableRow>
@@ -183,26 +175,26 @@ export function TableHero() {
             <TableBody>
               {data.map((item) => (
                 <TableRow
-                  key={item.slackid}
+                  key={item.slack_id}
                   className="text-gray-300 hover:bg-gray-200 hover:bg-opacity-50 transition-colors duration-200 border-b border-gray-300"
                 >
                   <TableCell className="bg-gray-600 px-4 py-2 text-sm">
-                    {item.fullname}
+                    {item.full_name}
                   </TableCell>
                   <TableCell className="px-4 py-2 text-sm">
-                    {item.slackid}
+                    {item.slack_id}
                   </TableCell>
                   <TableCell className="bg-gray-600 px-4 py-2 text-sm text-center">
-                    {item.onduty ? "True" : "False"}
+                    {item.on_duty ? "True" : "False"}
                   </TableCell>
                   <TableCell className="px-4 py-2 text-sm">
                     {item.count}
                   </TableCell>
                   <TableCell className="bg-gray-600 px-4 py-2 text-sm">
-                    {item.backup}
+                    {item.on_backup}
                   </TableCell>
                   <TableCell className="bg-gray-600 px-4 py-2 text-sm">
-                    <AvailabilityButton available={!item.holiday} />
+                    <AvailabilityButton available={!item.on_holiday} />
                   </TableCell>
                 </TableRow>
               ))}
