@@ -2,6 +2,9 @@ import React, { useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import anime from 'animejs';
+import rotationPostImage from '/public/images/rotation-post.png';
+import dashboardImage from '/public/images/dashboard.png';
+import onDutyGetImage from '/public/images/on-duty-get.png';
 
 const TextWrapper = ({ text }: { text: string }) => {
   // Split the text into individual letters and wrap each one in a span
@@ -57,10 +60,10 @@ const Hero = () => {
       </div>
 
       {/* Image */}
-      <div className="w-full md:w-1/2 relative h-auto hidden sm:block">
-        <Image className='bottom-0 left-4 absolute hidden md:block rounded-lg shadow-xl' src={'/images/dashboard.png'} alt='A screenshot of a dashboard with users' height={200} width={500} />
-        <Image className='top-5 absolute rounded-xl shadow-xl' src={'/images/rotation-post.png'} alt='An image of the bot creating a new task rotation' height={100} width={350} />
-        <Image className='right-0 -top-8 absolute rounded-lg shadow-xl' src={'/images/on-duty-get.png'} alt='Screenshot showing the users that are on duty for a task' height={150} width={400} />
+      <div className="w-full md:w-1/2 relative h-auto hidden md:block">
+        <Image className='bottom-0 left-4 absolute hidden md:block rounded-lg shadow-xl' src={dashboardImage} alt='A screenshot of a dashboard with users' />
+        <Image className='top-5 absolute rounded-xl shadow-xl' src={rotationPostImage} alt='An image of the bot creating a new task rotation' />
+        <Image priority className='right-0 -top-8 absolute rounded-lg shadow-xl' src={onDutyGetImage} alt='Screenshot showing the users that are on duty for a task' />
       </div>
     </section >
   );
