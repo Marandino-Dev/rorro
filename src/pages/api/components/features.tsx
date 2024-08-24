@@ -18,7 +18,7 @@ const FeatureBox: React.FC<FeatureBoxProps> = ({ feature, index }) => (
   <div className={`p-6 rounded-lg shadow-md flex flex-col items-center text-center  ${index > 3 && 'hidden md:flex'}`}>
     <div className="text-4xl mb-4">{feature.icon}</div>
     <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
-    <p className="">{feature.description}</p>
+    <p className="opacity-70">{feature.description}</p>
   </div>
 );
 

@@ -71,7 +71,7 @@ const Pricing: React.FC = () => {
   ];
 
   return (
-    <section id='pricing' className='bg-dark-bg md:dark:bg-light-bg text-dark dark:text-black md:py-12 overflow-x-hidden'>
+    <section id='pricing' className='bg-dark-bg md:dark:bg-tertiary text-dark md:-mx-96 dark:text-black md:py-12 overflow-x-hidden'>
       <h1 className="text-3xl font-bold text-center mb-8 hidden md:block">Choose Your Plan</h1>
       <div className="flex flex-col md:flex-row justify-center items-stretch space-y-6 md:space-y-0 md:space-x-6">
         {pricingPlans.map((plan, index) => (
