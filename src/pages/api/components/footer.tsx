@@ -22,14 +22,6 @@ export default function Footer() {
       ]
     },
     {
-      title: 'Product',
-      links: [
-        { text: 'Features', href: '/features' },
-        { text: 'Pricing', href: '/pricing' },
-        { text: 'FAQ', href: '/faq' },
-      ]
-    },
-    {
       title: 'Resources',
       links: [
         { text: 'Blog', href: '/blog' },
