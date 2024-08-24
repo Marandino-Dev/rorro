@@ -2,8 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  background: #212121;
+section {
+  margin: 3rem 0
 }
 
 @layer base {

@@ -34,8 +34,8 @@ const FeaturesGrid: React.FC = () => {
   ];
 
   return (
-    <div className="py-12">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+    <section>
+      <div className="px-4 sm:px-6 lg:px-8">
         <h2 className="text-3xl font-bold text-center mb-8">Awesome Features</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {features.map((feature, index) => (
@@ -43,7 +43,7 @@ const FeaturesGrid: React.FC = () => {
           ))}
         </div>
       </div>
-    </div>
+    </section>
   );
 };
 
