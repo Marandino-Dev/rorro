@@ -59,3 +59,14 @@ type RotationConfiguration = {
   // the current "rotation.name" is "rotation.user.active"????? need to decide if this will have separated tables for everyone, it should tbh. but what about the 
   // add here if we ever add automatic rotation and that kind of stuff
 }
+
+export type Organization = {
+  authed_users: string[];
+  access_hash: string;
+  team_id: string;
+  team_name: string;
+  team_domain?: string;
+  scope: string;
+  app_id: string;
+}
+
