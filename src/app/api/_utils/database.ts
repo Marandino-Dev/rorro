@@ -8,6 +8,11 @@ export enum TableName {
   Users = '_usersTable',
 }
 
+type CurrentActiveUsers = {
+  userOnDuty: SlackUser;
+  userOnBackup: SlackUser;
+};
+
 export class PostgresClient {
 
   _organizationId = '';//marandino
@@ -35,6 +40,26 @@ export class PostgresClient {
     console.log('I\'m trying to query everything from:', this._logsTable, this._usersTable);
     const { rows } = await sql` SELECT * FROM ${this[table]};`;
     return rows as T[];
+  }
+
+  public async queryCurrentActiveUsers(): Promise<CurrentActiveUsers> {
+    console.log(
+      `Querying the user on duty and their backup for: ${this._organizationId}, rotation: ${this._rotationName} from:`,
+      this._usersTable
+    );
+
+    const queryString = `
+      SELECT * FROM ${this._usersTable}
+      WHERE on_duty = true OR on_backup = true
+      ORDER BY on_duty DESC;
+    `;
+
+    const { rows } = await sql.query(queryString);
+
+    return {
+      userOnDuty: rows[0],
+      userOnBackup: rows[1]
+    };
   }
 
   public async queryUsersForOrganizationAndRotation(
