@@ -2,14 +2,11 @@ import Footer from '../api/components/footer';
 import Navbar from '../api/components/navbar';
 import React, { type JSX } from 'react';
 
-
-
-type Props = {
-  children: (string | JSX.Element)[];
+export interface LayoutProps {
+  children?: JSX.Element | JSX.Element[];
 }
 
-
-export default function Layout({ children }: Props) {
+export default function Layout({ children }: LayoutProps) {
   return (
     <>
       <Navbar />

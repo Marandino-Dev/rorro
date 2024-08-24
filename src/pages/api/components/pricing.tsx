@@ -11,7 +11,7 @@ interface PricingPlan {
 interface PricingCardProps extends PricingPlan { }
 
 const PricingCard: React.FC<PricingCardProps> = ({ title, price, features, buttonText, isPremium }) => (
-  <div className={`bg-light-bg rounded-lg shadow-lg p-6 ${!isPremium ? 'border-2 border-primary' : ''}`}>
+  <div className={`rounded-lg shadow-lg p-6 ${!isPremium ? 'border-2 border-secondary' : ''}`}>
     <h2 className="text-2xl font-bold mb-4">{title}</h2>
     <p className="text-4xl font-bold text-primary mb-6">{price}</p>
     <ul className="mb-6">
@@ -62,8 +62,8 @@ const Pricing: React.FC = () => {
   ];
 
   return (
-    <div className="py-12">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+    <section>
+      <div className="px-4 sm:px-6 lg:px-8">
         <h1 className="text-3xl font-bold text-center mb-8">Choose Your Plan</h1>
         <div className="flex flex-col md:flex-row justify-center items-stretch space-y-6 md:space-y-0 md:space-x-6">
           {pricingPlans.map((plan, index) => (
@@ -73,7 +73,7 @@ const Pricing: React.FC = () => {
           ))}
         </div>
       </div>
-    </div>
+    </section>
   );
 };
 
