@@ -27,7 +27,7 @@ export default function Navbar() {
           <div className="md:hidden">
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className={'inline-flex items-center justify-center p-2 rounded-md text-white hover:bg-primary $"btn"'}
+              className={'inline-flex items-center justify-center p-2 rounded-md'}
             >
               <span className="sr-only">Open main menu</span>
               {isOpen ? (

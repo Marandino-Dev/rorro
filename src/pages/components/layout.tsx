@@ -13,7 +13,7 @@ export default function Layout({ children }: Props) {
   return (
     <>
       <Navbar />
-      <main>{children}</main>
+      <main className='bg-light-bg text-dark dark:text-dark dark:bg-dark-bg'>{children}</main>
       <Footer />
     </>
   );
