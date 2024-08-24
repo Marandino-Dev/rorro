@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PostgresClient, TableName } from 'utils/database';
-
 import { encrypt } from 'utils/crypto';
 import { Organization } from 'types';
 
@@ -40,7 +39,7 @@ export async function GET(
     const access_hash = encrypt(access_token);
 
     const organization: Organization = {
-      authed_users: [authed_user?.id?.toString()],
+      authed_user: authed_user?.id?.toString(),
       scope,
       team_id: team?.id?.toString(),
       team_name: team?.name?.toString(),
@@ -51,12 +50,11 @@ export async function GET(
     // Save the code and the encription
     await new PostgresClient('', '')
       .putItems<Organization>([organization], TableName.Organizations);
-
-    return NextResponse.redirect('http://localhost:3000/dashboard'); // TODO: redirect the user to the dashboard form the request domain.
+    return NextResponse.redirect(req.nextUrl.host + '/dashboard');
 
   } catch (error) {
     console.log(error);
-
+    NextResponse.json({ message: 'Something went wrong' }, { status: 500 });
   }
 }
 

@@ -61,7 +61,7 @@ type RotationConfiguration = {
 }
 
 export type Organization = {
-  authed_users: string[];
+  authed_user: string;
   access_hash: string;
   team_id: string;
   team_name: string;
