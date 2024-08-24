@@ -1,8 +1,8 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
-    "./src/**/*.{js,jsx,ts,tsx}",
-    "./index.html",
+    './src/**/*.{js,jsx,ts,tsx}',
+    './index.html',
   ],
   darkMode: 'class', // Enables dark mode via a class
   theme: {
@@ -19,14 +19,14 @@ module.exports = {
         },
       },
       backgroundColor: {
-        'light-bg': '#f3f4f6',
-        'dark-bg': '#1f2937',
+        'light-bg': '#f7f7f7',
+        'dark-bg': '#090909',
       },
       textColor: {
-        DEFAULT: '#1f2937', // Light mode default text color
+        DEFAULT: '#090909', // Light mode default text color
         dark: '#f3f4f6',    // Dark mode default text color
       },
     },
   },
   plugins: [],
-}
+};

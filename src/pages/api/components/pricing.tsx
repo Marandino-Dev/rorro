@@ -11,23 +11,26 @@ interface PricingPlan {
 interface PricingCardProps extends PricingPlan { }
 
 const PricingCard: React.FC<PricingCardProps> = ({ title, price, features, buttonText, isPremium }) => (
-  <div className={`bg-white rounded-lg shadow-lg p-6 ${!isPremium ? 'border-2 border-primary' : ''}`}>
-    <h2 className="text-2xl font-bold text-gray-800 mb-4">{title}</h2>
-    <p className="text-4xl font-bold text-primary mb-6">{price}</p>
-    <ul className="mb-6">
+  <div className={`rounded-lg shadow-xl p-5 px-12 flex flex-wrap gap-2 md:gap-4 ${!isPremium ? '' : ''}`}>
+    <div className='font-bold'>
+      <h2 className='text-2xl md:text-3xl' >{title}</h2>
+      <h2 className="text-xl md:text-2xl text-primary">
+        {price}<span className='text-base opacity-80 text-dark dark:text-black'> user / month</span>
+      </h2>
+    </div>
+    <ul className="flex flex-wrap -ml-6">
       {features.map((feature, index) => (
-        <li key={index} className="flex items-center mb-2">
-          <svg className="h-5 w-5 text-green-500 mr-2" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" stroke="currentColor">
-            <path d="M5 13l4 4L19 7"></path>
-          </svg>
+        <li key={index} className="flex items-center">
+          <span>
+            <svg className="h-5 w-5 text-secondary mr-1" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" stroke="currentColor">
+              <path d="M5 13l4 4L19 7"></path>
+            </svg>
+          </span>
           {feature}
         </li>
       ))}
     </ul>
-    <button className={`w-full py-2 px-4 rounded-lg font-bold transition duration-300 ${isPremium
-      ? 'bg-primary text-white hover:bg-primary'
-      : 'bg-gray-200 text-gray-800 hover:bg-gray-300'
-      }`}>
+    <button className={'btn primary capitalize'}>
       {buttonText}
     </button>
   </div>
@@ -36,44 +39,48 @@ const PricingCard: React.FC<PricingCardProps> = ({ title, price, features, butto
 const Pricing: React.FC = () => {
   const pricingPlans: PricingPlan[] = [
     {
-      title: 'Free',
-      price: '$0/month',
+      title: 'Starter',
+      price: '$0.00',
       features: [
-        '-----',
-        '-----',
-        '-----',
+        'Unlimited users per rotation',
+        'Unlimited task rotations',
+        'Vacation mode to skip unavailable users',
+        'Seamless slack integration',
+        'Emergency options: re-assign or revert tasks instantly',
+        'Comprehensive logs for full transparency',
+        'Insightful dashboard with user stats',
       ],
-      buttonText: 'Get Started',
+      buttonText: 'try it now',
       isPremium: false
     },
     {
-      title: 'Premium',
-      price: '$1/month',
+      title: 'Pro',
+      price: '$1.99',
       features: [
-        '-----',
-        '-----',
-        '-----',
-        '-----',
-        '-----',
+        'Unlimited users per rotation',
+        'Unlimited task rotations',
+        'Vacation mode to skip unavailable users',
+        'Seamless slack integration',
+        'Emergency options: re-assign or revert tasks instantly',
+        'Comprehensive logs for full transparency',
+        'Insightful dashboard with user stats',
       ],
-      buttonText: 'Upgrade Now',
+      buttonText: 'install to slack',
       isPremium: true
     }
   ];
 
   return (
-    <div className="bg-gray-100 py-12">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <h1 className="text-3xl font-bold text-center text-gray-800 mb-8">Choose Your Plan</h1>
-        <div className="flex flex-col md:flex-row justify-center items-stretch space-y-6 md:space-y-0 md:space-x-6">
-          {pricingPlans.map((plan, index) => (
-            <div key={index} className="w-full md:w-80">
-              <PricingCard {...plan} />
-            </div>
-          ))}
-        </div>
+    <section id='pricing' className='bg-dark-bg md:dark:bg-tertiary text-dark md:-mx-96 dark:text-black md:py-12 overflow-x-hidden'>
+      <h1 className="text-3xl font-bold text-center mb-8 hidden md:block">Choose Your Plan</h1>
+      <div className="flex flex-col md:flex-row justify-center items-stretch space-y-6 md:space-y-0 md:space-x-6">
+        {pricingPlans.map((plan, index) => (
+          <div key={index} className="w-full md:w-80 bg-light-bg rounded-lg">
+            <PricingCard {...plan} />
+          </div>
+        ))}
       </div>
-    </div>
+    </section>
   );
 };
 
