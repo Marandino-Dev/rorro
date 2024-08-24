@@ -6,6 +6,8 @@ import { sql } from '@vercel/postgres';
 export enum TableName {
   Logs = '_logsTable',
   Users = '_usersTable',
+  Configurations = '_configurationsTable',
+  Organizations = '_organizationsTable',
 }
 
 type CurrentActiveUsers = {
@@ -20,13 +22,14 @@ export class PostgresClient {
 
   _logsTable = '';//marandino_rotation_logs
   _usersTable = '';//marandino_rotation_users
+  _configurationsTable = 'rotation_configurations';// this is the general configuration for rotations
+  _organizationsTable = 'organizations';// this is the data relevant to organizations
 
   constructor(organizationId: string, rotationName: string) {
     this._organizationId = organizationId; // marandino
     this._rotationName = rotationName; // standup
 
     this.constructTableNames();
-
     console.debug('The PostgresClient is ready to be used.');
   }
 
