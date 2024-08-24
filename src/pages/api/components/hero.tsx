@@ -6,16 +6,14 @@ const Hero = () => {
     <div className="flex flex-col md:flex-row items-center justify-between py-12 md:py-24">
       {/* Text content */}
       <div className="w-full md:w-1/2 mb-8 md:mb-0 text-xl flex flex-wrap gap-4">
-        <h1 className="text-4xl md:text-5xl font-bold mb-4">
-          RORRO: Simplify Your Team&apos;s Turnover
+        <h1 className="text-4xl md:text-5xl font-bold mb-4 capitalize">
+          <span className='text-primary'>RORRO</span>: Equitable Task Distribution
         </h1>
         <p>
-          Revolutionize user rotations in Slack with RORRO.
-          Your ultimate tool for seamless team scheduling.
+          Automate, rotate, and elevate your team&apos;s task management with one tool.
         </p>
         <p>
-          Designed for teams of all sizes
-          Wheters you&apos;re managing shifts, task assignments, or rotating team roles, RORRO makes the process smooth and efficient.
+          Effortless workload balance: A Slack bot designed for fairness
         </p>
         <button className="bg-primary font-bold py-3 px-6 rounded-lg hover:bg-primary transition duration-300">
           Get Started
