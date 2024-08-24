@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import anime from 'animejs/lib/anime';
+import anime from 'animejs';
 
 const TextWrapper = ({ text }: { text: string }) => {
   // Split the text into individual letters and wrap each one in a span
