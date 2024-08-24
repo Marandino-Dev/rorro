@@ -18,7 +18,7 @@ const PricingCard: React.FC<PricingCardProps> = ({ title, price, features, butto
         {price}<span className='text-base opacity-80 text-dark dark:text-black'> user / month</span>
       </h2>
     </div>
-    <ul className="flex flex-wrap -ml-6 capitalize">
+    <ul className="flex flex-wrap -ml-6">
       {features.map((feature, index) => (
         <li key={index} className="flex items-center">
           <span>
@@ -72,15 +72,13 @@ const Pricing: React.FC = () => {
 
   return (
     <section id='pricing' className='bg-dark-bg dark:bg-light-bg text-dark dark:text-black py-12 overflow-x-hidden'>
-      <div className="px-4 sm:px-6 lg:px-8">
-        <h1 className="text-3xl font-bold text-center mb-8">Choose Your Plan</h1>
-        <div className="flex flex-col md:flex-row justify-center items-stretch space-y-6 md:space-y-0 md:space-x-6">
-          {pricingPlans.map((plan, index) => (
-            <div key={index} className="w-full md:w-80">
-              <PricingCard {...plan} />
-            </div>
-          ))}
-        </div>
+      <h1 className="text-3xl font-bold text-center mb-8">Choose Your Plan</h1>
+      <div className="flex flex-col md:flex-row justify-center items-stretch space-y-6 md:space-y-0 md:space-x-6">
+        {pricingPlans.map((plan, index) => (
+          <div key={index} className="w-full md:w-80">
+            <PricingCard {...plan} />
+          </div>
+        ))}
       </div>
     </section>
   );
