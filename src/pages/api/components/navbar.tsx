@@ -27,7 +27,7 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <nav className="fixed w-full bg-light-bg dark:bg-dark-bg z-10">
+    <nav className="fixed sticky absolute top-0 w-full bg-light-bg dark:bg-dark-bg z-10">
       <div className="px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}

@@ -4,7 +4,7 @@ import Link from 'next/link';
 
 const Hero = () => {
   return (
-    <div className="flex flex-col md:flex-row items-center justify-between py-12 md:py-24">
+    <section className="flex flex-col md:flex-row items-center justify-between py-12 md:py-24">
       {/* Text content */}
       <div className="w-full md:w-1/2 mb-8 md:mb-0 text-xl flex flex-wrap gap-4">
         <h1 className="text-4xl md:text-5xl font-bold mb-4 capitalize">
@@ -32,7 +32,7 @@ const Hero = () => {
         <Image className='top-5 absolute rounded-xl shadow-xl' src={'/images/rotation-post.png'} alt='An image of the bot creating a new task rotation' height={100} width={350} />
         <Image className='right-0 -top-8 absolute rounded-lg shadow-xl' src={'/images/on-duty-get.png'} alt='Screenshot showing the users that are on duty for a task' height={150} width={400} />
       </div>
-    </div >
+    </section >
   );
 };
 

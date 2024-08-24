@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 section {
-  margin: 3rem 0
+  @apply my-12
 }
 
 @layer base {
