@@ -8,14 +8,14 @@ section {
 
 @layer base {
   .btn {
-    @apply text-lg font-medium px-3 py-2 rounded-md transition-all duration-300
+    @apply text-lg font-medium px-4 py-2 rounded-md transition-all duration-300 opacity-80
   }
 
-  .btn:hover {
-    @apply outline outline-2 outline-white
+  .btn:hover, btn:focus {
+    @apply opacity-100
   }
 
-  .btn:focus {
-    @apply outline-none ring-2 ring-white ring-offset-2 ring-offset-primary
+  .btn.primary {
+    @apply bg-primary
   }
 }

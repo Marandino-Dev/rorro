@@ -8,7 +8,7 @@ const Hero = () => {
       {/* Text content */}
       <div className="w-full md:w-1/2 mb-8 md:mb-0 text-xl flex flex-wrap gap-4">
         <h1 className="text-4xl md:text-5xl font-bold mb-4 capitalize">
-          <span className='text-primary'>RORRO</span>: Equitable Task Distribution
+          <span className='text-primary hover:text-secondary hover:opacity-80 transition duration-200'>RORRO</span>: Equitable Task Distribution
         </h1>
         <p>
           Automate, rotate, and elevate your team&apos;s task management with one tool.
@@ -20,7 +20,7 @@ const Hero = () => {
         <Link
           href="https://slack.com/oauth/v2/authorize?scope=channels%3Aread%2Cusergroups%3Aread%2Cusers%3Aread%2Cchat%3Awrite%2Ccommands&amp;user_scope=&amp;redirect_uri=https%3A%2F%2Fdevelopment-rorro.vercel.app%2Fapi%2Fv1%2Fslack%2Fconfirmation&amp;client_id=7546053177520.7516636957142"
         >
-          <button className="bg-primary font-bold py-3 px-6 rounded-lg hover:bg-primary transition duration-300">
+          <button className="btn primary">
             Get Started
           </button>
         </Link>
