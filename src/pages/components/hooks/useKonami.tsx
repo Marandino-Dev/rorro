@@ -7,7 +7,7 @@ const r = 'ArrowRight';
 const b = 'KeyB';
 const a = 'KeyA';
 
-export function useKonamiCode(): void {
+export default function useKonamiCode(): void {
 
   const userInput: string[] = [];
 
