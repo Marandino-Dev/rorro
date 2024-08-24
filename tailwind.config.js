@@ -19,7 +19,7 @@ module.exports = {
         },
       },
       backgroundColor: {
-        'light-bg': '#f3f4f6',
+        'light-bg': '#f7f7f7',
         'dark-bg': '#090909',
       },
       textColor: {

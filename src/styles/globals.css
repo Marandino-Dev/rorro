@@ -16,6 +16,10 @@ section {
   }
 
   .btn.primary {
-    @apply bg-primary
+    @apply bg-primary text-dark
+  }
+
+  .btn.secondary {
+    @apply bg-secondary
   }
 }
