@@ -2,8 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+body {
+  @apply text-sm md:text-base
+}
+
 section {
-  @apply my-12
+  @apply lg:my-12
 }
 
 @layer base {
