@@ -28,9 +28,9 @@ const Hero = () => {
 
       {/* Image */}
       <div className="w-full md:w-1/2 relative h-auto">
-        <Image className='bottom-0 left-4 absolute hidden md:block rounded-lg shadow-xl' src={'/images/dashboard.png'} alt='Rotation' height={200} width={500} />
-        <Image className='top-5 absolute rounded-xl shadow-xl' src={'/images/rotation-post.png'} alt='Rotation' height={100} width={350} />
-        <Image className='right-0 -top-8 absolute rounded-lg shadow-xl' src={'/images/on-duty-get.png'} alt='Rotation' height={150} width={400} />
+        <Image className='bottom-0 left-4 absolute hidden md:block rounded-lg shadow-xl' src={'/images/dashboard.png'} alt='A screenshot of a dashboard with users' height={200} width={500} />
+        <Image className='top-5 absolute rounded-xl shadow-xl' src={'/images/rotation-post.png'} alt='An image of the bot creating a new task rotation' height={100} width={350} />
+        <Image className='right-0 -top-8 absolute rounded-lg shadow-xl' src={'/images/on-duty-get.png'} alt='Screenshot showing the users that are on duty for a task' height={150} width={400} />
       </div>
     </div >
   );
