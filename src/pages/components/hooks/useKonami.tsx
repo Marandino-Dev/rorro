@@ -1,5 +1,7 @@
 import { useEffect } from 'react';
 
+import anime from 'animejs';
+
 const u = 'ArrowUp';
 const d = 'ArrowDown';
 const l = 'ArrowLeft';
@@ -18,26 +20,37 @@ export default function useKonamiCode(): void {
   //eslint-disable-next-line
   function handleKeyPress(this: HTMLElement, e: any) {
 
+    // only keep the last ten inputs
     userInput.push(e.code);
     if (userInput.length > konamiCodeArray.length) {
       userInput.shift();
-
     }
 
-
-
+    // this ain't spaghetti, this is the whole italian restaurant
     if (userInput.toString() == konamiCodeArray.toString()) {
 
-      new Audio('/success_sound.ogg').play();
+      const successAudio = new Audio('/success_sound.ogg');
+      successAudio.volume = 0.35;
+      successAudio.play();
 
       const logo = document.querySelector('#rorroLogo') as HTMLImageElement;
       const logoText = document.querySelector('#rorroText');
+      const hero = document.querySelector('#rorroHero');
 
-      if (logo && logoText) {
-        logo.src = 'https://cdn-icons-png.flaticon.com/256/3819/3819238.png'; // Change this to the path of your new image
+      if (logo && logoText && hero) {
+        logo.src = '/images/monito.png';
         logoText.textContent = 'MONITO';
+        hero.textContent = 'MONITO: ';
+
+        anime.timeline({ loop: true })
+          .add({
+            targets: '#rorroLogo',
+            translateY: ['-.3rem'],
+            translateX: ['1rem'],
+            duration: 500,
+            delay: 40
+          });
       }
-      console.log(' You\'ve entered the MONITO code');
     }
   }
 
