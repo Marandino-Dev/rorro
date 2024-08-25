@@ -2,8 +2,12 @@ import Hero from './api/components/hero';
 import Pricing from './api/components/pricing';
 import FeaturesGrid from './api/components/features';
 import Head from 'next/head';
+import useKonamiCode from './components/hooks/useKonami';
 
 export default function Home() {
+
+  useKonamiCode();
+
   return (
     <>
       <Head>
