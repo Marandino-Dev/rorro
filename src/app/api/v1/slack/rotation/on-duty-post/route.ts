@@ -6,49 +6,56 @@ import {
     sanitizeSlackText,
     parsePayloadFromRequest,
 } from 'utils/slack';
+import {
+    filterUserOnDuty,
+    filterSlackUsers,
+    selectSlackUser
+} from 'utils/logic';
+import { SlackUser } from '@/_types';
 
 export async function POST(req: NextRequest) {
     try {
         const parsedPayload = await parsePayloadFromRequest(req);
-
         const { text, team_domain } = parsedPayload;
-        console.log(parsedPayload);
 
-        const command: string = text.replace(/<[^>]+>/g, ''); // Cleanup the command
+        const command: string = text.replace(/<[^>]+>/g, '');
         const organizationName = sanitizeSlackText(team_domain);
         const rotationName = sanitizeSlackText(command);
 
-        if (!rotationName || typeof rotationName !== 'string') {
-            return NextResponse.json(
-                { error: 'rotationName is required' },
-                { status: 400 }
-            );
+        if (!rotationName) {
+            return NextResponse.json({ error: 'rotationName is required' }, { status: 400 });
         }
 
         const DbClient = new PostgresClient(organizationName, rotationName);
+        const { rows } = await DbClient.queryUsersForOrganizationAndRotation(organizationName, rotationName);
 
-        const activeUsers = await DbClient.queryCurrentActiveUsers();
+        const previousBackup = rows.find(user => user.on_backup === true)?.slack_id;
+        const newBackup = rows.find(user => user.on_duty === true)?.slack_id;
 
-        if (!activeUsers || !activeUsers.userOnDuty) {
-            const errorMessage = getSlackMessage(
-                SlackResponseType.Ephemeral,
-                'No active users found or incomplete data.'
-            );
-            return NextResponse.json(errorMessage, { status: 404 });
-        }
+        const usersNotOnDuty = filterUserOnDuty(rows);
+        const filteredUsers = filterSlackUsers(usersNotOnDuty);
 
-        const slackMessage = getSlackMessage(
-            SlackResponseType.Ephemeral,
-            `Slack user on duty: <@${activeUsers.userOnDuty.slack_id}> | Backup Slack user: <@${activeUsers.userOnBackup?.slack_id}>.`
+        const userOnDuty: SlackUser = selectSlackUser(filteredUsers);
+
+        const users = await DbClient.rotateUsers(
+            userOnDuty.slack_id,
+            newBackup,
+            previousBackup
         );
 
+        const slackMessage = getSlackMessage(
+            SlackResponseType.InChannel,
+            `Assigned user on duty: <@${userOnDuty.slack_id}>, backup user assigned: <@${newBackup}>.`
+        );
+
+        console.debug(users);
         return NextResponse.json(slackMessage, { status: 200 });
+
     } catch (error) {
-        console.error(JSON.stringify(error));
-        const slackMessage = getSlackMessage(
-            SlackResponseType.Ephemeral,
-            'Something went wrong, please try again.'
+        console.error('Error processing request:', error);
+        return NextResponse.json(
+            getSlackMessage(SlackResponseType.Ephemeral, 'Something went wrong, please try again.'),
+            { status: 500 }
         );
-        return NextResponse.json(slackMessage, { status: 500 });
     }
 }
