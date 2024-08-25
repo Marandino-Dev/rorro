@@ -1,39 +1,68 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import Image from 'next/image';
+import Link from 'next/link';
+import anime from 'animejs/lib/anime';
+
+const TextWrapper = ({ text }: { text: string }) => {
+  // Split the text into individual letters and wrap each one in a span
+  const wrappedText = text.split('').map((letter, index) => (
+    <span key={index} className="letter inline-block">
+      {letter}
+    </span>
+  ));
+
+  return (
+    <span id='rorroHero' className="letters text-primary hover:text-secondary relative inline-flex pr-2">
+      <span className='relative inline-block overflow-hidden'>
+        {wrappedText}
+      </span>
+    </span>);
+};
 
 const Hero = () => {
-  return (
-    <div className="bg-primary">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col md:flex-row items-center justify-between py-12 md:py-24">
-          {/* Text content */}
-          <div className="w-full md:w-1/2 mb-8 md:mb-0">
-            <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
-              RORRO: Simplify Your Team&apos;s Turnover
-            </h1>
-            <p className="text-xl text-white mb-6">
-              Revolutionize user rotations in Slack with RORRO.
-              Your ultimate tool for seamless team scheduling.
-            </p>
-            <p className='text-xl text-white mb-6'>
-              Designed for teams of all sizes
-              Wheters you&apos;re managing shifts, task assignments, or rotating team roles, RORRO makes the process smooth and efficient.
-            </p>
-            <button className="bg-primary text-white font-bold py-3 px-6 rounded-lg hover:bg-primary transition duration-300">
-              Get Started
-            </button>
-          </div>
 
-          {/* Image */}
-          <div className="w-full md:w-1/2">
-            <img
-              src="https://w7.pngwing.com/pngs/101/158/png-transparent-laptop-logo-show-logo-wanted-computer-50-electronics-computer-logo.png"
-              alt="RORRO App Interface"
-              className="rounded-lg shadow-xl"
-            />
-          </div>
-        </div>
+  useEffect(() => {
+    anime.timeline({ loop: false })
+      .add({
+        targets: '.letter',
+        translateY: ['1.1em', 0],
+        translateZ: 0,
+        duration: 750,
+        delay: (_, i) => 50 * i
+      });
+  }, []);
+  return (
+    <section className="flex flex-col md:flex-row items-center justify-between py-12 md:py-24">
+      {/* Text content */}
+      <div className="w-full md:w-1/2 mb-8 md:mb-0 text-xl flex flex-wrap gap-4">
+        <h1 className="text-4xl md:text-5xl font-bold md:mb-4 capitalize">
+          <TextWrapper text="RORRO: " />
+          Equitable Task Distribution
+        </h1>
+        <p>
+          Automate, rotate, and elevate your team&apos;s task management with one tool.
+        </p>
+        <p>
+          Effortless workload balance: A Slack bot designed for fairness
+        </p>
+
+        <Link
+          className='flex mt-4 w-full justify-end pr-4 md:block'
+          href="https://slack.com/oauth/v2/authorize?scope=channels%3Aread%2Cusergroups%3Aread%2Cusers%3Aread%2Cchat%3Awrite%2Ccommands&amp;user_scope=&amp;redirect_uri=https%3A%2F%2Fdevelopment-rorro.vercel.app%2Fapi%2Fv1%2Fslack%2Fconfirmation&amp;client_id=7546053177520.7516636957142"
+        >
+          <button className="btn primary">
+            Get Started
+          </button>
+        </Link>
       </div>
-    </div>
+
+      {/* Image */}
+      <div className="w-full md:w-1/2 relative h-auto hidden sm:block">
+        <Image className='bottom-0 left-4 absolute hidden md:block rounded-lg shadow-xl' src={'/images/dashboard.png'} alt='A screenshot of a dashboard with users' height={200} width={500} />
+        <Image className='top-5 absolute rounded-xl shadow-xl' src={'/images/rotation-post.png'} alt='An image of the bot creating a new task rotation' height={100} width={350} />
+        <Image className='right-0 -top-8 absolute rounded-lg shadow-xl' src={'/images/on-duty-get.png'} alt='Screenshot showing the users that are on duty for a task' height={150} width={400} />
+      </div>
+    </section >
   );
 };
 
