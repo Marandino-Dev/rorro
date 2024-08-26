@@ -112,7 +112,7 @@ export class PostgresClient {
         console.log(`Setting user on duty: ${userOnDutySlackId}`);
         const setOnDutyQuery = `
             UPDATE ${this._usersTable}
-            SET on_duty = true, on_backup = false, count = count + 1
+            SET on_duty = true, count = count + 1
             WHERE slack_id = $1;
         `;
         await sql.query(setOnDutyQuery, [userOnDutySlackId]);
