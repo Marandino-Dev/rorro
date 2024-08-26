@@ -11,7 +11,7 @@ import {
     filterSlackUsers,
     selectSlackUser
 } from 'utils/logic';
-import { SlackUser } from '@/_types';
+import { SlackUser } from 'types';
 
 export async function POST(req: NextRequest) {
     try {
@@ -45,7 +45,7 @@ export async function POST(req: NextRequest) {
 
         const slackMessage = getSlackMessage(
             SlackResponseType.InChannel,
-            `Assigned user on duty: <@${userOnDuty.slack_id}>, backup user assigned: <@${newBackup}>.`
+            `${rotationName}: <@${userOnDuty.slack_id}> is on duty, and <@${newBackup}> will back them up.`
         );
 
         console.debug(users);
