@@ -27,13 +27,13 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <nav className="fixed sticky absolute top-0 w-full bg-light-bg dark:bg-dark-bg z-10">
-      <div className="px-4 sm:px-6 lg:px-8">
+    <nav className="fixed sticky absolute px-4 top-0 w-full bg-light-bg dark:bg-dark-bg z-10">
+      <div className="px-4 container mx-auto sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link href="/" className='flex items-center space-x-2 text-xl font-bold btn flex-shrink-0'>
-            <img className='h-10' src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS8YjHt4SPnWQ0zR4IKTa9jQknRHtrvsCOoUg&s" />
-            <h1>RORRO</h1>
+            <img id='rorroLogo' alt='Logo' className='h-10' src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS8YjHt4SPnWQ0zR4IKTa9jQknRHtrvsCOoUg&s" />
+            <h1 id='rorroText'>RORRO</h1>
           </Link>
 
           {/* Desktop menu */}
