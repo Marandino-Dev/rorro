@@ -18,10 +18,11 @@ export function getUserOnDuty(users: SlackUser[]): SlackUser {
   return userOnDuty;
 }
 
+/**
+ * Filters a list of Slack users to only include those who are on duty and not on holiday.
+ */
 export function filterUserOnDuty(users: SlackUser[]): SlackUser[] {
-  return users.filter(
-    user => !user.on_duty
-  );
+  return users.filter(user => !user.on_duty && !user.on_holiday);
 }
 
 /**

@@ -121,6 +121,20 @@ export class PostgresClient {
         console.error('Error updating user statuses:', error);
         throw new Error('Failed to update user statuses');
     }
+  }
+
+  public async toggleHolidayStatus(toggledUserId: string): Promise<SlackUser> {
+    console.log(`Toggling holiday status for user: ${toggledUserId}`);
+
+    const updateQuery = `
+        UPDATE ${this._usersTable}
+        SET on_holiday = NOT on_holiday
+        WHERE slack_id = $1
+        RETURNING *;
+    `;
+
+    const { rows } = await sql.query(updateQuery, [toggledUserId]);
+    return rows[0];
 }
 
 
