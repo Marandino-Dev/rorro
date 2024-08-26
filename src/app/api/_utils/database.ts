@@ -80,6 +80,50 @@ export class PostgresClient {
     return { columns, rows };
   }
 
+  public async rotateUsers(
+    userOnDutySlackId: string,
+    newBackupSlackId: string | undefined,
+    previousBackupSlackId: string | undefined
+): Promise<void> {
+    try {
+        // Reset previous backup user
+        if (previousBackupSlackId) {
+            console.log(`Resetting backup for user: ${previousBackupSlackId}`);
+            const resetPreviousBackupQuery = `
+                UPDATE ${this._usersTable}
+                SET on_backup = false
+                WHERE slack_id = $1;
+            `;
+            await sql.query(resetPreviousBackupQuery, [previousBackupSlackId]);
+        }
+
+        // Set new backup user
+        if (newBackupSlackId) {
+            console.log(`Setting new backup: ${newBackupSlackId}`);
+            const setNewBackupQuery = `
+                UPDATE ${this._usersTable}
+                SET on_backup = true, on_duty = false
+                WHERE slack_id = $1;
+            `;
+            await sql.query(setNewBackupQuery, [newBackupSlackId]);
+        }
+
+        // Set on-duty user
+        console.log(`Setting user on duty: ${userOnDutySlackId}`);
+        const setOnDutyQuery = `
+            UPDATE ${this._usersTable}
+            SET on_duty = true, count = count + 1
+            WHERE slack_id = $1;
+        `;
+        await sql.query(setOnDutyQuery, [userOnDutySlackId]);
+
+    } catch (error) {
+        console.error('Error updating user statuses:', error);
+        throw new Error('Failed to update user statuses');
+    }
+}
+
+
 
   public async putItems<T extends Record<string, unknown>>(items: T[], table: TableName): Promise<T[]> {
 
