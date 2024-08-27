@@ -26,7 +26,6 @@
       "error",
       600
     ],
-    "no-console": "warn",
     "no-multiple-empty-lines": [
       "error",
       {
