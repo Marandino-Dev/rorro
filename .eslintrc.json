@@ -6,17 +6,62 @@
   "rules": {
     "no-unused-vars": "off",
     "@typescript-eslint/no-unused-vars": "error",
+    "no-multi-spaces": "error",
+    "comma-dangle": [
+      "error",
+      "always-multiline"
+    ],
     "@next/next/no-img-element": "off",
-    "semi": "error",
+    "@typescript-eslint/no-explicit-any": "error",
+    "import/consistent-type-specifier-style": "error",
+    "block-spacing": "error",
+    "comma-spacing": "error",
+    "complexity": "error",
+    "linebreak-style": "error",
+    "max-lines": [
+      "error",
+      600
+    ],
+    "max-len": [
+      "error",
+      {
+        "code": 160
+      }
+    ],
+    "no-console": "warn",
+    "no-multiple-empty-lines": [
+      "error",
+      {
+        "max": 1,
+        "maxEOF": 1
+      }
+    ],
+    "no-trailing-spaces": "error",
+    "object-curly-spacing": [
+      "error",
+      "always"
+    ],
+    "prefer-const": "error",
     "quotes": [
       "error",
       "single"
     ],
-    "@typescript-eslint/no-explicit-any": "error",
-    "import/consistent-type-specifier-style": [
+    "semi": "error",
+    "sort-imports": [
       "error",
-      "prefer-inline"
-    ]
+      {
+        "ignoreCase": true,
+        "memberSyntaxSortOrder": [
+          "none",
+          "all",
+          "multiple",
+          "single"
+        ]
+      }
+    ],
+    "space-in-parens": "error",
+    "spaced-comment": "error",
+    "strict": "error"
   },
   "parser": "@typescript-eslint/parser",
   "plugins": [
