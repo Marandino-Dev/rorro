@@ -123,6 +123,20 @@ export class PostgresClient {
     }
   }
 
+  public async toggleHolidayStatus(toggledUserId: string): Promise<SlackUser> {
+    console.log(`Toggling holiday status for user: ${toggledUserId}`);
+
+    const updateQuery = `
+        UPDATE ${this._usersTable}
+        SET on_holiday = NOT on_holiday
+        WHERE slack_id = $1
+        RETURNING *;
+    `;
+
+    const { rows } = await sql.query(updateQuery, [toggledUserId]);
+    return rows[0];
+  }
+
   public async putItems<T extends Record<string, unknown>>(items: T[], table: TableName): Promise<T[]> {
 
     console.debug(`Writing ${items.length} item(s) into: ${this[table]}`);
