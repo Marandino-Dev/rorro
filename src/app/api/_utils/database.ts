@@ -143,6 +143,42 @@ export class PostgresClient {
     return rows;
   }
 
+  // Update usersTable
+
+  public async updateUser(
+    slackId: string,
+    updatedData: Partial<SlackUser>
+  ): Promise<SlackUser | null> {
+    try {
+      const updateFields = Object.keys(updatedData)
+        .map((key, index) => `${key} = $${index + 2}`)
+        .join(', ');
+
+      const userUpdateValues = Object.values(updatedData);
+      userUpdateValues.unshift(slackId); // SLACK ID AS FIRST VALUE
+
+      const queryString = `
+        UPDATE ${this._usersTable}
+        SET ${updateFields}
+        WHERE slack_id = $1
+        RETURNING *;
+      `;
+
+      const { rows } = await sql.query<SlackUser>(queryString, userUpdateValues);
+
+      if (rows.length === 0) {
+        console.log('No user found with the provided Slack ID');
+        return null;
+      }
+
+      console.log('User updated successfully:', rows[0]);
+      return rows[0];
+    } catch (error) {
+      console.error('Error updating user:', error);
+      throw new Error('Failed to update user');
+    }
+  }
+
   /** This function will confirm that the table exists prior to inserting a new item */
   private async createTableIfNotExists(table: TableName, columns: string[], values: unknown[]) {
     const queryString = this.createSqlQuery(table, columns, values);
