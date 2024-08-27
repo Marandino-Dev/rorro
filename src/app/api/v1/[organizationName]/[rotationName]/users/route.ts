@@ -6,14 +6,14 @@ export async function PUT(
   { params }: { params: { organizationName: string; rotationName: string } }
 ) {
   const { organizationName, rotationName } = params;
-  const updatedData = await request.json();
+  const {updateData, userId} = await request.json();
 
   const client = new PostgresClient(organizationName, rotationName);
 
   try {
     const updatedUser = await client.updateUser(
-      updatedData.slack_id,
-      updatedData
+      userId,
+      updateData
     );
 
     if (!updatedUser) {
