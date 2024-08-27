@@ -2,11 +2,11 @@ import { PostgresClient, TableName } from 'utils/database';
 import { SlackUser } from 'types';
 import { NextRequest, NextResponse } from 'next/server';
 import {
+  SlackResponseType,
   getSlackMessage,
   getSlackUsersFromChannel,
   parsePayloadFromRequest,
   sanitizeSlackText,
-  SlackResponseType,
 } from 'utils/slack';
 
 export async function POST(

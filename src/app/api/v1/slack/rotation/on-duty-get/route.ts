@@ -1,10 +1,10 @@
 import { PostgresClient } from 'utils/database';
 import { NextRequest, NextResponse } from 'next/server';
 import {
+  SlackResponseType,
   getSlackMessage,
   parsePayloadFromRequest,
   sanitizeSlackText,
-  SlackResponseType,
 } from 'utils/slack';
 
 export async function POST(req: NextRequest) {
