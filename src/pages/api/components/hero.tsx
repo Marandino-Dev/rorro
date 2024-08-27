@@ -31,7 +31,7 @@ const Hero = () => {
         translateY: ['1.1em', 0],
         translateZ: 0,
         duration: 750,
-        delay: (_, i) => 50 * i
+        delay: (_, i) => 50 * i,
       });
   }, []);
   return (

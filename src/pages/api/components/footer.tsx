@@ -19,7 +19,7 @@ export default function Footer() {
       links: [
         { text: 'About Us', href: '/about' },
         { text: 'Press', href: '/press' },
-      ]
+      ],
     },
     {
       title: 'Resources',
@@ -27,7 +27,7 @@ export default function Footer() {
         { text: 'Blog', href: '/blog' },
         { text: 'Documentation', href: '/docs' },
         { text: 'Support', href: '/support' },
-      ]
+      ],
     },
     {
       title: 'Legal',
@@ -35,7 +35,7 @@ export default function Footer() {
         { text: 'Privacy Policy', href: '/privacy' },
         { text: 'Terms of Service', href: '/terms' },
         { text: 'Cookie Policy', href: '/cookie-policy' },
-      ]
+      ],
     },
   ];
 

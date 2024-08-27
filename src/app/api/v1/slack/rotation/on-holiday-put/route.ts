@@ -1,8 +1,8 @@
 import {
+  SlackResponseType,
   getSlackMessage,
   parsePayloadFromRequest,
   sanitizeSlackText,
-  SlackResponseType,
 } from 'utils/slack';
 import { NextRequest, NextResponse } from 'next/server';
 import { PostgresClient } from 'utils/database';

@@ -51,7 +51,7 @@ const Pricing: React.FC = () => {
         'Insightful dashboard with user stats',
       ],
       buttonText: 'try it now',
-      isPremium: false
+      isPremium: false,
     },
     {
       title: 'Pro',
@@ -66,8 +66,8 @@ const Pricing: React.FC = () => {
         'Insightful dashboard with user stats',
       ],
       buttonText: 'install to slack',
-      isPremium: true
-    }
+      isPremium: true,
+    },
   ];
 
   return (

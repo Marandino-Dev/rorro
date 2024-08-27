@@ -30,7 +30,6 @@ export type SlackCommandPayload = {
   api_app_id: string;
 }
 
-
 export type SlackCommandRequest = {
   body?: SlackCommandPayload
 }
@@ -44,7 +43,7 @@ export type Log = {
   type: LogType;
 }
 
-// rotations 
+// rotations
 export type Rotation = {
   id: string; // organization-rotationName
   name: string;
@@ -54,9 +53,9 @@ export type Rotation = {
 }
 
 type RotationConfiguration = {
-  has_backup?: boolean; //defaults to true
-  custom_message?: string; //default message will be something like
-  // the current "rotation.name" is "rotation.user.active"????? need to decide if this will have separated tables for everyone, it should tbh. but what about the 
+  has_backup?: boolean; // defaults to true
+  custom_message?: string; // default message will be something like
+  // the current "rotation.name" is "rotation.user.active"????? need to decide if this will have separated tables for everyone, it should tbh. but what about the
   // add here if we ever add automatic rotation and that kind of stuff
 }
 
