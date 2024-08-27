@@ -37,7 +37,7 @@ export function TableHero() {
 
   const tableHeaders = userColumns.map(column =>
     <TableHeaderCell
-      className="text-white hover:text-secondary py-5 border-b border-gray-300 cursor-pointer capitalize"
+      className="hover:text-secondary py-5 cursor-pointer capitalize"
       key={column + '-key'}
     >
       {column.replace('_', ' ')}
@@ -77,7 +77,7 @@ export function TableHero() {
 
   return (
     <div className="p-4 md:p-10 rounded-2xl my-12">
-      <h1 className="text-white hover:text-secondary text-4xl md:text-5xl font-bold md:mb-4 capitalize">
+      <h1 className="hover:text-secondary text-4xl md:text-5xl font-bold md:mb-4">
         Team Members
       </h1>
       {loading ? (
@@ -86,7 +86,7 @@ export function TableHero() {
         <div className="overflow-auto">
           <Table className="text-lg border-separate border-spacing-0 rounded">
             <TableHead>
-              <TableRow className="bg-black">
+              <TableRow className="bg-dark-bg">
                 {tableHeaders}
               </TableRow>
             </TableHead>
@@ -94,11 +94,11 @@ export function TableHero() {
               {users.map((user) => (
                 <TableRow
                   key={user.slack_id}
-                  className="text-black border-b border-gray-300"
+                  className="bg-light-bg px-4 py-2 text-base text-black text-left border-b border-gray-400"
                 >
                   {
                     userColumns.map((keyName, i) =>
-                      <TableCell key={keyName + i} className="bg-white px-4 py-2 text-base text-left">
+                      <TableCell key={keyName + i}>
                         {user[keyName].toString()}
                       </TableCell>
                     )
