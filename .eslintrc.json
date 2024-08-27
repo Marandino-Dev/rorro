@@ -31,7 +31,8 @@
       "error",
       {
         "max": 1,
-        "maxEOF": 1
+        "maxEOF": 1,
+        "maxBOF": 0
       }
     ],
     "no-trailing-spaces": "error",
