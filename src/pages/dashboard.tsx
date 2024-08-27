@@ -52,7 +52,7 @@ export function TableHero() {
     try {
       setLoading(true);
       const response = await fetch(
-        BASE_API_URL + '/marandino_workspace/rotation'
+        BASE_API_URL + '/marandino_workspace/rotation/users'
       );
       if (!response.ok) {
         throw new Error('Network response was not ok');
