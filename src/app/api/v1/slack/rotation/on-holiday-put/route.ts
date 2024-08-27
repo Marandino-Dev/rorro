@@ -7,41 +7,55 @@ import {
     parsePayloadFromRequest,
 } from 'utils/slack';
 
-export async function POST(req: NextRequest) {
+export async function PUT(req: NextRequest) {
     try {
         const parsedPayload = await parsePayloadFromRequest(req);
         const { text, team_domain } = parsedPayload;
-
-        // Extract and sanitize Slack ID, convert to uppercase, else it breaks
         const slackIdMatch = text.match(/<@([A-Z0-9]+)>/);
-        const slackId = slackIdMatch ? sanitizeSlackText(slackIdMatch[1]).toUpperCase() : null;
-
+        const slackId = slackIdMatch ? slackIdMatch[1] : null;
         const rotationName = sanitizeSlackText(text.replace(/<@[^>]+>/g, '').trim());
 
         if (!rotationName) {
-            return NextResponse.json({ error: 'rotationName is required' }, { status: 400 });
+            const message = 'Error: task name is required.\n' +
+                'Usage example: /rr-skip task-name @user';
+            return NextResponse.json(
+                getSlackMessage(SlackResponseType.Ephemeral, message),
+                { status: 400 }
+            );
         }
 
         if (!slackId) {
-            return NextResponse.json({ error: 'Slack user ID is required' }, { status: 400 });
+            const message = 'Error: User is required.\n' +
+                'Usage example: /rr-skip task-name @user';
+            return NextResponse.json(
+                getSlackMessage(SlackResponseType.Ephemeral, message),
+                { status: 400 }
+            );
         }
 
         const organizationName = sanitizeSlackText(team_domain);
-
         const DbClient = new PostgresClient(organizationName, rotationName);
+
+        // Ensure slackId is not null before passing it to the function
+        if (!slackId) {
+            return NextResponse.json(
+                getSlackMessage(SlackResponseType.Ephemeral, 'Invalid  user.'),
+                { status: 400 }
+            );
+        }
 
         const user = await DbClient.toggleHolidayStatus(slackId);
 
         if (!user) {
             return NextResponse.json(
-                getSlackMessage(SlackResponseType.Ephemeral, 'User not found or invalid.'),
+                getSlackMessage(SlackResponseType.Ephemeral, `<@${slackId}> user not found or invalid.`),
                 { status: 404 }
             );
         }
 
         const slackMessage = getSlackMessage(
             SlackResponseType.InChannel,
-            `${rotationName}: <@${user.slack_id}> holiday status is set to: ${user.on_holiday}.`
+            `${rotationName}; <@${user.slack_id}> ${user.on_holiday ? 'won\'t' : 'will'} be available for selection.`
         );
 
         console.debug(user);
