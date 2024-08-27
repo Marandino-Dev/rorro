@@ -22,12 +22,6 @@
       "error",
       600
     ],
-    "max-len": [
-      "error",
-      {
-        "code": 160
-      }
-    ],
     "no-console": "warn",
     "no-multiple-empty-lines": [
       "error",
