@@ -9,15 +9,7 @@ import {
   TableRow,
 } from '@tremor/react';
 
-
-type SlackUser = {
-  slack_id: string;
-  full_name: string;
-  count: number;
-  on_holiday: boolean;
-  on_duty: boolean;
-  on_backup: boolean;
-}
+import { SlackUser } from 'types'
 
 // Availability Button
 // const AvailabilityButton: React.FC<{ available: boolean }> = ({
