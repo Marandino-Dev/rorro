@@ -1,5 +1,5 @@
-import  { type NextRequest } from 'next/server';
-import { SlackUser, SlackCommandPayload } from 'types';
+import { type NextRequest } from 'next/server';
+import { SlackCommandPayload, SlackUser } from 'types';
 
 /** Slack Response Type in order to choose what type of display the return message will have */
 export enum SlackResponseType {
@@ -12,7 +12,7 @@ export enum SlackResponseType {
 }
 export function getSlackMessage(responseType: SlackResponseType, responseText: string) {
 
-  //TODO: expand upon this, make it be able to use different types of response.
+  // TODO: expand upon this, make it be able to use different types of response.
   // https://api.slack.com/interactivity/handling#responses
   return {
     response_type: responseType,
@@ -29,7 +29,7 @@ async function fetchSlackApi(slackApiString: string) {
     {
       method: 'GET',
       headers: {
-        'Authorization': 'Bearer ' + token,//TODO: we need to take the token we stored upon installation, not this one.
+        'Authorization': 'Bearer ' + token, // TODO: we need to take the token we stored upon installation, not this one.
       },
     }
   );
@@ -37,10 +37,9 @@ async function fetchSlackApi(slackApiString: string) {
   return await res.json();
 }
 
-
 export async function getSlackUsersFromChannel(channel: string): Promise<SlackUser[]> {
 
-  //TODO: make it accept an user group
+  // TODO: make it accept an user group
   if (!channel) return [];
 
   const { members } = await fetchSlackApi(`conversations.members?channel=${channel}`);
@@ -64,7 +63,7 @@ export async function getSlackUsersFromChannel(channel: string): Promise<SlackUs
 
 function createUser(slack_id: string, full_name: string): SlackUser {
 
-  //TODO: add an average for users that are added to a rotation mid-way
+  // TODO: add an average for users that are added to a rotation mid-way
   const user: SlackUser = {
     slack_id,
     full_name,
@@ -76,7 +75,6 @@ function createUser(slack_id: string, full_name: string): SlackUser {
   console.debug('The user has been created for: ', slack_id);
   return user;
 }
-
 
 /** Returns the input from the user, without spaces so the table doesn't break */
 export function sanitizeSlackText(text: string) {

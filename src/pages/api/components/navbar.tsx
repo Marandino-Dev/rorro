@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import React, { useState } from 'react';
 
-
 function buttons() {
   return (
     <>

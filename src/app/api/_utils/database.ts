@@ -2,7 +2,7 @@ import { SlackUser } from 'types';
 import { sql } from '@vercel/postgres';
 
 /** These are the local names for the table private values inside the PosttgreClient */
-//eslint-disable-next-line
+// eslint-disable-next-line
 export enum TableName {
   Logs = '_logsTable',
   Users = '_usersTable',
@@ -17,11 +17,11 @@ type CurrentActiveUsers = {
 
 export class PostgresClient {
 
-  _organizationId = '';//marandino
-  _rotationName = '';//rotation
+  _organizationId = '';// marandino
+  _rotationName = '';// rotation
 
-  _logsTable = '';//marandino_rotation_logs
-  _usersTable = '';//marandino_rotation_users
+  _logsTable = '';// marandino_rotation_logs
+  _usersTable = '';// marandino_rotation_users
   _configurationsTable = 'rotation_configurations';// this is the general configuration for rotations
   _organizationsTable = 'organizations';// this is the data relevant to organizations
 
@@ -35,8 +35,8 @@ export class PostgresClient {
 
   private constructTableNames = () => {
     const tableName = this._organizationId + '_' + this._rotationName; // marandino_standup
-    this._usersTable = tableName + '_users';//marandino_standup_users
-    this._logsTable = tableName + '_logs';//marandino_standup_logs
+    this._usersTable = tableName + '_users';// marandino_standup_users
+    this._logsTable = tableName + '_logs';// marandino_standup_logs
   };
 
   public async queryAll<T>(table: TableName): Promise<T[]> {
@@ -61,7 +61,7 @@ export class PostgresClient {
 
     return {
       userOnDuty: rows[0],
-      userOnBackup: rows[1]
+      userOnBackup: rows[1],
     };
   }
 
@@ -84,46 +84,44 @@ export class PostgresClient {
     userOnDutySlackId: string,
     newBackupSlackId: string | undefined,
     previousBackupSlackId: string | undefined
-): Promise<void> {
+  ): Promise<void> {
     try {
-        // Reset previous backup user
-        if (previousBackupSlackId) {
-            console.log(`Resetting backup for user: ${previousBackupSlackId}`);
-            const resetPreviousBackupQuery = `
+      // Reset previous backup user
+      if (previousBackupSlackId) {
+        console.log(`Resetting backup for user: ${previousBackupSlackId}`);
+        const resetPreviousBackupQuery = `
                 UPDATE ${this._usersTable}
                 SET on_backup = false
                 WHERE slack_id = $1;
             `;
-            await sql.query(resetPreviousBackupQuery, [previousBackupSlackId]);
-        }
+        await sql.query(resetPreviousBackupQuery, [previousBackupSlackId]);
+      }
 
-        // Set new backup user
-        if (newBackupSlackId) {
-            console.log(`Setting new backup: ${newBackupSlackId}`);
-            const setNewBackupQuery = `
+      // Set new backup user
+      if (newBackupSlackId) {
+        console.log(`Setting new backup: ${newBackupSlackId}`);
+        const setNewBackupQuery = `
                 UPDATE ${this._usersTable}
                 SET on_backup = true, on_duty = false
                 WHERE slack_id = $1;
             `;
-            await sql.query(setNewBackupQuery, [newBackupSlackId]);
-        }
+        await sql.query(setNewBackupQuery, [newBackupSlackId]);
+      }
 
-        // Set on-duty user
-        console.log(`Setting user on duty: ${userOnDutySlackId}`);
-        const setOnDutyQuery = `
+      // Set on-duty user
+      console.log(`Setting user on duty: ${userOnDutySlackId}`);
+      const setOnDutyQuery = `
             UPDATE ${this._usersTable}
             SET on_duty = true, count = count + 1
             WHERE slack_id = $1;
         `;
-        await sql.query(setOnDutyQuery, [userOnDutySlackId]);
+      await sql.query(setOnDutyQuery, [userOnDutySlackId]);
 
     } catch (error) {
-        console.error('Error updating user statuses:', error);
-        throw new Error('Failed to update user statuses');
+      console.error('Error updating user statuses:', error);
+      throw new Error('Failed to update user statuses');
     }
-}
-
-
+  }
 
   public async putItems<T extends Record<string, unknown>>(items: T[], table: TableName): Promise<T[]> {
 
@@ -149,7 +147,6 @@ export class PostgresClient {
     await sql.query(queryString);
   }
 
-
   /**
    * Formats multiple json objects in a way where the whole array can be inserted
    * to a table.
@@ -166,7 +163,6 @@ export class PostgresClient {
 
     return itemsArray.join(', ');
   }
-
 
   // TODO: make it just destructure the values, and make it accept a custom string for the action
   private createSqlQuery(table: TableName, columns: string[], values: unknown[]) {
@@ -193,7 +189,7 @@ export class PostgresClient {
     } else if (value instanceof Date) {
       return 'TIMESTAMP';
     } else if (Array.isArray(value)) {
-      return 'JSON'; //TODO: maybe we don't need an array here... complex tables can be made on the fly
+      return 'JSON'; // TODO: maybe we don't need an array here... complex tables can be made on the fly
     } else if (typeof value === 'object' && value !== null) {
       return 'JSON';
     } else {

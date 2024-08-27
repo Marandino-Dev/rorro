@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   // Card, we will be using this the moment we implement a proper dashboard
   Table,
@@ -13,18 +13,17 @@ import { SlackUser } from 'types';
 
 // Availability Button
 // const AvailabilityButton: React.FC<{ available: boolean }> = ({
-//   available,
+// available,
 // }) => (
-//   <button
-//     className={`px-4 py-2 rounded-full font-semibold border-2 ${available
-//       ? "border-green-500 text-gray-300 bg-transparent hover:bg-green-500 hover:text-white"
-//       : "border-red-500 text-gray-300 bg-transparent hover:bg-red-500 hover:text-white"
-//       } transition-colors duration-200`}
-//   >
-//     {available ? "Available" : "Unavailable"}
-//   </button>
+// <button
+// className={`px-4 py-2 rounded-full font-semibold border-2 ${available
+// ? "border-green-500 text-gray-300 bg-transparent hover:bg-green-500 hover:text-white"
+// : "border-red-500 text-gray-300 bg-transparent hover:bg-red-500 hover:text-white"
+// } transition-colors duration-200`}
+// >
+// {available ? "Available" : "Unavailable"}
+// </button>
 // );
-
 
 // TableHero
 export function TableHero() {
@@ -33,7 +32,6 @@ export function TableHero() {
   const [loading, setLoading] = useState(true);
   // const [sortColumn, setSortColumn] = useState<string | null>("on_holiday");
   // const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
-
 
   const tableHeaders = userColumns.map(column =>
     <TableHeaderCell

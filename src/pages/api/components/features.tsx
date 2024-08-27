@@ -1,7 +1,6 @@
 import React from 'react';
-import { FaSlack, FaClock, FaSuitcase, FaAddressCard, FaSlidersH, } from 'react-icons/fa';
+import { FaAddressCard, FaClock, FaSlack, FaSlidersH, FaSuitcase } from 'react-icons/fa';
 import { GiIsland, GiPadlock, GiPlanetConquest } from 'react-icons/gi';
-
 
 interface Feature {
   icon: React.ReactNode;
@@ -31,7 +30,7 @@ const FeaturesGrid: React.FC = () => {
     { icon: <GiPadlock />, title: 'Secure & Private', description: 'Full control over rotation access and data privacy.' },
     { icon: <FaSuitcase />, title: 'Workday Focus', description: 'Customize rotations for business days (e.g., Monday-Friday).' },
     { icon: <FaClock />, title: 'Automated Scheduling', description: 'Set it and forget it - assignments happen automatically.' },
-    { icon: <GiPlanetConquest />, title: 'Global-Friendly', description: 'Timezone support ensures timely rotations worldwide.' }
+    { icon: <GiPlanetConquest />, title: 'Global-Friendly', description: 'Timezone support ensures timely rotations worldwide.' },
   ];
 
   return (
