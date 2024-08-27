@@ -37,7 +37,7 @@ export function TableHero() {
 
   const tableHeaders = userColumns.map(column =>
     <TableHeaderCell
-      className="text-gray-300 py-5 border-b border-gray-300 cursor-pointer capitalize"
+      className="hover:text-secondary py-5 cursor-pointer capitalize"
       key={column + '-key'}
     >
       {column.replace('_', ' ')}
@@ -76,17 +76,17 @@ export function TableHero() {
   }, []);
 
   return (
-    <div className="p-4 md:p-10 rounded-2xl bg-gray-900">
-      <h1 className="text-gray-300 text-5xl font-semibold mb-2 mt-2 px-10">
+    <div className="p-4 md:p-10 rounded-2xl my-12">
+      <h1 className="hover:text-secondary text-4xl md:text-5xl font-bold md:mb-4">
         Team Members
       </h1>
       {loading ? (
         <p className="text-gray-300">Loading...</p>
       ) : (
-        <div className="overflow-hidden">
-          <Table className="text-gray-300 text-sm my-4 mx-8 border-separate border-spacing-0">
+        <div className="overflow-auto">
+          <Table className="text-lg border-separate border-spacing-0 rounded">
             <TableHead>
-              <TableRow className="bg-gray-700">
+              <TableRow className="bg-dark-bg">
                 {tableHeaders}
               </TableRow>
             </TableHead>
@@ -94,11 +94,11 @@ export function TableHero() {
               {users.map((user) => (
                 <TableRow
                   key={user.slack_id}
-                  className="text-gray-300 hover:bg-gray-200 hover:bg-opacity-50 transition-colors duration-200 border-b border-gray-300"
+                  className="bg-light-bg px-4 py-2 text-base text-black text-left border-b border-gray-400"
                 >
                   {
                     userColumns.map((keyName, i) =>
-                      <TableCell key={keyName + i} className="bg-gray-600 px-4 py-2 text-sm">
+                      <TableCell key={keyName + i}>
                         {user[keyName].toString()}
                       </TableCell>
                     )
