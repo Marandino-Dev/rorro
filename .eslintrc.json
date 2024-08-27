@@ -11,6 +11,10 @@
       "error",
       "always-multiline"
     ],
+    "indent": [
+      "error",
+      2
+    ],
     "@next/next/no-img-element": "off",
     "@typescript-eslint/no-explicit-any": "error",
     "import/consistent-type-specifier-style": "error",
