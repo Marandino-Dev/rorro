@@ -1,7 +1,6 @@
-import  { type NextApiRequest, type NextApiResponse } from 'next';
+import { type NextApiRequest, type NextApiResponse } from 'next';
 
 import { sql } from '@vercel/postgres';
-
 
 export const runtime = 'nodejs';
 
@@ -16,21 +15,21 @@ export default async function handler(
   try {
 
     switch (command) {
-      case 'list':
-        return listHandler(req, res);
-      case 'assign':
-        return assignHandler(req, res);
-      case 'current':
-        return currentHandler(req, res);
-      case 'revert':
-        return revertHandler(req, res);
-      default:
-        return res.status(200).json(
-          {
-            response_type: 'ephemeral',
-            text: 'Please provide a valid command. \n Available commands: `/cdk list`, `/cdk assign`, `/cdk revert`, `/cdk current`'
-          }
-        );
+    case 'list':
+      return listHandler(req, res);
+    case 'assign':
+      return assignHandler(req, res);
+    case 'current':
+      return currentHandler(req, res);
+    case 'revert':
+      return revertHandler(req, res);
+    default:
+      return res.status(200).json(
+        {
+          response_type: 'ephemeral',
+          text: 'Please provide a valid command. \n Available commands: `/cdk list`, `/cdk assign`, `/cdk revert`, `/cdk current`',
+        }
+      );
     }
   } catch (error) {
     return res.status(500).json({ message: 'Internal server error', error: JSON.stringify(error) });
@@ -48,7 +47,7 @@ const listHandler = async function (
       {
         response_type: 'ephemeral',
         // it should return the list of developers with their count
-        text: developers.map((developer) => `${developer.name}: ${developer.count}`).join('\n')
+        text: developers.map((developer) => `${developer.name}: ${developer.count}`).join('\n'),
       }
     );
 
@@ -59,7 +58,6 @@ const listHandler = async function (
     return res.status(500).json({ message: 'Internal server error', error: JSON.stringify(error) });
   }
 };
-
 
 export async function assignHandler(
   req: NextApiRequest,
@@ -94,9 +92,6 @@ export async function assignHandler(
     await sql`UPDATE developers SET count = count + 1 WHERE name = ${selectedDeveloper.name}`;
     await sql`UPDATE developers set current = true WHERE name = ${selectedDeveloper.name}`;
     await sql`UPDATE developers set current = false WHERE name != ${selectedDeveloper.name}`;
-
-
-
 
     return res.status(200).json(
       {

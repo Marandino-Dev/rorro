@@ -17,7 +17,7 @@ export default function useKonamiCode(): void {
 
   // TODO: remove that any, somehow the Event type doesn't contain the same stuff as the KeyboardEvent but the KeyboardEvent
   // is not available to be passed on the addeventlistener...
-  //eslint-disable-next-line
+  // eslint-disable-next-line
   function handleKeyPress(this: HTMLElement, e: any) {
 
     // only keep the last ten inputs
@@ -48,14 +48,14 @@ export default function useKonamiCode(): void {
             translateY: ['-.3rem'],
             translateX: ['1rem'],
             duration: 500,
-            delay: 40
+            delay: 40,
           });
       }
     }
   }
 
   useEffect(() => {
-    //on run
+    // on run
     document.addEventListener('keydown', handleKeyPress);
 
     // when unmounted

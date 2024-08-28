@@ -1,6 +1,5 @@
 import crypto from 'crypto';
 
-
 const ENCRYPTION_KEY = Buffer.from(process.env.ENCRYPTION_KEY || '', 'hex'); // Convert from hex to Buffer
 const IV_LENGTH = 16; // For AES, this is always 16
 

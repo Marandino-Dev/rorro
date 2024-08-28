@@ -19,9 +19,9 @@ export async function GET(
     const response = await fetch('https://slack.com/api/oauth.v2.access', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
+        'Content-Type': 'application/x-www-form-urlencoded',
       },
-      body: requestForm.toString()
+      body: requestForm.toString(),
     });
 
     const data = await response.json();
@@ -44,7 +44,7 @@ export async function GET(
       team_id: team?.id?.toString(),
       team_name: team?.name?.toString(),
       app_id,
-      access_hash
+      access_hash,
     };
 
     // Save the code and the encription
