@@ -169,6 +169,18 @@ export class PostgresClient {
     await sql.query(queryString);
   }
 
+  private async createLogsTableIfNotExists() {
+    await sql.query(`
+      CREATE TABLE IF NOT EXISTS ${this._logsTable} (
+        description TEXT,
+        date BIGINT,
+        executed_by TEXT,
+        type TEXT
+      );
+      CREATE INDEX IF NOT EXISTS idx_date ON ${this._logsTable} (date DESC);
+    `);
+  }
+
   /**
    * Formats multiple json objects in a way where the whole array can be inserted
    * to a table.
