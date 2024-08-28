@@ -113,6 +113,25 @@ export function TableHero() {
   );
 }
 
+const formatDate = (dateMillis: number | string): string => {
+  // Convert dateMillis to number if it's a string
+  const millis = typeof dateMillis === 'string' ? parseInt(dateMillis, 10) : dateMillis;
+
+  // Check if millis is a valid number
+  if (isNaN(millis) || millis <= 0) {
+    console.error('Invalid dateMillis value:', dateMillis);
+    return 'Invalid Date';
+  }
+
+  const date = new Date(millis);
+  const options: Intl.DateTimeFormatOptions = {
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric',
+  };
+  return date.toLocaleDateString(undefined, options);
+};
+
 // TableLogs
 export function TableLogs() {
   const [logs, setLogs] = useState<Log[]>([]);
@@ -170,12 +189,12 @@ export function TableLogs() {
             <TableBody>
               {logs.map((log) => (
                 <TableRow
-                  key={log.description}
+                  key={log.date}
                   className="bg-light-bg px-4 py-2 text-base text-black text-left border-b border-gray-400"
                 >
                   {logColumns.map((keyName, i) => (
                     <TableCell key={keyName + i}>
-                      {log[keyName].toString()}
+                      {keyName === 'date' ? formatDate(log[keyName] as number) : log[keyName].toString()}
                     </TableCell>
                   ))}
                 </TableRow>
