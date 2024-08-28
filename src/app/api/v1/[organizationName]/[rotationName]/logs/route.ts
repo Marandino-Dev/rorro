@@ -9,9 +9,9 @@ export async function GET(
 
   try {
     const DbClient = new PostgresClient(organizationName, rotationName);
-    const users = await DbClient.queryUsersForOrganizationAndRotation(organizationName, rotationName);
+    const logs = await DbClient.queryLogsForOrganizationAndRotation(organizationName, rotationName);
 
-    return NextResponse.json(users);
+    return NextResponse.json(logs);
   } catch (error) {
     console.error('Error querying database:', error);
 

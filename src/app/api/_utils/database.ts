@@ -1,4 +1,4 @@
-import { SlackUser } from 'types';
+import { Log, SlackUser } from 'types';
 import { sql } from '@vercel/postgres';
 
 /** These are the local names for the table private values inside the PosttgreClient */
@@ -74,6 +74,21 @@ export class PostgresClient {
 
     const queryString = `SELECT * FROM ${this._usersTable}`;
     const { rows } = await sql.query<SlackUser>(queryString, []);
+
+    const columns = Object.keys(rows[0]);
+
+    return { columns, rows };
+  }
+
+  public async queryLogsForOrganizationAndRotation(
+    organizationName: string,
+    rotationName: string
+  ): Promise<{ columns: string[], rows: Log[] }> {
+
+    console.info(`Querying logs from: ${organizationName}, ${rotationName}`);
+
+    const queryString = `SELECT * FROM ${this._logsTable}`;
+    const { rows } = await sql.query<Log>(queryString, []);
 
     const columns = Object.keys(rows[0]);
 
