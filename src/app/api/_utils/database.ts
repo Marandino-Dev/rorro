@@ -67,12 +67,14 @@ export class PostgresClient {
 
   public async queryUsersForOrganizationAndRotation(
     organizationName: string,
-    rotationName: string
+    rotationName: string,
+    filterOnHoliday: boolean = false // Optional parameter to control filtering
   ): Promise<{ columns: string[], rows: SlackUser[] }> {
 
     console.info(`Querying users from: ${organizationName}, ${rotationName}`);
-
-    const queryString = `SELECT * FROM ${this._usersTable}`;
+    const queryString = filterOnHoliday
+      ? `SELECT * FROM ${this._usersTable} WHERE on_holiday = false`
+      : `SELECT * FROM ${this._usersTable}`;
     const { rows } = await sql.query<SlackUser>(queryString, []);
 
     const columns = Object.keys(rows[0]);
