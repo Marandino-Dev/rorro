@@ -1,4 +1,17 @@
-import { SlackUser } from 'types';
+import { Log, LogType, SlackUser } from 'types';
+
+export function createLog(
+  description: string,
+  executedBy: string,
+  type: LogType
+): Log {
+  return {
+    description,
+    date: Date.now(), // Automatically sets the current timestamp in milliseconds
+    executed_by: executedBy,
+    type,
+  };
+}
 
 /**
  * @return The max amount of times an user has been selected.

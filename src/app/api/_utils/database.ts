@@ -97,6 +97,20 @@ export class PostgresClient {
     return { columns, rows };
   }
 
+  public async insertLog(log: Log): Promise<void> {
+
+    const queryString = `
+      INSERT INTO logs (description, date, executed_by, type)
+      VALUES ($1, $2, $3, $4)
+    `;
+    const values = [log.description, log.date, log.executed_by, log.type];
+
+    await sql.query(queryString, values)
+      .catch((error) => {
+        console.error('Error inserting log entry:', error);
+      });
+  }
+
   public async rotateUsers(
     userOnDutySlackId: string,
     newBackupSlackId: string | undefined,
@@ -167,6 +181,18 @@ export class PostgresClient {
   private async createTableIfNotExists(table: TableName, columns: string[], values: unknown[]) {
     const queryString = this.createSqlQuery(table, columns, values);
     await sql.query(queryString);
+  }
+
+  public async createLogsTableIfNotExists() {
+    await sql.query(`
+      CREATE TABLE IF NOT EXISTS ${this._logsTable} (
+        description TEXT,
+        date BIGINT,
+        executed_by TEXT,
+        type TEXT
+      );
+      CREATE INDEX IF NOT EXISTS idx_date ON ${this._logsTable} (date DESC);
+    `);
   }
 
   /**
