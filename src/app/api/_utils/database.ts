@@ -97,6 +97,22 @@ export class PostgresClient {
     return { columns, rows };
   }
 
+  public async insertLog(log: Log): Promise<void> {
+
+    await this.createLogsTableIfNotExists();
+    const queryString = `
+      INSERT INTO logs (description, date, executed_by, type)
+      VALUES ($1, $2, $3, $4)
+    `;
+    const values = [log.description, log.date, log.executed_by, log.type];
+
+    try {
+      await sql.query(queryString, values);
+    } catch (error) {
+      console.error('Failed to insert log:', error);
+    }
+  }
+
   public async rotateUsers(
     userOnDutySlackId: string,
     newBackupSlackId: string | undefined,
