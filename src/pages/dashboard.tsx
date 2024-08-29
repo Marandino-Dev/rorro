@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
 
 import {
   Table,
@@ -32,6 +34,7 @@ export function TableHero() {
   const [users, setUsers] = useState<SlackUser[]>([]);
   const [userColumns, setUserColumns] = useState<(keyof SlackUser)[]>([]);
   const [loading, setLoading] = useState(true);
+
   // const [sortColumn, setSortColumn] = useState<string | null>("on_holiday");
   // const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
 
@@ -90,6 +93,9 @@ export function TableHero() {
             <TableHead>
               <TableRow className="bg-dark-bg">
                 {tableHeaders}
+                <TableCell className='hover:text-secondary text-lg font-bold md:mb-4'>
+                  Actions
+                </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -103,6 +109,16 @@ export function TableHero() {
                       {user[keyName].toString()}
                     </TableCell>
                   ))}
+                  <TableCell> {/* BUTTONS */}
+                    <FontAwesomeIcon
+                      icon={faEdit}
+                      className="hover:text-green-500 cursor-pointer mr-4"
+                    />
+                    <FontAwesomeIcon
+                      icon={faTrash}
+                      className="hover:text-red-700 cursor-pointer"
+                    />
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>

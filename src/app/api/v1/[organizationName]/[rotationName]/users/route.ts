@@ -1,7 +1,6 @@
 import { type NextRequest, NextResponse } from 'next/server';
 import { PostgresClient } from 'utils/database';
 
-
 export async function PUT(
   request: NextRequest,
   { params }: { params: { organizationName: string; rotationName: string } }
