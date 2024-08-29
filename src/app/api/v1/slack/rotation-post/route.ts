@@ -8,6 +8,7 @@ import {
   parsePayloadFromRequest,
   sanitizeSlackText,
 } from 'utils/slack';
+import { createLog } from '@/app/api/_utils/logic';
 
 export async function POST(req: NextRequest) {
   try {
@@ -15,7 +16,7 @@ export async function POST(req: NextRequest) {
     console.log('Parsed payload:', parsedPayload);
 
     // Destructure necessary values from the payload
-    const { text, team_domain, channel_id } = parsedPayload;
+    const { text, team_domain, channel_id, user_name } = parsedPayload;
 
     // Clean up the command text
     const command: string = text.replace(/<[^>]+>/g, '');
@@ -36,13 +37,21 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'rotationName is required' }, { status: 400 });
     }
 
-    // Initialize the database client
     const DbClient = new PostgresClient(organizationName, rotationName);
 
-    // Insert the new users into the database
     await DbClient.putItems<SlackUser>(newUsers, TableName.Users);
 
     await DbClient.createLogsTableIfNotExists();
+
+    const logEntry = createLog(
+      `Created ${rotationName} task`,
+      sanitizeSlackText(user_name),
+      'status'
+    );
+
+    console.log('Created Log Entry:', logEntry); // Debugging log
+
+    await DbClient.insertLog(organizationName, rotationName, logEntry);
 
     return NextResponse.json(
       getSlackMessage(SlackResponseType.InChannel, `Successfully created the ${rotationName} rotation.`)

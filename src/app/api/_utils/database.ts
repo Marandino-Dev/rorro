@@ -97,10 +97,13 @@ export class PostgresClient {
     return { columns, rows };
   }
 
-  public async insertLog(log: Log): Promise<void> {
+  public async insertLog(organizationName: string,
+    rotationName: string, log: Log): Promise<void> {
+
+    console.info(`Querying logs from: ${organizationName}, ${rotationName}`);
 
     const queryString = `
-      INSERT INTO logs (description, date, executed_by, type)
+      INSERT INTO ${this._logsTable} (description, date, executed_by, type)
       VALUES ($1, $2, $3, $4)
     `;
     const values = [log.description, log.date, log.executed_by, log.type];
@@ -109,6 +112,8 @@ export class PostgresClient {
       .catch((error) => {
         console.error('Error inserting log entry:', error);
       });
+
+    console.info('Log inserted successfully:', log);
   }
 
   public async rotateUsers(
