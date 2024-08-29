@@ -21,11 +21,11 @@ import { Log } from 'types';
 // }) => (
 //   <button
 //     className={`px-4 py-2 rounded-full font-semibold border-2 ${available
-//       ? "border-green-500 text-gray-300 bg-transparent hover:bg-green-500 hover:text-white"
-//       : "border-red-500 text-gray-300 bg-transparent hover:bg-red-500 hover:text-white"
+//       ? 'border-green-500 text-gray-300 bg-transparent hover:bg-green-500 hover:text-white'
+//       : 'border-red-500 text-gray-300 bg-transparent hover:bg-red-500 hover:text-white'
 //     } transition-colors duration-200`}
 //   >
-//     {available ? "Available" : "Unavailable"}
+//     {available ? 'Available' : 'Unavailable'}
 //   </button>
 // );
 
@@ -35,12 +35,12 @@ export function TableHero() {
   const [userColumns, setUserColumns] = useState<(keyof SlackUser)[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // const [sortColumn, setSortColumn] = useState<string | null>("on_holiday");
-  // const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
+  // const [sortColumn, setSortColumn] = useState<string | null>('on_holiday');
+  // const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
 
   const tableHeaders = userColumns.map(column => (
     <TableHeaderCell
-      className="hover:text-secondary py-5 cursor-pointer capitalize"
+      className='hover:text-secondary py-5 cursor-pointer capitalize'
       key={column + '-key'}
     >
       {column.replace('_', ' ')}
@@ -48,9 +48,9 @@ export function TableHero() {
 
       These sort columns will be the visual cue in case we are currently sorting by this column
 
-      {sortColumn === "full_name" &&
+      {sortColumn === 'full_name' &&
 
-      (sortDirection === "asc" ? "↑" : "↓")}
+      (sortDirection === 'asc' ? '↑' : '↓')}
 
       */}
     </TableHeaderCell>
@@ -80,18 +80,38 @@ export function TableHero() {
     fetchUserData();
   }, []);
 
+  // MODAL WORK
+
+  const [selectedUser, setSelectedUser] = useState<SlackUser | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+
+  const organizationName = 'marandino_workspace'; // IMPROVE THIS
+  const rotationName = 'rotation'; // IMPROVE THIS
+
+  const handleUpdateClick = (user: SlackUser) => {
+    setSelectedUser(user);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedUser(null);
+  };
+
+  //
+
   return (
-    <div className="p-4 md:p-10 rounded-2xl my-12">
-      <h1 className="hover:text-secondary text-4xl md:text-5xl font-bold md:mb-4">
+    <div className='p-4 md:p-10 rounded-2xl my-12'>
+      <h1 className='hover:text-secondary text-4xl md:text-5xl font-bold md:mb-4'>
         Team Members
       </h1>
       {loading ? (
-        <p className="text-gray-300">Loading...</p>
+        <p className='text-gray-300'>Loading...</p>
       ) : (
-        <div className="overflow-auto">
-          <Table className="text-lg border-separate border-spacing-0 rounded">
+        <div className='overflow-auto'>
+          <Table className='text-lg border-separate border-spacing-0 rounded'>
             <TableHead>
-              <TableRow className="bg-dark-bg">
+              <TableRow className='bg-dark-bg'>
                 {tableHeaders}
                 <TableCell className='hover:text-secondary text-lg font-bold md:mb-4'>
                   Actions
@@ -102,7 +122,7 @@ export function TableHero() {
               {users.map((user) => (
                 <TableRow
                   key={user.slack_id}
-                  className="bg-light-bg px-4 py-2 text-base text-black text-left border-b border-gray-400"
+                  className='bg-light-bg px-4 py-2 text-base text-black text-left border-b border-gray-400'
                 >
                   {userColumns.map((keyName, i) => (
                     <TableCell key={keyName + i}>
@@ -110,14 +130,21 @@ export function TableHero() {
                     </TableCell>
                   ))}
                   <TableCell> {/* BUTTONS */}
-                    <FontAwesomeIcon
-                      icon={faEdit}
-                      className="hover:text-green-500 cursor-pointer mr-4"
-                    />
-                    <FontAwesomeIcon
-                      icon={faTrash}
-                      className="hover:text-red-700 cursor-pointer"
-                    />
+                    <button
+                      onClick={() => handleUpdateClick(user)}>
+                      <FontAwesomeIcon
+                        icon={faEdit}
+                        className='hover:text-secondary cursor-pointer'
+                      />
+                    </button>
+                    <button
+                      // onClick={() => handleDelete()}
+                      className='ml-6'>
+                      <FontAwesomeIcon
+                        icon={faTrash}
+                        className='hover:text-red-700 cursor-pointer'
+                      />
+                    </button>
                   </TableCell>
                 </TableRow>
               ))}
@@ -125,9 +152,20 @@ export function TableHero() {
           </Table>
         </div>
       )}
+
+      {isModalOpen && (
+        <Modal
+          user={selectedUser}
+          onClose={handleCloseModal}
+          organizationName={organizationName}
+          rotationName={rotationName}
+        />
+      )}
     </div>
   );
 }
+
+//
 
 const formatDate = (dateMillis: number | string): string => {
   // Convert dateMillis to number if it's a string
@@ -156,7 +194,7 @@ export function TableLogs() {
 
   const tableHeaders = logColumns.map(column => (
     <TableHeaderCell
-      className="hover:text-secondary py-5 cursor-pointer capitalize"
+      className='hover:text-secondary py-5 cursor-pointer capitalize'
       key={column + '-log-key'}
     >
       {column.replace('_', ' ')}
@@ -188,17 +226,17 @@ export function TableLogs() {
   }, []);
 
   return (
-    <div className="p-4 md:p-10 rounded-2xl my-12">
-      <h1 className="hover:text-secondary text-4xl md:text-5xl font-bold md:mb-4">
+    <div className='p-4 md:p-10 rounded-2xl my-12'>
+      <h1 className='hover:text-secondary text-4xl md:text-5xl font-bold md:mb-4'>
         Logs Data
       </h1>
       {logsLoading ? (
-        <p className="text-gray-300">Loading...</p>
+        <p className='text-gray-300'>Loading...</p>
       ) : (
-        <div className="overflow-auto">
-          <Table className="text-lg border-separate border-spacing-0 rounded">
+        <div className='overflow-auto'>
+          <Table className='text-lg border-separate border-spacing-0 rounded'>
             <TableHead>
-              <TableRow className="bg-dark-bg">
+              <TableRow className='bg-dark-bg'>
                 {tableHeaders}
               </TableRow>
             </TableHead>
@@ -206,7 +244,7 @@ export function TableLogs() {
               {logs.map((log) => (
                 <TableRow
                   key={log.date}
-                  className="bg-light-bg px-4 py-2 text-base text-black text-left border-b border-gray-400"
+                  className='bg-light-bg px-4 py-2 text-base text-black text-left border-b border-gray-400'
                 >
                   {logColumns.map((keyName, i) => (
                     <TableCell key={keyName + i}>
