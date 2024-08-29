@@ -1,9 +1,5 @@
 import { Log, LogType, SlackUser } from 'types';
 
-/**
- * @return The max amount of times an user has been selected.
- */
-
 export function createLog(
   description: string,
   executedBy: string,
@@ -17,6 +13,9 @@ export function createLog(
   };
 }
 
+/**
+ * @return The max amount of times an user has been selected.
+ */
 export function getHighestCount(users: SlackUser[]): number {
   return Math.max(...users.map((user) => user.count));
 }

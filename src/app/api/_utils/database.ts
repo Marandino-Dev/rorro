@@ -99,18 +99,16 @@ export class PostgresClient {
 
   public async insertLog(log: Log): Promise<void> {
 
-    await this.createLogsTableIfNotExists();
     const queryString = `
       INSERT INTO logs (description, date, executed_by, type)
       VALUES ($1, $2, $3, $4)
     `;
     const values = [log.description, log.date, log.executed_by, log.type];
 
-    try {
-      await sql.query(queryString, values);
-    } catch (error) {
-      console.error('Failed to insert log:', error);
-    }
+    await sql.query(queryString, values)
+      .catch((error) => {
+        console.error('Error inserting log entry:', error);
+      });
   }
 
   public async rotateUsers(
@@ -185,7 +183,7 @@ export class PostgresClient {
     await sql.query(queryString);
   }
 
-  private async createLogsTableIfNotExists() {
+  public async createLogsTableIfNotExists() {
     await sql.query(`
       CREATE TABLE IF NOT EXISTS ${this._logsTable} (
         description TEXT,
