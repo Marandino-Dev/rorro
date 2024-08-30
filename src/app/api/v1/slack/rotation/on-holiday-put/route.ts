@@ -6,7 +6,7 @@ import {
 } from 'utils/slack';
 import { NextRequest, NextResponse } from 'next/server';
 import { PostgresClient } from 'utils/database';
-import { createLog } from '@/app/api/_utils/logic';
+import { createLog } from 'utils/logic';
 
 export async function PUT(req: NextRequest) {
   try {

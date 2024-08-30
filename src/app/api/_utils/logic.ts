@@ -7,7 +7,7 @@ export function createLog(
 ): Log {
   return {
     description,
-    date: Date.now(),
+    date: Date.now(), // Automatically sets the current timestamp in milliseconds
     executed_by,
     type,
   };

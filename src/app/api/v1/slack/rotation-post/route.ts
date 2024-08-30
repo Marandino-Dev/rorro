@@ -8,7 +8,7 @@ import {
   parsePayloadFromRequest,
   sanitizeSlackText,
 } from 'utils/slack';
-import { createLog } from '@/app/api/_utils/logic';
+import { createLog } from 'utils/logic';
 
 export async function POST(req: NextRequest) {
   try {

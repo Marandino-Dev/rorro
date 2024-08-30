@@ -87,7 +87,7 @@ export class PostgresClient {
     rotationName: string
   ): Promise<{ columns: string[], rows: Log[] }> {
 
-    console.info(`Querying logs from: ${organizationName}, ${rotationName}`);
+    console.info(`Writing log for: ${organizationName}, ${rotationName}`);
 
     const queryString = `SELECT * FROM ${this._logsTable} ORDER BY date DESC`;
     const { rows } = await sql.query<Log>(queryString, []);
