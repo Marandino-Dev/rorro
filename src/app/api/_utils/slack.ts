@@ -92,7 +92,14 @@ export async function parsePayloadFromRequest(req: NextRequest): Promise<SlackCo
   if (contentType?.includes('multipart/form-data') || contentType?.includes('application/x-www-form-urlencoded')) {
     // Handle form data
     const formData = await req.formData();
-    return Object.fromEntries(formData) as SlackCommandPayload;
+    // TODO: refactor this to be more readable
+    const entries = Array.from(formData.entries()).map(([key, value]) => {
+      if (typeof value === 'string') {
+        return [key, value.trim()];
+      }
+      return [key, value];
+    });
+    return Object.fromEntries(entries) as SlackCommandPayload;
   }
 
   throw new Error('We failed to parse the command with contentType: ' + contentType);
