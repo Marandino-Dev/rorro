@@ -89,7 +89,7 @@ export class PostgresClient {
 
     console.info(`Querying logs from: ${organizationName}, ${rotationName}`);
 
-    const queryString = `SELECT * FROM ${this._logsTable}`;
+    const queryString = `SELECT * FROM ${this._logsTable} ORDER BY date DESC`;
     const { rows } = await sql.query<Log>(queryString, []);
 
     const columns = Object.keys(rows[0]);
