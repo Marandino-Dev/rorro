@@ -116,8 +116,11 @@ function UserTables(params: { organizationName: string, rotationName: string }) 
   };
 
   useEffect(() => {
-    fetchUserData();
-  }, []);
+    // only fetch data if the modal is not open, so upon loading the page and clicking on a user,
+    if (!isModalOpen) {
+      fetchUserData();
+    }
+  }, [isModalOpen]);
 
   const handleUpdateClick = (user: SlackUser) => {
     setSelectedUser(user);
