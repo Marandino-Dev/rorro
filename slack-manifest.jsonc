@@ -41,6 +41,13 @@
         "url": "https://development-rorro.vercel.app/api/v1/slack/configuration",
         "description": "Opens the configuration dashboard",
         "should_escape": true
+      },
+      {
+        "command": "/rr-reroll",
+        "url": "https://development-rorro.vercel.app/api/v1/slack/rotation/reroll-put",
+        "description": "Rerolls the rotation, this will choose a new user to be on duty.",
+        "usage_hint": "task",
+        "should_escape": true
       }
     ]
   },
