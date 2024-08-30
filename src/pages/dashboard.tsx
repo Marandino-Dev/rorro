@@ -10,8 +10,7 @@ import {
   TableRow,
 } from '@tremor/react';
 
-import { SlackUser } from 'types';
-import { Log } from 'types';
+import { Log, SlackUser } from 'types';
 import { useSearchParams } from 'next/navigation';
 
 const formatDate = (dateMillis: number | string): string => {
@@ -33,7 +32,63 @@ const formatDate = (dateMillis: number | string): string => {
   return date.toLocaleDateString(undefined, options);
 };
 
-export function TableHero(params: { organizationName: string, rotationName: string }) {
+interface TableProps<T> {
+  title: string;
+  data: T[];
+  columns: (keyof T)[];
+  loading: boolean;
+  onRowClick?: (item: T) => void;
+  formatCell?: (key: keyof T, value: T[keyof T]) => React.ReactNode;
+}
+
+function GenericTable<T>({ title, data, columns, loading, onRowClick, formatCell }: TableProps<T>) {
+  const tableHeaders = columns.map(column => (
+    <TableHeaderCell
+      className='hover:text-secondary py-5 cursor-pointer capitalize'
+      key={String(column) + '-key'}
+    >
+      {String(column).replace('_', ' ')}
+    </TableHeaderCell>
+  ));
+
+  return (
+    <div className='p-4 md:p-10 rounded-2xl my-12'>
+      <h1 className='hover:text-secondary text-4xl md:text-5xl font-bold md:mb-4'>
+        {title}
+      </h1>
+      {loading ? (
+        <p className='text-gray-300'>Loading...</p>
+      ) : (
+        <div className='overflow-auto'>
+          <Table className='text-lg border-separate border-spacing-0 rounded'>
+            <TableHead>
+              <TableRow className='bg-dark-bg'>
+                {tableHeaders}
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {data.map((item, index) => (
+                <TableRow
+                  key={index}
+                  onClick={() => onRowClick && onRowClick(item)}
+                  className='bg-light-bg px-4 py-2 text-base text-black text-left border-b border-gray-400 cursor-pointer'
+                >
+                  {columns.map((keyName, i) => (
+                    <TableCell key={String(keyName) + i}>
+                      {formatCell ? formatCell(keyName, item[keyName]) : String(item[keyName])}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function UserTables(params: { organizationName: string, rotationName: string }) {
   const { organizationName, rotationName } = params;
   const [users, setUsers] = useState<SlackUser[]>([]);
   const [userColumns, setUserColumns] = useState<(keyof SlackUser)[]>([]);
@@ -41,15 +96,6 @@ export function TableHero(params: { organizationName: string, rotationName: stri
 
   const [selectedUser, setSelectedUser] = useState<SlackUser | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-
-  const tableHeaders = userColumns.map(column => (
-    <TableHeaderCell
-      className='hover:text-secondary py-5 cursor-pointer capitalize'
-      key={column + '-key'}
-    >
-      {column.replace('_', ' ')}
-    </TableHeaderCell>
-  ));
 
   const fetchUserData = async () => {
     const BASE_API_URL = 'http://localhost:3000/api/v1';
@@ -80,42 +126,15 @@ export function TableHero(params: { organizationName: string, rotationName: stri
     setSelectedUser(null);
   };
 
-  //
-
   return (
-    <div className='p-4 md:p-10 rounded-2xl my-12'>
-      <h1 className='hover:text-secondary text-4xl md:text-5xl font-bold md:mb-4'>
-        Team Members
-      </h1>
-      {loading ? (
-        <p className='text-gray-300'>Loading...</p>
-      ) : (
-        <div className='overflow-auto'>
-          <Table className='text-lg border-separate border-spacing-0 rounded'>
-            <TableHead>
-              <TableRow className='bg-dark-bg'>
-                {tableHeaders}
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {users.map((user) => (
-                <TableRow
-                  key={user.slack_id}
-                  onClick={() => handleUpdateClick(user)}
-                  className='bg-light-bg px-4 py-2 text-base text-black text-left border-b border-gray-400 cursor-pointer'
-                >
-                  {userColumns.map((keyName, i) => (
-                    <TableCell key={keyName + i}>
-                      {user[keyName].toString()}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
-      )}
-
+    <>
+      <GenericTable<SlackUser>
+        title="Team Members"
+        data={users}
+        columns={userColumns}
+        loading={loading}
+        onRowClick={handleUpdateClick}
+      />
       {isModalOpen && (
         <Modal
           user={selectedUser}
@@ -124,26 +143,15 @@ export function TableHero(params: { organizationName: string, rotationName: stri
           rotationName={rotationName}
         />
       )}
-    </div>
+    </>
   );
 }
 
-// TableLogs
-function TableLogs(params: { organizationName: string, rotationName: string }) {
-
+function LogsTable(params: { organizationName: string, rotationName: string }) {
   const { organizationName, rotationName } = params;
   const [logs, setLogs] = useState<Log[]>([]);
   const [logColumns, setLogColumns] = useState<(keyof Log)[]>([]);
   const [logsLoading, setLogsLoading] = useState(true);
-
-  const tableHeaders = logColumns.map(column => (
-    <TableHeaderCell
-      className='hover:text-secondary py-5 cursor-pointer capitalize'
-      key={column + '-log-key'}
-    >
-      {column.replace('_', ' ')}
-    </TableHeaderCell>
-  ));
 
   const fetchLogsData = async () => {
     const BASE_API_URL = 'http://localhost:3000/api/v1';
@@ -169,44 +177,25 @@ function TableLogs(params: { organizationName: string, rotationName: string }) {
     fetchLogsData();
   }, []);
 
+  const formatCell = (key: keyof Log, value: Log[keyof Log]) => {
+    if (key === 'date') {
+      return formatDate(value as number);
+    }
+    return String(value);
+  };
+
   return (
-    <div className='p-4 md:p-10 rounded-2xl my-12'>
-      <h1 className='hover:text-secondary text-4xl md:text-5xl font-bold md:mb-4'>
-        Logs Data
-      </h1>
-      {logsLoading ? (
-        <p className='text-gray-300'>Loading...</p>
-      ) : (
-        <div className='overflow-auto'>
-          <Table className='text-lg border-separate border-spacing-0 rounded'>
-            <TableHead>
-              <TableRow className='bg-dark-bg'>
-                {tableHeaders}
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {logs.map((log) => (
-                <TableRow
-                  key={log.date}
-                  className='bg-light-bg px-4 py-2 text-base text-black text-left border-b border-gray-400'
-                >
-                  {logColumns.map((keyName, i) => (
-                    <TableCell key={keyName + i}>
-                      {keyName === 'date' ? formatDate(log[keyName] as number) : log[keyName].toString()}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
-      )}
-    </div>
+    <GenericTable<Log>
+      title="Logs Data"
+      data={logs}
+      columns={logColumns}
+      loading={logsLoading}
+      formatCell={formatCell}
+    />
   );
 }
 
 export default function Dashboard() {
-
   const params = useSearchParams();
   if (!params) {
     return <div>No organization or rotation selected</div>;
@@ -221,8 +210,8 @@ export default function Dashboard() {
 
   return (
     <>
-      <TableHero organizationName={organization_id} rotationName={rotation_id} />
-      <TableLogs organizationName={organization_id} rotationName={rotation_id} />
+      <UserTables organizationName={organization_id} rotationName={rotation_id} />
+      <LogsTable organizationName={organization_id} rotationName={rotation_id} />
     </>
   );
 }
