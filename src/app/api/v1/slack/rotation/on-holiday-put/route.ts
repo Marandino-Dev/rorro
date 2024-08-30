@@ -8,7 +8,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { PostgresClient } from 'utils/database';
 import { createLog } from 'utils/logic';
 
-export async function PUT(req: NextRequest) {
+export async function POST(req: NextRequest) {
   try {
     const parsedPayload = await parsePayloadFromRequest(req);
     const { text, team_domain, user_name } = parsedPayload;
