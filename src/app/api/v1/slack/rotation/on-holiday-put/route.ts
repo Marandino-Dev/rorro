@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
   try {
     const parsedPayload = await parsePayloadFromRequest(req);
     const { text, team_domain, user_name } = parsedPayload;
-    const slackIdMatch = text.match(/<@([A-Z0-9]+)>/);
+    const slackIdMatch = text.match(/<@([A-Z0-9]+)\|[^>]+>/);
     const slackId = slackIdMatch ? slackIdMatch[1] : null;
     const rotationName = sanitizeSlackText(
       text.replace(/<@[^>]+>/g, '').trim()
