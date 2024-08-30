@@ -12,8 +12,29 @@ import {
 
 import { SlackUser } from 'types';
 import { Log } from 'types';
+import { useSearchParams } from 'next/navigation';
 
-export function TableHero() {
+const formatDate = (dateMillis: number | string): string => {
+  // Convert dateMillis to number if it's a string
+  const millis = typeof dateMillis === 'string' ? parseInt(dateMillis, 10) : dateMillis;
+
+  // Check if millis is a valid number
+  if (isNaN(millis) || millis <= 0) {
+    console.error('Invalid dateMillis value:', dateMillis);
+    return 'Invalid Date';
+  }
+
+  const date = new Date(millis);
+  const options: Intl.DateTimeFormatOptions = {
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric',
+  };
+  return date.toLocaleDateString(undefined, options);
+};
+
+export function TableHero(params: { organizationName: string, rotationName: string }) {
+  const { organizationName, rotationName } = params;
   const [users, setUsers] = useState<SlackUser[]>([]);
   const [userColumns, setUserColumns] = useState<(keyof SlackUser)[]>([]);
   const [loading, setLoading] = useState(true);
@@ -32,30 +53,22 @@ export function TableHero() {
 
   const fetchUserData = async () => {
     const BASE_API_URL = 'http://localhost:3000/api/v1';
-    try {
-      setLoading(true);
-      const response = await fetch(
-        `${BASE_API_URL}/marandino_workspace/rotation/users`
-      );
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      const { rows: users, columns }: { rows: SlackUser[], columns: (keyof SlackUser)[] } = await response.json();
-      setUsers(users);
-      setUserColumns(columns);
-    } catch (error) {
-      console.error('Error fetching user data:', error);
-    } finally {
-      setLoading(false);
+    setLoading(true);
+    const response = await fetch(
+      `${BASE_API_URL}/${organizationName}/${rotationName}/users`
+    );
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
     }
+    setLoading(false);
+    const { rows: users, columns }: { rows: SlackUser[], columns: (keyof SlackUser)[] } = await response.json();
+    setUsers(users);
+    setUserColumns(columns);
   };
 
   useEffect(() => {
     fetchUserData();
-  }, [isModalOpen]);
-
-  const organizationName = 'marandino_workspace'; // IMPROVE THIS
-  const rotationName = 'rotation'; // IMPROVE THIS
+  }, []);
 
   const handleUpdateClick = (user: SlackUser) => {
     setSelectedUser(user);
@@ -115,27 +128,10 @@ export function TableHero() {
   );
 }
 
-const formatDate = (dateMillis: number | string): string => {
-  // Convert dateMillis to number if it's a string
-  const millis = typeof dateMillis === 'string' ? parseInt(dateMillis, 10) : dateMillis;
-
-  // Check if millis is a valid number
-  if (isNaN(millis) || millis <= 0) {
-    console.error('Invalid dateMillis value:', dateMillis);
-    return 'Invalid Date';
-  }
-
-  const date = new Date(millis);
-  const options: Intl.DateTimeFormatOptions = {
-    month: 'long',
-    day: 'numeric',
-    year: 'numeric',
-  };
-  return date.toLocaleDateString(undefined, options);
-};
-
 // TableLogs
-export function TableLogs() {
+function TableLogs(params: { organizationName: string, rotationName: string }) {
+
+  const { organizationName, rotationName } = params;
   const [logs, setLogs] = useState<Log[]>([]);
   const [logColumns, setLogColumns] = useState<(keyof Log)[]>([]);
   const [logsLoading, setLogsLoading] = useState(true);
@@ -151,14 +147,14 @@ export function TableLogs() {
 
   const fetchLogsData = async () => {
     const BASE_API_URL = 'http://localhost:3000/api/v1';
+
     try {
       setLogsLoading(true);
+      // TODO: add proper pagination
       const response = await fetch(
-        `${BASE_API_URL}/marandino_workspace/new_test_rotation/logs`
+        `${BASE_API_URL}/${organizationName}/${rotationName}/logs`
       );
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
+
       const { rows: logs, columns }: { rows: Log[], columns: (keyof Log)[] } = await response.json();
       setLogs(logs);
       setLogColumns(columns);
@@ -210,10 +206,23 @@ export function TableLogs() {
 }
 
 export default function Dashboard() {
+
+  const params = useSearchParams();
+  if (!params) {
+    return <div>No organization or rotation selected</div>;
+  }
+
+  const organization_id = params.get('organization_id');
+  const rotation_id = params.get('rotation_id');
+
+  if (!organization_id || !rotation_id) {
+    return <div>No organization or rotation selected</div>;
+  }
+
   return (
-    <div>
-      <TableHero />
-      <TableLogs />
-    </div>
+    <>
+      <TableHero organizationName={organization_id} rotationName={rotation_id} />
+      <TableLogs organizationName={organization_id} rotationName={rotation_id} />
+    </>
   );
 }
