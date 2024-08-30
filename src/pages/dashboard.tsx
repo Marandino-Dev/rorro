@@ -28,6 +28,8 @@ const formatDate = (dateMillis: number | string): string => {
     month: 'long',
     day: 'numeric',
     year: 'numeric',
+    hour: 'numeric',
+    minute: 'numeric',
   };
   return date.toLocaleDateString(undefined, options);
 };
@@ -52,8 +54,8 @@ function GenericTable<T>({ title, data, columns, loading, onRowClick, formatCell
   ));
 
   return (
-    <div className='p-4 md:p-10 rounded-2xl my-12'>
-      <h1 className='hover:text-secondary text-4xl md:text-5xl font-bold md:mb-4'>
+    <div className='p-4 md:p-10 rounded-2xl'>
+      <h1 className='hover:text-secondary text-2xl font-bold'>
         {title}
       </h1>
       {loading ? (
@@ -98,7 +100,8 @@ function UserTables(params: { organizationName: string, rotationName: string }) 
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
   const fetchUserData = async () => {
-    const BASE_API_URL = 'http://localhost:3000/api/v1';
+    const BASE_API_URL = window.location.origin + '/api/v1' ||'http://localhost:3000/api/v1';
+
     setLoading(true);
     const response = await fetch(
       `${BASE_API_URL}/${organizationName}/${rotationName}/users`
@@ -154,7 +157,7 @@ function LogsTable(params: { organizationName: string, rotationName: string }) {
   const [logsLoading, setLogsLoading] = useState(true);
 
   const fetchLogsData = async () => {
-    const BASE_API_URL = 'http://localhost:3000/api/v1';
+    const BASE_API_URL = window.location.origin + '/api/v1' ||'http://localhost:3000/api/v1';
 
     try {
       setLogsLoading(true);
