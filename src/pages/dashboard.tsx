@@ -1,6 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
 import Modal from './api/components/modal';
 
 import {
@@ -35,6 +33,10 @@ export function TableHero() {
   const [users, setUsers] = useState<SlackUser[]>([]);
   const [userColumns, setUserColumns] = useState<(keyof SlackUser)[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // MODAL
+  const [selectedUser, setSelectedUser] = useState<SlackUser | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
   // const [sortColumn, setSortColumn] = useState<string | null>('on_holiday');
   // const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
@@ -79,12 +81,9 @@ export function TableHero() {
 
   useEffect(() => {
     fetchUserData();
-  }, []);
+  }, [isModalOpen]);
 
   // MODAL WORK
-
-  const [selectedUser, setSelectedUser] = useState<SlackUser | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
   const organizationName = 'marandino_workspace'; // IMPROVE THIS
   const rotationName = 'rotation'; // IMPROVE THIS
@@ -114,39 +113,20 @@ export function TableHero() {
             <TableHead>
               <TableRow className='bg-dark-bg'>
                 {tableHeaders}
-                <TableCell className='hover:text-secondary text-lg font-bold md:mb-4'>
-                  Actions
-                </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {users.map((user) => (
                 <TableRow
                   key={user.slack_id}
-                  className='bg-light-bg px-4 py-2 text-base text-black text-left border-b border-gray-400'
+                  onClick={() => handleUpdateClick(user)}
+                  className='bg-light-bg px-4 py-2 text-base text-black text-left border-b border-gray-400 cursor-pointer'
                 >
                   {userColumns.map((keyName, i) => (
                     <TableCell key={keyName + i}>
                       {user[keyName].toString()}
                     </TableCell>
                   ))}
-                  <TableCell> {/* BUTTONS */}
-                    <button
-                      onClick={() => handleUpdateClick(user)}>
-                      <FontAwesomeIcon
-                        icon={faEdit}
-                        className='hover:text-secondary cursor-pointer'
-                      />
-                    </button>
-                    <button
-                      // onClick={() => handleDelete()}
-                      className='ml-6'>
-                      <FontAwesomeIcon
-                        icon={faTrash}
-                        className='hover:text-red-700 cursor-pointer'
-                      />
-                    </button>
-                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
