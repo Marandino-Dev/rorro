@@ -35,10 +35,12 @@ const Modal: React.FC<ModalProps> = ({
     e.preventDefault();
     if (!formData) return;
 
+    const BASE_API_URL = window.location.origin + '/api/v1' ||'http://localhost:3000/api/v1';
+
     setIsSubmitting(true);
     try {
       const response = await fetch(
-        `http://localhost:3000/api/v1/${organizationName}/${rotationName}/users`,
+        `${BASE_API_URL}/${organizationName}/${rotationName}/users`,
         {
           method: 'PUT',
           headers: {

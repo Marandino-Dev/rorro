@@ -1,0 +1,79 @@
+{
+  "display_information": {
+    "name": "Rorro (Beta)"
+  },
+  "features": {
+    "bot_user": {
+      "display_name": "Rorro (Beta)",
+      "always_online": false
+    },
+    "slash_commands": [
+      {
+        "command": "/rr-create",
+        "url": "https://development-rorro.vercel.app/api/v1/slack/rotation-post",
+        "description": "This will create a new rotation, or roll if it already exists. The users will be taken from the channel this was invoked at.",
+        "usage_hint": "task",
+        "should_escape": true
+      },
+      {
+        "command": "/rr",
+        "url": "https://development-rorro.vercel.app/api/v1/slack/rotation/on-duty-post",
+        "description": "Chooses a new user to be on duty.",
+        "usage_hint": "task",
+        "should_escape": true
+      },
+      {
+        "command": "/rr-on-duty",
+        "url": "https://development-rorro.vercel.app/api/v1/slack/rotation/on-duty-get",
+        "description": "Retrieves the current user on duty for the chore, and any backup if available.",
+        "usage_hint": "task",
+        "should_escape": true
+      },
+      {
+        "command": "/rr-skip",
+        "url": "https://development-rorro.vercel.app/api/v1/slack/rotation/on-holiday-put",
+        "description": "Sets an user as on holiday, this will prevent them from being chosen for rotation.",
+        "usage_hint": "task @user",
+        "should_escape": true
+      },
+      {
+        "command": "/rr-config",
+        "url": "https://development-rorro.vercel.app/api/v1/slack/configuration",
+        "description": "Opens the configuration dashboard",
+        "should_escape": true
+      },
+      {
+        "command": "/rr-reroll",
+        "url": "https://development-rorro.vercel.app/api/v1/slack/rotation/reroll-put",
+        "description": "Rerolls the rotation, this will choose a new user to be on duty.",
+        "usage_hint": "task",
+        "should_escape": true
+      }
+    ]
+  },
+  "oauth_config": {
+    "redirect_urls": [
+      "https://development-rorro.vercel.app/api/v1/slack/confirmation"
+    ],
+    "scopes": {
+      "bot": [
+        "app_mentions:read",
+        "channels:read",
+        "chat:write",
+        "commands",
+        "team:read",
+        "usergroups:read",
+        "users:read"
+      ]
+    }
+  },
+  "settings": {
+    "org_deploy_enabled": false,
+    "socket_mode_enabled": false,
+    "token_rotation_enabled": false
+  }
+}
+// Before deploying, let's change the name and the urls to rorro.vercel.app
+// There's no way to programatically update the manifest; it would need to use a configuration token per workspace that has the app installed.
+// https://app.slack.com/app-settings/ use this one to update the manifest
+// https://api.slack.com/reference/manifests#config-tokens this is the documentation for future reference
