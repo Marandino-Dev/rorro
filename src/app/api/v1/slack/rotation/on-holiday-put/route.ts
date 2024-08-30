@@ -6,11 +6,12 @@ import {
 } from 'utils/slack';
 import { NextRequest, NextResponse } from 'next/server';
 import { PostgresClient } from 'utils/database';
+import { createLog } from 'utils/logic';
 
 export async function PUT(req: NextRequest) {
   try {
     const parsedPayload = await parsePayloadFromRequest(req);
-    const { text, team_domain } = parsedPayload;
+    const { text, team_domain, user_name } = parsedPayload;
     const slackIdMatch = text.match(/<@([A-Z0-9]+)>/);
     const slackId = slackIdMatch ? slackIdMatch[1] : null;
     const rotationName = sanitizeSlackText(
@@ -65,6 +66,17 @@ export async function PUT(req: NextRequest) {
       } be available for selection.`
     );
 
+    // Create a log entry
+    const logEntry = createLog(
+      `Changed ${user.full_name} ${user.on_holiday ? 'to on holiday' : 'back to work'}.`,
+      sanitizeSlackText(user_name),
+      'status'
+    );
+
+    // Insert the log entry into the database
+    const log = await DbClient.insertLog(organizationName, rotationName, logEntry);
+
+    console.debug(log);
     console.debug(user);
     return NextResponse.json(slackMessage, { status: 200 });
   } catch (error) {
