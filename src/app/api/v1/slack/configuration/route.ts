@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PostgresClient } from 'utils/database';
 import jwt from 'jsonwebtoken';
-import { parsePayloadFromRequest, sanitizeSlackText } from 'utils/slack';
+import { SlackResponseType, getSlackMessage, parsePayloadFromRequest, sanitizeSlackText } from 'utils/slack';
 
 const jwtSecret = process.env.JWT_SECRET || '';
 const baseURL = process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : 'http://localhost:3000';
@@ -18,7 +18,13 @@ export async function POST(req: NextRequest) {
     const organization = await dbClient.getOrganization(team_id);
 
     if (!organization) {
-      return NextResponse.json({ message: 'Something happened, we could not authenticate you.' }, { status: 401 });
+      return NextResponse.json(getSlackMessage(
+        SlackResponseType.Ephemeral, 'Something went wrong, we could not authenticate you. Please reinstall the app.'
+      ));
+    }
+
+    if(!rotationName) {
+      return NextResponse.json(getSlackMessage(SlackResponseType.Ephemeral, 'Please specify a rotation name'));
     }
 
     const token = jwt.sign({ organization, user_id, user_name }, jwtSecret, { expiresIn: '1d' });
