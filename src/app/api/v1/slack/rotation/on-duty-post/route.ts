@@ -7,6 +7,7 @@ import {
   sanitizeSlackText,
 } from 'utils/slack';
 import {
+  createLog,
   filterSlackUsers,
   filterUserOnDuty,
   selectSlackUser,
@@ -16,7 +17,7 @@ import { SlackUser } from 'types';
 export async function POST(req: NextRequest) {
   try {
     const parsedPayload = await parsePayloadFromRequest(req);
-    const { text, team_domain } = parsedPayload;
+    const { text, team_domain, user_name } = parsedPayload;
 
     const command: string = text.replace(/<[^>]+>/g, '');
     const organizationName = sanitizeSlackText(team_domain);
@@ -30,7 +31,7 @@ export async function POST(req: NextRequest) {
     const { rows } = await DbClient.queryUsersForOrganizationAndRotation(organizationName, rotationName, true);
 
     const previousBackup = rows.find(user => user.on_backup === true)?.slack_id;
-    const newBackup = rows.find(user => user.on_duty === true)?.slack_id;
+    const newBackup = rows.find(user => user.on_duty === true);
 
     const usersNotOnDuty = filterUserOnDuty(rows);
     const filteredUsers = filterSlackUsers(usersNotOnDuty);
@@ -39,15 +40,26 @@ export async function POST(req: NextRequest) {
 
     const users = await DbClient.rotateUsers(
       userOnDuty.slack_id,
-      newBackup,
+      newBackup?.slack_id,
       previousBackup
     );
 
     const slackMessage = getSlackMessage(
       SlackResponseType.InChannel,
-      `${rotationName}: <@${userOnDuty.slack_id}> is on duty, and <@${newBackup}> will back them up.`
+      `${rotationName}: <@${userOnDuty.slack_id}> is on duty, and <@${newBackup?.slack_id}> will back them up.`
     );
 
+    // Create a log entry
+    const logEntry = createLog(
+      `Changed ${userOnDuty.full_name} to on duty and ${newBackup?.full_name} as backup`,
+      sanitizeSlackText(user_name),
+      'rotation'
+    );
+
+    // Insert the log entry into the database
+    const log = await DbClient.insertLog(organizationName, rotationName, logEntry);
+
+    console.debug(log);
     console.debug(users);
     return NextResponse.json(slackMessage, { status: 200 });
 
