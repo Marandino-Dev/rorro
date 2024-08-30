@@ -100,7 +100,7 @@ export class PostgresClient {
   public async insertLog(organizationName: string,
     rotationName: string, log: Log): Promise<void> {
 
-    console.info(`Querying logs from: ${organizationName}, ${rotationName}`);
+    console.info(`Writing log for: ${organizationName}, ${rotationName}`);
 
     const queryString = `
       INSERT INTO ${this._logsTable} (description, date, executed_by, type)
