@@ -13,33 +13,13 @@ import {
 import { SlackUser } from 'types';
 import { Log } from 'types';
 
-// Availability Button
-
-// const AvailabilityButton: React.FC<{ available: boolean }> = ({
-//   available,
-// }) => (
-//   <button
-//     className={`px-4 py-2 rounded-full font-semibold border-2 ${available
-//       ? 'border-green-500 text-gray-300 bg-transparent hover:bg-green-500 hover:text-white'
-//       : 'border-red-500 text-gray-300 bg-transparent hover:bg-red-500 hover:text-white'
-//     } transition-colors duration-200`}
-//   >
-//     {available ? 'Available' : 'Unavailable'}
-//   </button>
-// );
-
-// TableHero
 export function TableHero() {
   const [users, setUsers] = useState<SlackUser[]>([]);
   const [userColumns, setUserColumns] = useState<(keyof SlackUser)[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // MODAL
   const [selectedUser, setSelectedUser] = useState<SlackUser | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-
-  // const [sortColumn, setSortColumn] = useState<string | null>('on_holiday');
-  // const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
 
   const tableHeaders = userColumns.map(column => (
     <TableHeaderCell
@@ -47,15 +27,6 @@ export function TableHero() {
       key={column + '-key'}
     >
       {column.replace('_', ' ')}
-      {/*
-
-      These sort columns will be the visual cue in case we are currently sorting by this column
-
-      {sortColumn === 'full_name' &&
-
-      (sortDirection === 'asc' ? '↑' : '↓')}
-
-      */}
     </TableHeaderCell>
   ));
 
@@ -82,8 +53,6 @@ export function TableHero() {
   useEffect(() => {
     fetchUserData();
   }, [isModalOpen]);
-
-  // MODAL WORK
 
   const organizationName = 'marandino_workspace'; // IMPROVE THIS
   const rotationName = 'rotation'; // IMPROVE THIS
@@ -145,8 +114,6 @@ export function TableHero() {
     </div>
   );
 }
-
-//
 
 const formatDate = (dateMillis: number | string): string => {
   // Convert dateMillis to number if it's a string
