@@ -236,8 +236,8 @@ export class PostgresClient {
     `);
   }
 
-  public async getOrganization(team_id: string): Promise<Organization> {
-    const queryString = `SELECT * FROM ${this._organizationsTable} WHERE team_id = $1`;
+  public static async getOrganization(team_id: string): Promise<Organization> {
+    const queryString = 'SELECT * FROM organizations WHERE team_id = $1';
     const { rows } = await sql.query<Organization>(queryString, [team_id]);
     return rows[0];
   }
