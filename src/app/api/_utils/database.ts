@@ -177,8 +177,14 @@ export class PostgresClient {
     const columnString = columns.join(', ');
     const userValuesString = this.getValuesForUpdate<T>(items);
 
-    const putQuery = `INSERT INTO ${this[table]} (${columnString}) VALUES ${userValuesString};`;
+    const putQuery = `
+      INSERT INTO ${this[table]} (${columnString})
+      VALUES ${userValuesString}
+      ON CONFLICT DO NOTHING
+      RETURNING *;
+    `;
     const { rows } = await sql.query<T>(putQuery);
+    console.log('Rows inserted:', rows);
     return rows;
   }
 
@@ -261,11 +267,20 @@ export class PostgresClient {
 
   // TODO: make it just destructure the values, and make it accept a custom string for the action
   private createSqlQuery(table: TableName, columns: string[], values: unknown[]) {
-    return 'CREATE TABLE IF NOT EXISTS ' + this[table] + ' (' +
+    // Create the table if it doesn't exist
+    const createTableQuery = 'CREATE TABLE IF NOT EXISTS ' + this[table] + ' (' +
       columns.map((column, index) => {
         return column + ' ' + this.getValueType(values[index]);
-      }
-      ).join(', ') + ');';
+      }).join(', ') + ');';
+
+    // Check if 'slack_id' column exists, otherwise use the first column
+    const indexColumn = columns.includes('slack_id') ? 'slack_id' : columns[0];
+
+    // Create a unique index on the chosen column to ensure no duplicates
+    const createIndexQuery = `CREATE UNIQUE INDEX IF NOT EXISTS idx_${this[table]}_${indexColumn} ON ${this[table]} (${indexColumn});`;
+
+    // Combine both queries
+    return createTableQuery + ' ' + createIndexQuery;
   }
 
   // TODO: refactor this
