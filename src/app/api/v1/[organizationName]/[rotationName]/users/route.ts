@@ -1,6 +1,7 @@
 import { createLog } from 'utils/logic';
 import { type NextRequest, NextResponse } from 'next/server';
 import { PostgresClient } from 'utils/database';
+import { SlackUser } from 'types';
 
 export async function GET(
   _: NextRequest,
@@ -30,22 +31,29 @@ export async function PUT(
 ) {
   const { organizationName, rotationName } = params;
   const { updateData, userId } = await request.json();
-
   const client = new PostgresClient(organizationName, rotationName);
-
+  const { rows } = await client.queryUsersForOrganizationAndRotation(organizationName, rotationName, true);
   try {
     const updatedUser = await client.updateUser(
       userId,
       updateData
     );
+    const originalUser = rows.find(user => user.slack_id === updatedUser?.slack_id);
 
-    if (!updatedUser) {
-      return NextResponse.json({ message: 'User not found' }, { status: 404 });
+    const changes: string[] = []; // Define `changes` in an outer scope
+
+    if (originalUser && updatedUser) {
+      Object.entries(originalUser).forEach(([key, originalValue]) => {
+        const updatedValue = updatedUser[key as keyof SlackUser];
+        if (originalValue !== updatedValue) {
+          changes.push(`${key}: ${updatedValue}`);
+        }
+      });
     }
 
     // Create a log entry
     const logEntry = createLog(
-      `Updated user properties of: ${updatedUser.full_name}'}.`,
+      `Changes made to ${updatedUser?.full_name}: ${changes.join(', ')}.`,
       'Dashboard',
       'status'
     );
