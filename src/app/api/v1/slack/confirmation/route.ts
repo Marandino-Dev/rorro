@@ -39,9 +39,9 @@ export async function GET(
     const access_hash = encrypt(access_token);
 
     const organization: Organization = {
+      team_id: team?.id?.toString(),
       authed_user: authed_user?.id?.toString(),
       scope,
-      team_id: team?.id?.toString(),
       team_name: team?.name?.toString(),
       app_id,
       access_hash,
