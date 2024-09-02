@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
 
     if (!slackId || !rotationName) {
       const message =
-        'Error: User is required. Usage example: /rr-skip task-name @user';
+        'Error: User and Task are required. Usage example: /rr-skip task-name @user';
       return NextResponse.json(
         getSlackMessage(SlackResponseType.Ephemeral, message),
       );
