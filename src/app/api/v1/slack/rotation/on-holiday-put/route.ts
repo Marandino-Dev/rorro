@@ -13,40 +13,23 @@ export async function POST(req: NextRequest) {
     const parsedPayload = await parsePayloadFromRequest(req);
     const { text, team_domain, user_name } = parsedPayload;
     const slackIdMatch = text.match(/<@([A-Z0-9]+)\|[^>]+>/);
+
+    // TODO: add multiple users support
     const slackId = slackIdMatch ? slackIdMatch[1] : null;
     const rotationName = sanitizeSlackText(
       text.replace(/<@[^>]+>/g, '').trim()
     );
 
-    if (!rotationName) {
+    if (!slackId || !rotationName) {
       const message =
         'Error: User is required. Usage example: /rr-skip task-name @user';
       return NextResponse.json(
         getSlackMessage(SlackResponseType.Ephemeral, message),
-        { status: 400 }
-      );
-    }
-
-    if (!slackId) {
-      const message =
-        'Error: User is required. Usage example: /rr-skip task-name @user';
-      return NextResponse.json(
-        getSlackMessage(SlackResponseType.Ephemeral, message),
-        { status: 400 }
       );
     }
 
     const organizationName = sanitizeSlackText(team_domain);
     const DbClient = new PostgresClient(organizationName, rotationName);
-
-    // Ensure slackId is not null before passing it to the function
-    if (!slackId) {
-      return NextResponse.json(
-        getSlackMessage(SlackResponseType.Ephemeral, 'Invalid  user.'),
-        { status: 400 }
-      );
-    }
-
     const user = await DbClient.toggleHolidayStatus(slackId);
 
     if (!user) {
@@ -55,13 +38,12 @@ export async function POST(req: NextRequest) {
           SlackResponseType.Ephemeral,
           `<@${slackId}> user not found or invalid.`
         ),
-        { status: 404 }
       );
     }
 
     const slackMessage = getSlackMessage(
       SlackResponseType.InChannel,
-      `${rotationName}; <@${user.slack_id}> ${
+      `${rotationName.replace(/_/g, ' ')}; <@${user.slack_id}> ${
         user.on_holiday ? 'won\'t' : 'will'
       } be available for selection.`
     );
@@ -77,16 +59,14 @@ export async function POST(req: NextRequest) {
     const log = await DbClient.insertLog(organizationName, rotationName, logEntry);
 
     console.debug(log);
-    console.debug(user);
-    return NextResponse.json(slackMessage, { status: 200 });
+    return NextResponse.json(slackMessage);
   } catch (error) {
     console.error('Error processing request:', error);
     return NextResponse.json(
       getSlackMessage(
         SlackResponseType.Ephemeral,
         'Something went wrong, please try again.'
-      ),
-      { status: 500 }
+      )
     );
   }
 }
