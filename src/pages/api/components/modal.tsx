@@ -64,6 +64,7 @@ const Modal: React.FC<ModalProps> = ({
     } catch (error) {
       console.error('Error updating user data:', error);
     } finally {
+      window.location.reload();
       setIsSubmitting(false);
       onClose();
     }
@@ -72,8 +73,9 @@ const Modal: React.FC<ModalProps> = ({
   // MODAL HERO
 
   return (
-    <div onClick={onClose} className='fixed inset-x-0 top-0 h-full flex items-start justify-center z-50 bg-gray-800 bg-opacity-50'>
-      <div className='relative bg-light-bg p-6 sm:p-8 rounded-lg shadow-lg max-w-sm w-full mt-8 md:max-w-lg md:my-auto'>
+    <div className='fixed inset-x-0 top-0 h-full flex items-start justify-center'>
+      <div className='absolute inset-0 z-10 bg-gray-800 bg-opacity-50' onClick={onClose}></div>
+      <div className='relative z-30 bg-light-bg p-6 sm:p-8 rounded-lg shadow-lg max-w-sm w-full mt-12 md:max-w-lg md:my-auto'>
         {/* CLOSE BUTTON */}
         <button
           className='absolute top-6 md:top-8 right-8 text text-2xl'
