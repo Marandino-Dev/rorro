@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import Modal from './api/components/modal';
 
 import {
   Table,
@@ -9,109 +10,8 @@ import {
   TableRow,
 } from '@tremor/react';
 
-import { SlackUser } from 'types';
-import { Log } from 'types';
-
-// Availability Button
-
-// const AvailabilityButton: React.FC<{ available: boolean }> = ({
-//   available,
-// }) => (
-//   <button
-//     className={`px-4 py-2 rounded-full font-semibold border-2 ${available
-//       ? "border-green-500 text-gray-300 bg-transparent hover:bg-green-500 hover:text-white"
-//       : "border-red-500 text-gray-300 bg-transparent hover:bg-red-500 hover:text-white"
-//     } transition-colors duration-200`}
-//   >
-//     {available ? "Available" : "Unavailable"}
-//   </button>
-// );
-
-// TableHero
-export function TableHero() {
-  const [users, setUsers] = useState<SlackUser[]>([]);
-  const [userColumns, setUserColumns] = useState<(keyof SlackUser)[]>([]);
-  const [loading, setLoading] = useState(true);
-  // const [sortColumn, setSortColumn] = useState<string | null>("on_holiday");
-  // const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
-
-  const tableHeaders = userColumns.map(column => (
-    <TableHeaderCell
-      className="hover:text-secondary py-5 cursor-pointer capitalize"
-      key={column + '-key'}
-    >
-      {column.replace('_', ' ')}
-      {/*
-
-      These sort columns will be the visual cue in case we are currently sorting by this column
-
-      {sortColumn === "full_name" &&
-
-      (sortDirection === "asc" ? "↑" : "↓")}
-
-      */}
-    </TableHeaderCell>
-  ));
-
-  const fetchUserData = async () => {
-    const BASE_API_URL = 'http://localhost:3000/api/v1';
-    try {
-      setLoading(true);
-      const response = await fetch(
-        `${BASE_API_URL}/marandino_workspace/rotation/users`
-      );
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      const { rows: users, columns }: { rows: SlackUser[], columns: (keyof SlackUser)[] } = await response.json();
-      setUsers(users);
-      setUserColumns(columns);
-    } catch (error) {
-      console.error('Error fetching user data:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchUserData();
-  }, []);
-
-  return (
-    <div className="p-4 md:p-10 rounded-2xl my-12">
-      <h1 className="hover:text-secondary text-4xl md:text-5xl font-bold md:mb-4">
-        Team Members
-      </h1>
-      {loading ? (
-        <p className="text-gray-300">Loading...</p>
-      ) : (
-        <div className="overflow-auto">
-          <Table className="text-lg border-separate border-spacing-0 rounded">
-            <TableHead>
-              <TableRow className="bg-dark-bg">
-                {tableHeaders}
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {users.map((user) => (
-                <TableRow
-                  key={user.slack_id}
-                  className="bg-light-bg px-4 py-2 text-base text-black text-left border-b border-gray-400"
-                >
-                  {userColumns.map((keyName, i) => (
-                    <TableCell key={keyName + i}>
-                      {user[keyName].toString()}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
-      )}
-    </div>
-  );
-}
+import { Log, SlackUser } from 'types';
+import { useSearchParams } from 'next/navigation';
 
 const formatDate = (dateMillis: number | string): string => {
   // Convert dateMillis to number if it's a string
@@ -128,35 +28,144 @@ const formatDate = (dateMillis: number | string): string => {
     month: 'long',
     day: 'numeric',
     year: 'numeric',
+    hour: 'numeric',
+    minute: 'numeric',
   };
   return date.toLocaleDateString(undefined, options);
 };
 
-// TableLogs
-export function TableLogs() {
+interface TableProps<T> {
+  title: string;
+  data: T[];
+  columns: (keyof T)[];
+  loading: boolean;
+  onRowClick?: (item: T) => void;
+  formatCell?: (key: keyof T, value: T[keyof T]) => React.ReactNode;
+}
+
+function GenericTable<T>({ title, data, columns, loading, onRowClick, formatCell }: TableProps<T>) {
+  const tableHeaders = columns.map(column => (
+    <TableHeaderCell
+      className='hover:text-secondary py-5 cursor-pointer capitalize'
+      key={String(column) + '-key'}
+    >
+      {String(column).replace('_', ' ')}
+    </TableHeaderCell>
+  ));
+
+  return (
+    <div className='p-4 md:p-10 rounded-2xl'>
+      <h1 className='hover:text-secondary text-2xl font-bold'>
+        {title}
+      </h1>
+      {loading ? (
+        <p className='text-gray-300'>Loading...</p>
+      ) : (
+        <div className='overflow-auto'>
+          <Table className='text-lg border-separate border-spacing-0 rounded'>
+            <TableHead>
+              <TableRow className='bg-dark-bg'>
+                {tableHeaders}
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {data.map((item, index) => (
+                <TableRow
+                  key={index}
+                  onClick={() => onRowClick && onRowClick(item)}
+                  className='bg-light-bg px-4 py-2 text-base text-black text-left border-b border-gray-400 cursor-pointer'
+                >
+                  {columns.map((keyName, i) => (
+                    <TableCell key={String(keyName) + i}>
+                      {formatCell ? formatCell(keyName, item[keyName]) : String(item[keyName])}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function UserTables(params: { organizationName: string, rotationName: string }) {
+  const { organizationName, rotationName } = params;
+  const [users, setUsers] = useState<SlackUser[]>([]);
+  const [userColumns, setUserColumns] = useState<(keyof SlackUser)[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const [selectedUser, setSelectedUser] = useState<SlackUser | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+
+  const fetchUserData = async () => {
+    const BASE_API_URL = window.location.origin + '/api/v1' ||'http://localhost:3000/api/v1';
+
+    setLoading(true);
+    const response = await fetch(
+      `${BASE_API_URL}/${organizationName}/${rotationName}/users`
+    );
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    setLoading(false);
+    const { rows: users, columns }: { rows: SlackUser[], columns: (keyof SlackUser)[] } = await response.json();
+    setUsers(users);
+    setUserColumns(columns);
+  };
+
+  useEffect(() => {
+    fetchUserData();
+  }, []);
+
+  const handleUpdateClick = (user: SlackUser) => {
+    setSelectedUser(user);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedUser(null);
+  };
+
+  return (
+    <>
+      <GenericTable<SlackUser>
+        title="Team Members"
+        data={users}
+        columns={userColumns}
+        loading={loading}
+        onRowClick={handleUpdateClick}
+      />
+      {isModalOpen && (
+        <Modal
+          user={selectedUser}
+          onClose={handleCloseModal}
+          organizationName={organizationName}
+          rotationName={rotationName}
+        />
+      )}
+    </>
+  );
+}
+
+function LogsTable(params: { organizationName: string, rotationName: string }) {
+  const { organizationName, rotationName } = params;
   const [logs, setLogs] = useState<Log[]>([]);
   const [logColumns, setLogColumns] = useState<(keyof Log)[]>([]);
   const [logsLoading, setLogsLoading] = useState(true);
 
-  const tableHeaders = logColumns.map(column => (
-    <TableHeaderCell
-      className="hover:text-secondary py-5 cursor-pointer capitalize"
-      key={column + '-log-key'}
-    >
-      {column.replace('_', ' ')}
-    </TableHeaderCell>
-  ));
-
   const fetchLogsData = async () => {
-    const BASE_API_URL = 'http://localhost:3000/api/v1';
+    const BASE_API_URL = window.location.origin + '/api/v1' ||'http://localhost:3000/api/v1';
+
     try {
       setLogsLoading(true);
+      // TODO: add proper pagination
       const response = await fetch(
-        `${BASE_API_URL}/marandino_workspace/new_test_rotation/logs`
+        `${BASE_API_URL}/${organizationName}/${rotationName}/logs`
       );
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
+
       const { rows: logs, columns }: { rows: Log[], columns: (keyof Log)[] } = await response.json();
       setLogs(logs);
       setLogColumns(columns);
@@ -171,47 +180,41 @@ export function TableLogs() {
     fetchLogsData();
   }, []);
 
+  const formatCell = (key: keyof Log, value: Log[keyof Log]) => {
+    if (key === 'date') {
+      return formatDate(value as number);
+    }
+    return String(value);
+  };
+
   return (
-    <div className="p-4 md:p-10 rounded-2xl my-12">
-      <h1 className="hover:text-secondary text-4xl md:text-5xl font-bold md:mb-4">
-        Logs Data
-      </h1>
-      {logsLoading ? (
-        <p className="text-gray-300">Loading...</p>
-      ) : (
-        <div className="overflow-auto">
-          <Table className="text-lg border-separate border-spacing-0 rounded">
-            <TableHead>
-              <TableRow className="bg-dark-bg">
-                {tableHeaders}
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {logs.map((log) => (
-                <TableRow
-                  key={log.date}
-                  className="bg-light-bg px-4 py-2 text-base text-black text-left border-b border-gray-400"
-                >
-                  {logColumns.map((keyName, i) => (
-                    <TableCell key={keyName + i}>
-                      {keyName === 'date' ? formatDate(log[keyName] as number) : log[keyName].toString()}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
-      )}
-    </div>
+    <GenericTable<Log>
+      title="Logs Data"
+      data={logs}
+      columns={logColumns}
+      loading={logsLoading}
+      formatCell={formatCell}
+    />
   );
 }
 
 export default function Dashboard() {
+  const params = useSearchParams();
+  if (!params) {
+    return <div>No organization or rotation selected</div>;
+  }
+
+  const organization_id = params.get('organization_id');
+  const rotation_id = params.get('rotation_id');
+
+  if (!organization_id || !rotation_id) {
+    return <div>No organization or rotation selected</div>;
+  }
+
   return (
-    <div>
-      <TableHero />
-      <TableLogs />
-    </div>
+    <>
+      <UserTables organizationName={organization_id} rotationName={rotation_id} />
+      <LogsTable organizationName={organization_id} rotationName={rotation_id} />
+    </>
   );
 }

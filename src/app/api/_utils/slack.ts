@@ -1,5 +1,7 @@
 import { type NextRequest } from 'next/server';
 import { SlackCommandPayload, SlackUser } from 'types';
+import { PostgresClient } from './database';
+import { decrypt } from './crypto';
 
 /** Slack Response Type in order to choose what type of display the return message will have */
 export enum SlackResponseType {
@@ -21,9 +23,11 @@ export function getSlackMessage(responseType: SlackResponseType, responseText: s
 
 }
 
-async function fetchSlackApi(slackApiString: string) {
+async function fetchSlackApi(slackApiString: string, team_id: string) {
+  // fetch the organization:
+  const organization = await PostgresClient.getOrganization(team_id);
+  const token = decrypt(organization.access_hash);
 
-  const token = process.env.SLACK_TEST_TOKEN;
   // const res = await fetch('https://slack.com/api/usergroups.users.list?usergroup=' + userGroupId,
   const res = await fetch('https://slack.com/api/' + slackApiString,
     {
@@ -37,12 +41,12 @@ async function fetchSlackApi(slackApiString: string) {
   return await res.json();
 }
 
-export async function getSlackUsersFromChannel(channel: string): Promise<SlackUser[]> {
+export async function getSlackUsersFromChannel(channel: string, team_id: string): Promise<SlackUser[]> {
 
   // TODO: make it accept an user group
   if (!channel) return [];
 
-  const { members } = await fetchSlackApi(`conversations.members?channel=${channel}`);
+  const { members } = await fetchSlackApi(`conversations.members?channel=${channel}`, team_id);
 
   console.info('These are the members in this channel: ', members);
 
@@ -52,7 +56,7 @@ export async function getSlackUsersFromChannel(channel: string): Promise<SlackUs
   // create the new users based on that.
   for (let i = 0; i < members.length; i++) {
     const member = members[i];// this should be a slackId
-    const { user } = await fetchSlackApi('users.info?user=' + member);
+    const { user } = await fetchSlackApi('users.info?user=' + member, team_id);
 
     const newUser = createUser(member, user?.profile?.real_name_normalized || '');
     newUsersArray.push(newUser);
@@ -92,7 +96,14 @@ export async function parsePayloadFromRequest(req: NextRequest): Promise<SlackCo
   if (contentType?.includes('multipart/form-data') || contentType?.includes('application/x-www-form-urlencoded')) {
     // Handle form data
     const formData = await req.formData();
-    return Object.fromEntries(formData) as SlackCommandPayload;
+    // TODO: refactor this to be more readable
+    const entries = Array.from(formData.entries()).map(([key, value]) => {
+      if (typeof value === 'string') {
+        return [key, value.trim()];
+      }
+      return [key, value];
+    });
+    return Object.fromEntries(entries) as SlackCommandPayload;
   }
 
   throw new Error('We failed to parse the command with contentType: ' + contentType);

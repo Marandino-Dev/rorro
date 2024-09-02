@@ -1,4 +1,4 @@
-import { Log, SlackUser } from 'types';
+import { Log, Organization, SlackUser } from 'types';
 import { sql } from '@vercel/postgres';
 
 /** These are the local names for the table private values inside the PosttgreClient */
@@ -177,9 +177,51 @@ export class PostgresClient {
     const columnString = columns.join(', ');
     const userValuesString = this.getValuesForUpdate<T>(items);
 
-    const putQuery = `INSERT INTO ${this[table]} (${columnString}) VALUES ${userValuesString};`;
+    const putQuery = `
+      INSERT INTO ${this[table]} (${columnString})
+      VALUES ${userValuesString}
+      ON CONFLICT DO NOTHING
+      RETURNING *;
+    `;
     const { rows } = await sql.query<T>(putQuery);
+    console.log('Rows inserted:', rows);
     return rows;
+  }
+
+  // Update usersTable
+
+  public async updateUser(
+    slackId: string,
+    updatedData: Partial<SlackUser>
+  ): Promise<SlackUser | null> {
+    try {
+      const updateFields = Object.keys(updatedData)
+        .map((key, index) => `${key} = $${index + 2}`)
+        .join(', ');
+
+      const userUpdateValues = Object.values(updatedData);
+      userUpdateValues.unshift(slackId); // SLACK ID AS FIRST VALUE
+
+      const queryString = `
+        UPDATE ${this._usersTable}
+        SET ${updateFields}
+        WHERE slack_id = $1
+        RETURNING *;
+      `;
+
+      const { rows } = await sql.query<SlackUser>(queryString, userUpdateValues);
+
+      if (rows.length === 0) {
+        console.log('No user found with the provided Slack ID');
+        return null;
+      }
+
+      console.log('User updated successfully:', rows[0]);
+      return rows[0];
+    } catch (error) {
+      console.error('Error updating user:', error);
+      throw new Error('Failed to update user');
+    }
   }
 
   /** This function will confirm that the table exists prior to inserting a new item */
@@ -198,6 +240,12 @@ export class PostgresClient {
       );
       CREATE INDEX IF NOT EXISTS idx_date ON ${this._logsTable} (date DESC);
     `);
+  }
+
+  public static async getOrganization(team_id: string): Promise<Organization> {
+    const queryString = 'SELECT * FROM organizations WHERE team_id = $1';
+    const { rows } = await sql.query<Organization>(queryString, [team_id]);
+    return rows[0];
   }
 
   /**
@@ -219,11 +267,20 @@ export class PostgresClient {
 
   // TODO: make it just destructure the values, and make it accept a custom string for the action
   private createSqlQuery(table: TableName, columns: string[], values: unknown[]) {
-    return 'CREATE TABLE IF NOT EXISTS ' + this[table] + ' (' +
+    // Create the table if it doesn't exist
+    const createTableQuery = 'CREATE TABLE IF NOT EXISTS ' + this[table] + ' (' +
       columns.map((column, index) => {
         return column + ' ' + this.getValueType(values[index]);
-      }
-      ).join(', ') + ');';
+      }).join(', ') + ');';
+
+    // Check if 'slack_id' column exists, otherwise use the first column
+    const indexColumn = columns.includes('slack_id') ? 'slack_id' : columns[0];
+
+    // Create a unique index on the chosen column to ensure no duplicates
+    const createIndexQuery = `CREATE UNIQUE INDEX IF NOT EXISTS idx_${this[table]}_${indexColumn} ON ${this[table]} (${indexColumn});`;
+
+    // Combine both queries
+    return createTableQuery + ' ' + createIndexQuery;
   }
 
   // TODO: refactor this

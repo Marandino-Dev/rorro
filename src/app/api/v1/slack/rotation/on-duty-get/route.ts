@@ -20,8 +20,10 @@ export async function POST(req: NextRequest) {
 
     if (!rotationName || typeof rotationName !== 'string') {
       return NextResponse.json(
-        { error: 'rotationName is required' },
-        { status: 400 }
+        getSlackMessage(
+          SlackResponseType.Ephemeral,
+          'No active users found.'
+        ),
       );
     }
 
@@ -34,7 +36,7 @@ export async function POST(req: NextRequest) {
         SlackResponseType.Ephemeral,
         'No active users found or incomplete data.'
       );
-      return NextResponse.json(errorMessage, { status: 404 });
+      return NextResponse.json(errorMessage);
     }
 
     const slackMessage = getSlackMessage(
@@ -42,13 +44,13 @@ export async function POST(req: NextRequest) {
       `Slack user on duty: <@${activeUsers.userOnDuty.slack_id}> | Backup Slack user: <@${activeUsers.userOnBackup?.slack_id}>.`
     );
 
-    return NextResponse.json(slackMessage, { status: 200 });
+    return NextResponse.json(slackMessage);
   } catch (error) {
     console.error(JSON.stringify(error));
     const slackMessage = getSlackMessage(
       SlackResponseType.Ephemeral,
       'Something went wrong, please try again.'
     );
-    return NextResponse.json(slackMessage, { status: 500 });
+    return NextResponse.json(slackMessage);
   }
 }
