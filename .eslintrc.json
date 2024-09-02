@@ -1,3 +1,68 @@
 {
-  "extends": "next/core-web-vitals"
+  "extends": [
+    "next/core-web-vitals",
+    "eslint:recommended"
+  ],
+  "rules": {
+    "no-unused-vars": "off",
+    "@typescript-eslint/no-unused-vars": "error",
+    "no-multi-spaces": "error",
+    "comma-dangle": [
+      "error",
+      "always-multiline"
+    ],
+    "indent": [
+      "error",
+      2
+    ],
+    "@next/next/no-img-element": "off",
+    "@typescript-eslint/no-explicit-any": "error",
+    "import/consistent-type-specifier-style": "error",
+    "block-spacing": "error",
+    "comma-spacing": "error",
+    "complexity": "error",
+    "linebreak-style": "error",
+    "max-lines": [
+      "error",
+      600
+    ],
+    "no-multiple-empty-lines": [
+      "error",
+      {
+        "max": 1,
+        "maxEOF": 1,
+        "maxBOF": 0
+      }
+    ],
+    "no-trailing-spaces": "error",
+    "object-curly-spacing": [
+      "error",
+      "always"
+    ],
+    "prefer-const": "error",
+    "quotes": [
+      "error",
+      "single"
+    ],
+    "semi": "error",
+    "sort-imports": [
+      "error",
+      {
+        "ignoreDeclarationSort": true,
+        "memberSyntaxSortOrder": [
+          "none",
+          "all",
+          "multiple",
+          "single"
+        ]
+      }
+    ],
+    "space-in-parens": "error",
+    "spaced-comment": "error",
+    "strict": "error"
+  },
+  "parser": "@typescript-eslint/parser",
+  "plugins": [
+    "@typescript-eslint"
+  ]
 }
