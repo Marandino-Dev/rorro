@@ -51,7 +51,10 @@ const Hero = () => {
 
         <Link
           className='flex mt-4 w-full justify-end pr-4 md:block'
-          href="https://slack.com/oauth/v2/authorize?scope=channels%3Aread%2Cusergroups%3Aread%2Cusers%3Aread%2Cchat%3Awrite%2Ccommands&amp;user_scope=&amp;redirect_uri=https%3A%2F%2Fdevelopment-rorro.vercel.app%2Fapi%2Fv1%2Fslack%2Fconfirmation&amp;client_id=7546053177520.7516636957142"
+          href={
+            `https://slack.com/oauth/v2/authorize?client_id=${process.env.SLACK_CLIENT_ID}`
+            + '&scope=app_mentions:read,channels:read,chat:write,commands,team:read,usergroups:read,users:read'
+          }
         >
           <button className="btn primary">
             Get Started

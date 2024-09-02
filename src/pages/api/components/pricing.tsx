@@ -1,4 +1,5 @@
 import React from 'react';
+import Link from 'next/link';
 
 interface PricingPlan {
   title: string;
@@ -30,9 +31,16 @@ const PricingCard: React.FC<PricingCardProps> = ({ title, price, features, butto
         </li>
       ))}
     </ul>
-    <button className={'btn primary capitalize'}>
-      {buttonText}
-    </button>
+    <Link
+      href={
+        `https://slack.com/oauth/v2/authorize?client_id=${process.env.SLACK_CLIENT_ID}`
+        + '&scope=app_mentions:read,channels:read,chat:write,commands,team:read,usergroups:read,users:read'
+      }
+    >
+      <button className={'btn primary capitalize'}>
+        {buttonText}
+      </button>
+    </Link>
   </div>
 );
 
