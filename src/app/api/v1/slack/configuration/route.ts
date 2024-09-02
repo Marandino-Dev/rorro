@@ -14,8 +14,7 @@ export async function POST(req: NextRequest) {
     const organizationName = sanitizeSlackText(team_domain);
     const rotationName = sanitizeSlackText(text.replace(/<[^>]+>/g, '')); // cleanup the command
 
-    const dbClient = new PostgresClient(organizationName, rotationName);
-    const organization = await dbClient.getOrganization(team_id);
+    const organization = await PostgresClient.getOrganization(team_id);
 
     if (!organization) {
       return NextResponse.json(getSlackMessage(
