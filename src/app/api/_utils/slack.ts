@@ -38,6 +38,7 @@ async function fetchSlackApi(slackApiString: string, team_id: string) {
     }
   );
 
+  // if this fails, we must throw an error here, and handle it in the routes. something like: "the token is expired, please reinstall the app"
   return await res.json();
 }
 
@@ -50,7 +51,7 @@ export async function getSlackUsersFromChannel(channel: string, team_id: string)
 
   console.info('These are the members in this channel: ', members);
 
-  if (members?.length < 0) return [];
+  if (!members || members.length <= 0) return [];
   const newUsersArray: SlackUser[] = [];
 
   // create the new users based on that.
@@ -59,6 +60,28 @@ export async function getSlackUsersFromChannel(channel: string, team_id: string)
     const { user } = await fetchSlackApi('users.info?user=' + member, team_id);
 
     const newUser = createUser(member, user?.profile?.real_name_normalized || '');
+    newUsersArray.push(newUser);
+  }
+
+  return newUsersArray;
+}
+
+// TODO refactor this, it's almost the same as the function above.
+export async function getSlackUsersFromUserGroup(userGroup: string, team_id: string): Promise<SlackUser[]> {
+  if (!userGroup) return [];
+
+  const { users }= await fetchSlackApi(`usergroups.users.list?usergroup=${userGroup}`, team_id);
+  console.info('These are the users in this group: ', users);
+
+  if (!users || users.length <= 0) return [];
+  const newUsersArray: SlackUser[] = [];
+
+  // create the new users based on that.
+  for (let i = 0; i < users.length; i++) {
+    const user = users[i];// this should be a slackId
+    const { user: userInfo } = await fetchSlackApi('users.info?user=' + user, team_id);
+
+    const newUser = createUser(user, userInfo?.profile?.real_name_normalized || '');
     newUsersArray.push(newUser);
   }
 

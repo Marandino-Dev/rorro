@@ -12,7 +12,7 @@
         "command": "/rr-create",
         "url": "https://development-rorro.vercel.app/api/v1/slack/rotation-post",
         "description": "This will create a new rotation, or roll if it already exists. The users will be taken from the channel this was invoked at.",
-        "usage_hint": "task",
+        "usage_hint": "task @userGroup",
         "should_escape": true
       },
       {
