@@ -16,7 +16,7 @@ export async function POST(req: NextRequest) {
     console.log('Parsed payload:', parsedPayload);
 
     // Destructure necessary values from the payload
-    const { text, team_domain, channel_id, user_name } = parsedPayload;
+    const { text, team_domain, channel_id, user_name, team_id } = parsedPayload;
 
     // Clean up the command text
     const command: string = text.replace(/<[^>]+>/g, '');
@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
     const channelId = channel_id.trim();
 
     // Get the users from the Slack channel
-    const newUsers = await getSlackUsersFromChannel(channelId);
+    const newUsers = await getSlackUsersFromChannel(channelId, team_id);
     console.debug(`New users fetched: ${JSON.stringify(newUsers, null, ' ')}`);
 
     // Validate rotation name

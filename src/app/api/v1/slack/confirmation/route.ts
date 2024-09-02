@@ -39,9 +39,9 @@ export async function GET(
     const access_hash = encrypt(access_token);
 
     const organization: Organization = {
+      team_id: team?.id?.toString(),
       authed_user: authed_user?.id?.toString(),
       scope,
-      team_id: team?.id?.toString(),
       team_name: team?.name?.toString(),
       app_id,
       access_hash,
@@ -50,11 +50,13 @@ export async function GET(
     // Save the code and the encription
     await new PostgresClient('', '')
       .putItems<Organization>([organization], TableName.Organizations);
-    return NextResponse.redirect(req.nextUrl.host + '/dashboard');
+
+    // Construct the full URL for redirection
+    const redirectUrl = new URL('/dashboard', `https://${req.headers.get('host')}`);
+    return NextResponse.redirect(redirectUrl.toString());
 
   } catch (error) {
     console.log(error);
     NextResponse.json({ message: 'Something went wrong' }, { status: 500 });
   }
 }
-
