@@ -9,8 +9,9 @@
     "lint": "next lint",
     "lint:fix": "next lint --fix",
     "pr": "npm run check && gh pr create -B develop",
-    "check": "npm run lint && npm run build",
-    "test": "jest"
+    "check": "npm run lint && npm run build && npm run test",
+    "test": "jest",
+    "test:watch": "jest --watch"
   },
   "dependencies": {
     "@tremor/react": "3.17.4",
