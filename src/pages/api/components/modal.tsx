@@ -76,7 +76,7 @@ const Modal: React.FC<ModalProps> = ({
       <div className='relative bg-light-bg p-6 sm:p-8 rounded-lg shadow-lg max-w-sm w-full mt-8 md:max-w-lg md:my-auto'>
         {/* CLOSE BUTTON */}
         <button
-          className='top-4 right-4 text text-2xl hover:text-3xl'
+          className='absolute top-6 md:top-8 right-8 text text-2xl'
           onClick={onClose}
         >
           &times;
