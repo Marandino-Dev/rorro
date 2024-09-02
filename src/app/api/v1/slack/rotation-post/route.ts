@@ -5,6 +5,7 @@ import {
   SlackResponseType,
   getSlackMessage,
   getSlackUsersFromChannel,
+  getSlackUsersFromUserGroup,
   parsePayloadFromRequest,
   sanitizeSlackText,
 } from 'utils/slack';
@@ -20,6 +21,12 @@ export async function POST(req: NextRequest) {
 
     // Clean up the command text
     const command: string = text.replace(/<[^>]+>/g, '');
+
+    // Extract the userGroup ID if present
+    const userGroupMatch = text.match(/<!subteam\^([A-Z0-9]+)\|/);
+    const userGroup = userGroupMatch ? userGroupMatch[1] : null;
+
+    console.log('UserGroup ID:', userGroup);
     console.log('Command cleaned:', command);
 
     // Sanitize and prepare values for database operations
@@ -28,13 +35,21 @@ export async function POST(req: NextRequest) {
     const channelId = channel_id.trim();
 
     // Get the users from the Slack channel
-    const newUsers = await getSlackUsersFromChannel(channelId, team_id);
+
+    const newUsers = userGroup ? await getSlackUsersFromUserGroup(userGroup, team_id) : await getSlackUsersFromChannel(channelId, team_id);
+
+    if (newUsers.length === 0) {
+      return NextResponse.json(
+        getSlackMessage(SlackResponseType.Ephemeral, 'Could not find any users, if this is a private channel add an @userGroup')
+      );
+    }
+
     console.debug(`New users fetched: ${JSON.stringify(newUsers, null, ' ')}`);
 
     // Validate rotation name
     if (!rotationName || typeof rotationName !== 'string') {
       console.error('Invalid rotationName:', rotationName);
-      return NextResponse.json({ error: 'rotationName is required' }, { status: 400 });
+      return NextResponse.json({ error: 'rotationName is required' });
     }
 
     const DbClient = new PostgresClient(organizationName, rotationName);

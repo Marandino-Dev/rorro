@@ -48,7 +48,7 @@ export async function GET(
       access_hash,
     };
 
-    // Save the code and the encription
+    // Save the code and the encryption
     await PostgresClient.putOrganization(organization);
     // Construct the full URL for redirection
     const redirectUrl = new URL('/dashboard', `https://${req.headers.get('host')}`);
