@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
   try {
     const parsedPayload = await parsePayloadFromRequest(req);
     const { text, team_domain, user_name } = parsedPayload;
-    const slackIdMatch = text.match(/<@([A-Z0-9]+)\|[^>]+>/);
+    const slackIdMatch = text.match(/<@([A-Z0-9]+)/);
 
     // TODO: add multiple users support
     const slackId = slackIdMatch ? slackIdMatch[1] : null;
@@ -20,9 +20,11 @@ export async function POST(req: NextRequest) {
       text.replace(/<@[^>]+>/g, '').trim()
     );
 
+    console.log('slackId', slackId, 'rotationName', rotationName, 'team_domain', team_domain, 'user_name', user_name);
+
     if (!slackId || !rotationName) {
       const message =
-        'Error: User and Task are required. Usage example: /rr-skip task-name @user';
+        'Error: User and Task are required. Usage example: /rr-skip task name @user';
       return NextResponse.json(
         getSlackMessage(SlackResponseType.Ephemeral, message),
       );

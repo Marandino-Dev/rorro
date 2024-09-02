@@ -54,7 +54,16 @@ describe('On Holiday PUT', () => {
       expect(response.status).toBe(200);
     });
 
-    it.todo('should handle exceptions');
+    it('should handle exceptions', async ()=>{
+      toggleHolidayStatusSpy.mockRejectedValueOnce(new Error('Something went wrong'));
+
+      const response = await POST(createMockRequest('test rotation <@U2147483697>'));
+
+      const responseBody = await response.json();
+
+      expect(responseBody.text).toMatch(/something went wrong.*please try again/i);
+      expect(response.status).toBe(200);
+    });
   });
 });
 
