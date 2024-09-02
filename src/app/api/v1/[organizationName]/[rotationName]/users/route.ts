@@ -32,7 +32,7 @@ export async function PUT(
   const { organizationName, rotationName } = params;
   const { updateData, userId } = await request.json();
   const client = new PostgresClient(organizationName, rotationName);
-  const { rows } = await client.queryUsersForOrganizationAndRotation(organizationName, rotationName, true);
+  const { rows } = await client.queryUsersForOrganizationAndRotation(organizationName, rotationName);
   try {
     const updatedUser = await client.updateUser(
       userId,

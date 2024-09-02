@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
     }
 
     const DbClient = new PostgresClient(organizationName, rotationName);
-    const { rows } = await DbClient.queryUsersForOrganizationAndRotation(organizationName, rotationName);
+    const { rows } = await DbClient.queryUsersForOrganizationAndRotation(organizationName, rotationName, true);
 
     const previousBackup = rows.find(user => user.on_backup === true)?.slack_id;
     const newBackup = rows.find(user => user.on_duty === true);
