@@ -252,7 +252,8 @@ export class PostgresClient {
     const queryString = `
       INSERT INTO organizations (organization_id, team_id, authed_user, scope, team_name, app_id, access_hash)
       VALUES ($1, $2, $3, $4, $5, $6, $7)
-      ON CONFLICT DO NOTHING
+      ON CONFLICT (organization_id) DO UPDATE SET
+      access_hash = $7
     `;
     await sql.query(queryString, [organization_id, team_id, authed_user, scope, team_name, app_id, access_hash]);
   }
