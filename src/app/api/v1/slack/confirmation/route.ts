@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PostgresClient, TableName } from 'utils/database';
+import { PostgresClient } from 'utils/database';
 import { encrypt } from 'utils/crypto';
 import { Organization } from 'types';
 
@@ -39,6 +39,7 @@ export async function GET(
     const access_hash = encrypt(access_token);
 
     const organization: Organization = {
+      organization_id: app_id + '-' + team?.id?.toString(),
       team_id: team?.id?.toString(),
       authed_user: authed_user?.id?.toString(),
       scope,
@@ -48,9 +49,7 @@ export async function GET(
     };
 
     // Save the code and the encription
-    await new PostgresClient('', '')
-      .putItems<Organization>([organization], TableName.Organizations);
-
+    await PostgresClient.putOrganization(organization);
     // Construct the full URL for redirection
     const redirectUrl = new URL('/dashboard', `https://${req.headers.get('host')}`);
     return NextResponse.redirect(redirectUrl.toString());
