@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
     const rotationName = sanitizeSlackText(command);
 
     if (!rotationName) {
-      return NextResponse.json({ error: 'rotationName is required' }, { status: 400 });
+      return NextResponse.json({ error: 'rotationName is required' });
     }
 
     const DbClient = new PostgresClient(organizationName, rotationName);
@@ -71,13 +71,12 @@ export async function POST(req: NextRequest) {
 
     console.debug(log);
     console.debug(users);
-    return NextResponse.json(slackMessage, { status: 200 });
+    return NextResponse.json(slackMessage);
 
   } catch (error) {
     console.error('Error processing request:', error);
     return NextResponse.json(
-      getSlackMessage(SlackResponseType.Ephemeral, 'Something went wrong, please try again.'),
-      { status: 500 }
+      getSlackMessage(SlackResponseType.Ephemeral, 'Something went wrong, please try again.')
     );
   }
 }
