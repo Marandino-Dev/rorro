@@ -7,7 +7,6 @@ export enum TableName {
   Logs = '_logsTable',
   Users = '_usersTable',
   Configurations = '_configurationsTable',
-  Organizations = '_organizationsTable',
 }
 
 type CurrentActiveUsers = {
@@ -23,7 +22,6 @@ export class PostgresClient {
   _logsTable = '';// marandino_rotation_logs
   _usersTable = '';// marandino_rotation_users
   _configurationsTable = 'rotation_configurations';// this is the general configuration for rotations
-  _organizationsTable = 'organizations';// this is the data relevant to organizations
 
   constructor(organizationId: string, rotationName: string) {
     this._organizationId = organizationId; // marandino
@@ -243,9 +241,20 @@ export class PostgresClient {
   }
 
   public static async getOrganization(team_id: string): Promise<Organization> {
-    const queryString = 'SELECT * FROM organizations WHERE team_id = $1';
-    const { rows } = await sql.query<Organization>(queryString, [team_id]);
+    const queryString = 'SELECT * FROM organizations WHERE organization_id = $1';
+    const slackAppId = process.env.SLACK_APP_ID;
+    const { rows } = await sql.query<Organization>(queryString, [slackAppId + '-' + team_id]);
     return rows[0];
+  }
+
+  public static async putOrganization(organization: Organization) {
+    const { organization_id, team_id, authed_user, scope, team_name, app_id, access_hash } = organization;
+    const queryString = `
+      INSERT INTO organizations (organization_id, team_id, authed_user, scope, team_name, app_id, access_hash)
+      VALUES ($1, $2, $3, $4, $5, $6, $7)
+      ON CONFLICT DO NOTHING
+    `;
+    await sql.query(queryString, [organization_id, team_id, authed_user, scope, team_name, app_id, access_hash]);
   }
 
   /**

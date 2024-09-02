@@ -62,6 +62,8 @@ type RotationConfiguration = {
 export type Organization = {
   authed_user: string;
   access_hash: string;
+  /** This is a combination of the Slack App ID and the Slack Team ID */
+  organization_id: string;
   team_id: string;
   team_name: string;
   team_domain?: string;
