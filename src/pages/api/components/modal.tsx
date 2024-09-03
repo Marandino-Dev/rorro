@@ -23,11 +23,22 @@ const Modal: React.FC<ModalProps> = ({
     }
   }, [user]);
 
+  // CHANGED FIELDS
+
+  const [changedFields, setChangedFields] = useState<Partial<SlackUser>>({});
+
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
+    const newValue = type === 'checkbox' ? checked : value;
+
     setFormData((prevData) => ({
       ...(prevData as SlackUser),
-      [name]: type === 'checkbox' ? checked : value,
+      [name]: newValue,
+    }));
+
+    setChangedFields((prevChanges) => ({
+      ...prevChanges,
+      [name]: newValue,
     }));
   };
 
@@ -35,7 +46,7 @@ const Modal: React.FC<ModalProps> = ({
     e.preventDefault();
     if (!formData) return;
 
-    const BASE_API_URL = window.location.origin + '/api/v1' ||'http://localhost:3000/api/v1';
+    const BASE_API_URL = window.location.origin + '/api/v1' || 'http://localhost:3000/api/v1';
 
     setIsSubmitting(true);
     try {
@@ -47,7 +58,7 @@ const Modal: React.FC<ModalProps> = ({
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            updateData: formData,
+            updateData: changedFields,
             userId: formData.slack_id,
           }),
         }
