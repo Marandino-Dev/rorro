@@ -24,22 +24,34 @@ export function getSlackMessage(responseType: SlackResponseType, responseText: s
 }
 
 async function fetchSlackApi(slackApiString: string, team_id: string) {
-  // fetch the organization:
+  // Fetch the organization:
   const organization = await PostgresClient.getOrganization(team_id);
   const token = decrypt(organization.access_hash);
 
-  // const res = await fetch('https://slack.com/api/usergroups.users.list?usergroup=' + userGroupId,
-  const res = await fetch('https://slack.com/api/' + slackApiString,
-    {
+  try {
+    // const res = await fetch('https://slack.com/api/usergroups.users.list?usergroup=' + userGroupId,
+    const res = await fetch('https://slack.com/api/' + slackApiString, {
       method: 'GET',
       headers: {
-        'Authorization': 'Bearer ' + token, // TODO: we need to take the token we stored upon installation, not this one.
+        'Authorization': 'Bearer ' + token, // TODO: retrieve the correct token stored upon installation.
       },
-    }
-  );
+    });
 
-  // if this fails, we must throw an error here, and handle it in the routes. something like: "the token is expired, please reinstall the app"
-  return await res.json();
+    const jsonResponse = await res.json();
+
+    // Check if the response is not OK or contains an error
+    if (!res.ok || jsonResponse.error) {
+      throw new Error(`Error fetching from Slack API: ${jsonResponse.error || 'Unknown error'}.\nPlease check if the Slack token is valid. Reinstalling the app might resolve this issue.`);
+    }
+
+    return jsonResponse;
+  } catch (error) {
+    // Type assertion or check if error is an instance of Error
+    if (error instanceof Error) {
+      console.error(`Failed to fetch from Slack API: ${error.message}`);
+      throw new Error(`Failed to fetch from Slack API: ${error.message}. Ensure that the Slack app is correctly installed and the token is valid. If the issue persists, please reinstall the app.`);
+    }
+  }
 }
 
 export async function getSlackUsersFromChannel(channel: string, team_id: string): Promise<SlackUser[]> {
