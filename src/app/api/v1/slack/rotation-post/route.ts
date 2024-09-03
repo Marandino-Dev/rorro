@@ -38,10 +38,9 @@ export async function POST(req: NextRequest) {
 
     const newUsers = userGroup ? await getSlackUsersFromUserGroup(userGroup, team_id) : await getSlackUsersFromChannel(channelId, team_id);
 
-    if (newUsers.length === 0) {
-      return NextResponse.json(
-        getSlackMessage(SlackResponseType.Ephemeral, 'Could not find any users, if this is a private channel add an @userGroup')
-      );
+    if (!newUsers || newUsers.length === 0) {
+      console.error('No users found:', newUsers);
+      return NextResponse.json({ error: 'Could not find any users, if this is a private channel add an @userGroup' });
     }
 
     console.debug(`New users fetched: ${JSON.stringify(newUsers, null, ' ')}`);
