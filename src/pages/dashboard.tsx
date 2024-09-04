@@ -100,7 +100,7 @@ function UserTables(params: { organizationName: string, rotationName: string }) 
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
   const fetchUserData = async () => {
-    const BASE_API_URL = window.location.origin + '/api/v1' ||'http://localhost:3000/api/v1';
+    const BASE_API_URL = window.location.origin + '/api/v1' || 'http://localhost:3000/api/v1';
 
     setLoading(true);
     const response = await fetch(
@@ -157,7 +157,7 @@ function LogsTable(params: { organizationName: string, rotationName: string }) {
   const [logsLoading, setLogsLoading] = useState(true);
 
   const fetchLogsData = async () => {
-    const BASE_API_URL = window.location.origin + '/api/v1' ||'http://localhost:3000/api/v1';
+    const BASE_API_URL = window.location.origin + '/api/v1' || 'http://localhost:3000/api/v1';
 
     try {
       setLogsLoading(true);

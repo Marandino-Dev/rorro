@@ -81,6 +81,36 @@ const Modal: React.FC<ModalProps> = ({
     }
   };
 
+  const renderToggle = (id: string, name: keyof SlackUser, label: string) => {
+    const isChecked = !!formData?.[name];
+
+    return (
+      <div className='mb-4 flex items-center justify-between'>
+        <label htmlFor={id} className='inline-flex items-center cursor-pointer'>
+          <span className='mr-3 text'>{label}</span>
+          <div className='relative'>
+            <input
+              type='checkbox'
+              id={id}
+              name={name}
+              checked={isChecked}
+              onChange={handleChange}
+              className='sr-only peer'
+            />
+            <div className='w-11 h-6 bg-dark-bg rounded-full peer-checked:bg-secondary peer-focus:ring-2 peer-focus:ring-secondary'></div>
+            <div className='absolute top-0.5 left-0.5 bg-white w-5 h-5 rounded-full transition-transform transform peer-checked:translate-x-full'></div>
+          </div>
+        </label>
+        <span
+          className={`ml-3 text-sm font-medium ${isChecked ? 'text-green-500' : 'text-red-500'
+            }`}
+        >
+          {isChecked ? 'Available' : 'Unavailable'}
+        </span>
+      </div>
+    );
+  };
+
   // MODAL HERO
 
   return (
@@ -128,45 +158,9 @@ const Modal: React.FC<ModalProps> = ({
               className='w-full px-3 py-2 border text rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-black'
             />
           </div>
-          <div className='mb-4 flex items-center'>
-            <input
-              type='checkbox'
-              id='on_holiday'
-              name='on_holiday'
-              checked={formData?.on_holiday || false}
-              onChange={handleChange}
-              className='mr-2'
-            />
-            <label htmlFor='on_holiday' className='text'>
-              On Holiday
-            </label>
-          </div>
-          <div className='mb-4 flex items-center'>
-            <input
-              type='checkbox'
-              id='on_duty'
-              name='on_duty'
-              checked={formData?.on_duty || false}
-              onChange={handleChange}
-              className='mr-2'
-            />
-            <label htmlFor='on_duty' className='text'>
-              On Duty
-            </label>
-          </div>
-          <div className='mb-4 flex items-center'>
-            <input
-              type='checkbox'
-              id='on_backup'
-              name='on_backup'
-              checked={formData?.on_backup || false}
-              onChange={handleChange}
-              className='mr-2'
-            />
-            <label htmlFor='on_backup' className='text'>
-              On Backup
-            </label>
-          </div>
+          {renderToggle('on_holiday', 'on_holiday', 'On Holiday')}
+          {renderToggle('on_duty', 'on_duty', 'On Duty')}
+          {renderToggle('on_backup', 'on_backup', 'On Backup')}
           <div className='flex justify-end'>
             <button
               type='submit'
