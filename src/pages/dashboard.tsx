@@ -108,7 +108,8 @@ function GenericTable<T>({ title, data, columns, loading, onRowClick, formatCell
                 <TableRow
                   key={index}
                   onClick={() => onRowClick && onRowClick(item)}
-                  className='bg-light-bg px-4 py-2 text-base text-black text-left border-b border-gray-400 cursor-pointer'
+                  className={`px-4 py-2 text-base text-black text-left border-b border-gray-400 cursor-pointer 
+                  ${(item as { on_holiday?: boolean }).on_holiday ? 'bg-red-500' : 'bg-light-bg'}`}
                 >
                   {columns.map((keyName, i) => (
                     <TableCell key={String(keyName) + i}>
