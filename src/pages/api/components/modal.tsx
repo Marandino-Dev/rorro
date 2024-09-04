@@ -1,4 +1,4 @@
-import React, { ChangeEvent, FormEvent, useEffect, useState, useRef } from 'react';
+import React, { ChangeEvent, FormEvent, useEffect, useRef, useState } from 'react';
 import { SlackUser } from 'types';
 
 interface ModalProps {
