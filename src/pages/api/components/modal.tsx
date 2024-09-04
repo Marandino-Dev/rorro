@@ -102,8 +102,7 @@ const Modal: React.FC<ModalProps> = ({
           </div>
         </label>
         <span
-          className={`ml-3 text-sm font-medium ${isChecked ? 'text-green-500' : 'text-red-500'
-            }`}
+          className={`ml-3 text-sm font-medium ${isChecked ? 'text-green-500' : 'text-red-500'}`}
         >
           {isChecked ? 'Available' : 'Unavailable'}
         </span>
