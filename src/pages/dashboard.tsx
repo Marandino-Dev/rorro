@@ -44,12 +44,46 @@ interface TableProps<T> {
 }
 
 function GenericTable<T>({ title, data, columns, loading, onRowClick, formatCell }: TableProps<T>) {
+
+  // SORTING
+  const [sortColumn, setSortColumn] = useState<keyof T | null>('on_duty' as keyof T);
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
+
+  useEffect(() => {
+    setSortColumn('on_duty' as keyof T);
+    setSortDirection('desc');
+  }, []);
+
+  const handleSort = (column: keyof T) => {
+    if (sortColumn === column) {
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortColumn(column);
+      setSortDirection('asc');
+    }
+  };
+
+  const sortedData = React.useMemo(() => {
+    if (!sortColumn) return data;
+    return [...data].sort((a, b) => {
+      if (a[sortColumn] < b[sortColumn]) return sortDirection === 'asc' ? -1 : 1;
+      if (a[sortColumn] > b[sortColumn]) return sortDirection === 'asc' ? 1 : -1;
+      return 0;
+    });
+  }, [data, sortColumn, sortDirection]);
+
   const tableHeaders = columns.map(column => (
     <TableHeaderCell
       className='hover:text-secondary py-5 cursor-pointer capitalize'
       key={String(column) + '-key'}
+      onClick={() => handleSort(column)}
     >
       {String(column).replace('_', ' ')}
+      {sortColumn === column && (
+        <span className='ml-2'>
+          {sortDirection === 'asc' ? '↑' : '↓'}
+        </span>
+      )}
     </TableHeaderCell>
   ));
 
@@ -69,7 +103,8 @@ function GenericTable<T>({ title, data, columns, loading, onRowClick, formatCell
               </TableRow>
             </TableHead>
             <TableBody>
-              {data.map((item, index) => (
+
+              {sortedData.map((item, index) => (
                 <TableRow
                   key={index}
                   onClick={() => onRowClick && onRowClick(item)}

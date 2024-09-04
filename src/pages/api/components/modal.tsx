@@ -81,6 +81,7 @@ const Modal: React.FC<ModalProps> = ({
     }
   };
 
+  // TOGGLES
   const renderToggle = (id: string, name: keyof SlackUser, label: string) => {
     const isChecked = !!formData?.[name];
 
@@ -102,7 +103,7 @@ const Modal: React.FC<ModalProps> = ({
           </div>
         </label>
         <span
-          className={`ml-3 text-sm font-medium ${isChecked ? 'text-green-500' : 'text-red-500'}`}
+          className={`ml-3 text-sm font-bold ${isChecked ? 'text-green-500' : 'text-red-500'}`}
         >
           {isChecked ? 'Available' : 'Unavailable'}
         </span>
