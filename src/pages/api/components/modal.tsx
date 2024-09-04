@@ -1,4 +1,4 @@
-import React, { ChangeEvent, FormEvent, useEffect, useState } from 'react';
+import React, { ChangeEvent, FormEvent, useEffect, useState, useRef } from 'react';
 import { SlackUser } from 'types';
 
 interface ModalProps {
@@ -16,10 +16,15 @@ const Modal: React.FC<ModalProps> = ({
 }) => {
   const [formData, setFormData] = useState<SlackUser | null>(null);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const countInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (user) {
       setFormData({ ...user });
+    }
+
+    if (countInputRef.current) {
+      countInputRef.current.focus();
     }
   }, [user]);
 
@@ -155,6 +160,7 @@ const Modal: React.FC<ModalProps> = ({
               name='count'
               value={formData?.count || ''}
               onChange={handleChange}
+              ref={countInputRef}
               className='w-full px-3 py-2 border text rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-black'
             />
           </div>
