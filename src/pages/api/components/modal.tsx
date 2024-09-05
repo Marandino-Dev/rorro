@@ -1,4 +1,4 @@
-import React, { ChangeEvent, FormEvent, useEffect, useRef, useState } from 'react';
+import React, { ChangeEvent, FormEvent, useEffect, useState } from 'react';
 import { SlackUser } from 'types';
 
 interface ModalProps {
@@ -16,15 +16,10 @@ const Modal: React.FC<ModalProps> = ({
 }) => {
   const [formData, setFormData] = useState<SlackUser | null>(null);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-  const countInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (user) {
       setFormData({ ...user });
-    }
-
-    if (countInputRef.current) {
-      countInputRef.current.focus();
     }
   }, [user]);
 
@@ -91,27 +86,22 @@ const Modal: React.FC<ModalProps> = ({
     const isChecked = !!formData?.[name];
 
     return (
-      <div className='mb-4 flex items-center justify-between'>
-        <label htmlFor={id} className='inline-flex items-center cursor-pointer'>
-          <span className='mr-3 text'>{label}</span>
-          <div className='relative'>
+      <div className="flex items-center space-x-4">
+        <label htmlFor={id} className="inline-flex items-center cursor-pointer">
+          <span className="mr-3 text">{label}</span>
+          <div className="relative">
             <input
-              type='checkbox'
+              type="checkbox"
               id={id}
               name={name}
               checked={isChecked}
               onChange={handleChange}
-              className='sr-only peer'
+              className="sr-only peer"
             />
-            <div className='w-11 h-6 bg-dark-bg rounded-full peer-checked:bg-secondary peer-focus:ring-2 peer-focus:ring-secondary'></div>
-            <div className='absolute top-0.5 left-0.5 bg-white w-5 h-5 rounded-full transition-transform transform peer-checked:translate-x-full'></div>
+            <div className="w-11 h-6 bg-red-500 rounded-full peer-checked:bg-secondary peer-focus:ring-2 peer-focus:ring-secondary"></div>
+            <div className="absolute top-0.5 left-0.5 bg-white w-5 h-5 rounded-full transition-transform transform peer-checked:translate-x-full"></div>
           </div>
         </label>
-        <span
-          className={`ml-3 text-sm font-bold ${isChecked ? 'text-green-500' : 'text-red-500'}`}
-        >
-          {isChecked ? 'Available' : 'Unavailable'}
-        </span>
       </div>
     );
   };
@@ -131,42 +121,50 @@ const Modal: React.FC<ModalProps> = ({
         </button>
         <h2 className='text text-2xl font-semibold mb-6'>Update User</h2>
         <form onSubmit={handleSubmit}>
-          <div className='mb-4'>
-            <label
-              className='block text text-sm font-bold mb-2'
-              htmlFor='full_name'
-            >
-              Full Name
-            </label>
-            <input
-              type='text'
-              id='full_name'
-              name='full_name'
-              value={formData?.full_name || ''}
-              onChange={handleChange}
-              className='w-full px-3 py-2 border text rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-black'
-            />
+
+          {/* NAME & COUNT IN THE SAME ROW */}
+          <div className='flex space-x-4 mb-4'>
+            <div className='w-7/12'>
+              <label
+                className='block text text-sm font-bold mb-2'
+                htmlFor='full_name'
+              >
+                Full Name
+              </label>
+              <input
+                type='text'
+                id='full_name'
+                name='full_name'
+                value={formData?.full_name || ''}
+                onChange={handleChange}
+                className='w-full px-3 py-2 border text rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-black'
+              />
+            </div>
+            <div className='w-5/12'>
+              <label
+                className='block text text-sm font-bold mb-2'
+                htmlFor='count'
+              >
+                Count
+              </label>
+              <input
+                type='number'
+                id='count'
+                name='count'
+                value={formData?.count || ''}
+                onChange={handleChange}
+                className='w-full px-3 py-2 border text rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-black'
+              />
+            </div>
           </div>
-          <div className='mb-4'>
-            <label
-              className='block text text-sm font-bold mb-2'
-              htmlFor='count'
-            >
-              Count
-            </label>
-            <input
-              type='number'
-              id='count'
-              name='count'
-              value={formData?.count || ''}
-              onChange={handleChange}
-              ref={countInputRef}
-              className='w-full px-3 py-2 border text rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-black'
-            />
+
+          {/* TOGGLES */}
+          <div className="flex space-x-4 mb-4">
+            {renderToggle('on_holiday', 'on_holiday', 'On Holiday')}
+            {renderToggle('on_duty', 'on_duty', 'On Duty')}
+            {renderToggle('on_backup', 'on_backup', 'On Backup')}
           </div>
-          {renderToggle('on_holiday', 'on_holiday', 'On Holiday')}
-          {renderToggle('on_duty', 'on_duty', 'On Duty')}
-          {renderToggle('on_backup', 'on_backup', 'On Backup')}
+
           <div className='flex justify-end'>
             <button
               type='submit'
