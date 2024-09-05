@@ -39,18 +39,18 @@ async function fetchSlackApi(slackApiString: string, team_id: string) {
 
     const jsonResponse = await res.json();
 
-    // Check if the response is not OK or contains an error
-    if (!res.ok || jsonResponse.error) {
+    if (jsonResponse.error === 'invalid_auth') {
       throw new Error(`Error fetching from Slack API: ${jsonResponse.error || 'Unknown error'}.\nPlease check if the Slack token is valid. Reinstalling the app might resolve this issue.`);
+    }
+
+    if (!res.ok || jsonResponse.error) {
+      throw new Error(`Error fetching from Slack API: ${jsonResponse.error || 'Unknown error'}`);
     }
 
     return jsonResponse;
   } catch (error) {
-    // Type assertion or check if error is an instance of Error
-    if (error instanceof Error) {
-      console.error(`Failed to fetch from Slack API: ${error.message}`);
-      throw new Error(`Failed to fetch from Slack API: ${error.message}. Ensure that the Slack app is correctly installed and the token is valid. If the issue persists, please reinstall the app.`);
-    }
+    console.error(`Failed to fetch from Slack API: ${error}`);
+    throw error;
   }
 }
 
