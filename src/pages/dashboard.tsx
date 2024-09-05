@@ -49,6 +49,9 @@ function GenericTable<T>({ title, data, columns, loading, onRowClick, formatCell
   const [sortColumn, setSortColumn] = useState<keyof T | null>('on_duty' as keyof T);
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const rowsPerPage = 10;
+
   useEffect(() => {
     setSortColumn('on_duty' as keyof T);
     setSortDirection('desc');
@@ -71,6 +74,14 @@ function GenericTable<T>({ title, data, columns, loading, onRowClick, formatCell
       return 0;
     });
   }, [data, sortColumn, sortDirection]);
+
+  // PAGINATION LOGIC
+  const totalPages = Math.ceil(sortedData.length / rowsPerPage);
+  const paginatedData = sortedData.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage);
+
+  const handlePageChange = (newPage: number) => {
+    setCurrentPage(newPage);
+  };
 
   const tableHeaders = columns.map(column => (
     <TableHeaderCell
@@ -104,7 +115,7 @@ function GenericTable<T>({ title, data, columns, loading, onRowClick, formatCell
             </TableHead>
             <TableBody>
 
-              {sortedData.map((item, index) => (
+              {paginatedData.map((item, index) => (
                 <TableRow
                   key={index}
                   onClick={() => onRowClick && onRowClick(item)}
@@ -120,6 +131,39 @@ function GenericTable<T>({ title, data, columns, loading, onRowClick, formatCell
               ))}
             </TableBody>
           </Table>
+
+          {/* PAGINATION*/}
+          <div className="flex justify-end items-center mt-4 space-x-4">
+            <button
+              onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
+              disabled={currentPage === 1}
+              className="px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-700 disabled:opacity-50 transition-colors font-medium"
+            >
+              Previous
+            </button>
+
+            {/* PAGE NUMBER */}
+            {Array.from({ length: totalPages }, (_, index) => (
+              <button
+                key={index + 1}
+                onClick={() => handlePageChange(index + 1)}
+                className={`px-3 py-1 text-black rounded-lg font-medium ${index + 1 === currentPage
+                  ? 'bg-gray-800 text-white'
+                  : 'bg-white border border-gray-300 hover:bg-gray-100'}`
+                }
+              >
+                {index + 1}
+              </button>
+            ))}
+
+            <button
+              onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
+              disabled={currentPage === totalPages}
+              className="px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-700 disabled:opacity-50 transition-colors font-medium"
+            >
+              Next
+            </button>
+          </div>
         </div>
       )}
     </div>
