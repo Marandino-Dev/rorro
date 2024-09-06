@@ -25,8 +25,6 @@ const { POST } = require('@/app/api/v1/slack/rotation-post/route');
 
 describe('Rotation POST', () => {
   beforeEach(() => {
-    putItemsSpy.mockResolvedValueOnce([]);
-    createLogsTableIfNotExistsSpy.mockResolvedValueOnce();
     insertLogSpy.mockResolvedValueOnce();
   });
 
@@ -39,7 +37,6 @@ describe('Rotation POST', () => {
       // We're not doing anything with this data, so it doesn't matter what we return, but it should be returning the inserted users
       putItemsSpy.mockResolvedValueOnce([]);
       createLogsTableIfNotExistsSpy.mockResolvedValueOnce();
-      insertLogSpy.mockResolvedValueOnce();
     });
 
     const mockUsers = [
@@ -103,10 +100,27 @@ describe('Rotation POST', () => {
       const res = await POST(createMockRequest('test rotation <!subteam^S01234567890|test group>'));
       const jsonResponse = await res.json();
 
-      expect(jsonResponse.text).toMatch(/users.*private channel.*@userGroup/i);
+      expect(jsonResponse.error).toMatch(/users.*private channel.*@userGroup/i);
     });
 
-    it.todo('should return an error if there are no users in the channel'); // assert the instructions asking if the channel is private
-    it.todo('should handle any of the write operations failing');
+    it('should return an error if there are no users in the channel', async () => {
+      getSlackUsersFromChannelMock.mockResolvedValueOnce([]);
+
+      const res = await POST(createMockRequest('test rotation'));
+      const jsonResponse = await res.json();
+
+      expect(jsonResponse.error).toMatch(/users.*private channel.*@userGroup/i);
+    });
+
+    it('should handle any of the write operations failing', async () => {
+      getSlackUsersFromUserGroupMock.mockResolvedValueOnce(mockSlackUserV2());
+      putItemsSpy.mockRejectedValueOnce(new Error('test error'));
+
+      const res = await POST(createMockRequest('test rotation <!subteam^S01234567890|test group>'));
+      const jsonResponse = await res.json();
+      console.log('jsonResponse:', jsonResponse); // Debugging line to check the actual response
+
+      expect(jsonResponse.text).toMatch(/error:.*request/i);
+    });
   });
 });
