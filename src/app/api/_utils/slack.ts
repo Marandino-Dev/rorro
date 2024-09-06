@@ -38,7 +38,7 @@ async function fetchSlackApi(slackApiString: string, team_id: string) {
 
   const jsonResponse = await res.json();
 
-  if (jsonResponse.error === 'invalid_auth') {
+  if (jsonResponse?.error === 'invalid_auth') {
     throw new Error(`Error fetching from Slack API: ${jsonResponse.error || 'Unknown error'}.\nPlease check if the Slack token is valid. Reinstalling the app might resolve this issue.`);
   }
 
