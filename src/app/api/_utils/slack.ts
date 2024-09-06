@@ -28,30 +28,27 @@ async function fetchSlackApi(slackApiString: string, team_id: string) {
   const organization = await PostgresClient.getOrganization(team_id);
   const token = decrypt(organization.access_hash);
 
-  try {
-    // const res = await fetch('https://slack.com/api/usergroups.users.list?usergroup=' + userGroupId,
-    const res = await fetch('https://slack.com/api/' + slackApiString, {
-      method: 'GET',
-      headers: {
-        'Authorization': 'Bearer ' + token, // TODO: retrieve the correct token stored upon installation.
-      },
-    });
+  // const res = await fetch('https://slack.com/api/usergroups.users.list?usergroup=' + userGroupId,
+  const res = await fetch('https://slack.com/api/' + slackApiString, {
+    method: 'GET',
+    headers: {
+      'Authorization': 'Bearer ' + token,
+    },
+  });
 
-    const jsonResponse = await res.json();
+  const jsonResponse = await res.json();
 
-    if (jsonResponse.error === 'invalid_auth') {
-      throw new Error(`Error fetching from Slack API: ${jsonResponse.error || 'Unknown error'}.\nPlease check if the Slack token is valid. Reinstalling the app might resolve this issue.`);
-    }
-
-    if (!res.ok || jsonResponse.error) {
-      throw new Error(`Error fetching from Slack API: ${jsonResponse.error || 'Unknown error'}`);
-    }
-
-    return jsonResponse;
-  } catch (error) {
-    console.error(`Failed to fetch from Slack API: ${error}`);
-    throw error;
+  if (jsonResponse.error === 'invalid_auth') {
+    throw new Error(`Error fetching from Slack API: ${jsonResponse.error || 'Unknown error'}.\nPlease check if the Slack token is valid. Reinstalling the app might resolve this issue.`);
   }
+
+  // Log other errors, but do not throw them
+  if (!res.ok || jsonResponse.error) {
+    console.error(`Error fetching from Slack API: ${jsonResponse.error || 'Unknown error'}`);
+  }
+
+  return jsonResponse;
+
 }
 
 export async function getSlackUsersFromChannel(channel: string, team_id: string): Promise<SlackUser[]> {

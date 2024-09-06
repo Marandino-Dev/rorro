@@ -74,6 +74,6 @@ export async function POST(req: NextRequest) {
   } catch (error) {
     console.error('Error processing request:', error);
     return NextResponse.json(
-      getSlackMessage(SlackResponseType.Ephemeral, 'error:'));
+      getSlackMessage(SlackResponseType.Ephemeral, 'error: Processing request'));
   }
 }
