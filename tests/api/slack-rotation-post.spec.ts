@@ -91,6 +91,12 @@ describe('Rotation POST', () => {
   });
 
   describe('Error handling and edge cases', () => {
+    it('should return an error if the rotation name is not provided', async () => {
+      const res = await POST(createMockRequest('<!subteam^S01234567890|test group>'));
+      const jsonResponse = await res.json();
+      expect(jsonResponse.error).toMatch(/rotation.*required/);
+    });
+
     it.todo('should return an error if the rotation name is not provided');
     it.todo('should return an error if the user group is not found');
     it.todo('should return an error if there are no users in the channel'); // assert the instructions asking if the channel is private
