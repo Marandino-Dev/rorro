@@ -43,7 +43,7 @@ async function fetchSlackApi(slackApiString: string, team_id: string) {
   }
 
   // Log other errors, but do not throw them
-  if (!res.ok || jsonResponse.error) {
+  if (!res.ok || jsonResponse?.error) {
     console.error(`Error fetching from Slack API: ${jsonResponse.error || 'Unknown error'}`);
   }
 
