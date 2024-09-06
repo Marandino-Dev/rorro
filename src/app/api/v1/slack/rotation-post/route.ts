@@ -32,7 +32,9 @@ export async function POST(req: NextRequest) {
     // Validate rotation name
     if (!rotationName || typeof rotationName !== 'string') {
       console.error('Invalid rotationName:', rotationName);
-      return NextResponse.json({ error: 'rotationName is required' });
+      return NextResponse.json(
+        getSlackMessage(SlackResponseType.Ephemeral, 'rotationName is required')
+      );
     }
 
     // Get the users from the Slack channel
@@ -42,7 +44,9 @@ export async function POST(req: NextRequest) {
 
     if (!newUsers || newUsers.length === 0) {
       console.error('No users found:', newUsers);
-      return NextResponse.json({ error: 'Could not find any users, if this is a private channel add an @userGroup' });
+      return NextResponse.json(
+        getSlackMessage(SlackResponseType.Ephemeral, 'Could not find any users, if this is a private channel add an @userGroup')
+      );
     }
 
     console.debug(`New users fetched: ${JSON.stringify(newUsers, null, ' ')}`);
