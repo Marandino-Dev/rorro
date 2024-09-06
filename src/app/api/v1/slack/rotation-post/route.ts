@@ -36,7 +36,9 @@ export async function POST(req: NextRequest) {
     }
 
     // Get the users from the Slack channel
-    const newUsers = userGroup ? await getSlackUsersFromUserGroup(userGroup, team_id) : await getSlackUsersFromChannel(channelId, team_id);
+    const newUsers = userGroup ?
+      await getSlackUsersFromUserGroup(userGroup, team_id):
+      await getSlackUsersFromChannel(channelId, team_id);
 
     if (!newUsers || newUsers.length === 0) {
       console.error('No users found:', newUsers);
@@ -63,7 +65,8 @@ export async function POST(req: NextRequest) {
       getSlackMessage(SlackResponseType.InChannel, `Successfully created the ${rotationName.replace('_', ' ')} rotation.`)
     );
   } catch (error) {
-    console.error('Error processing request:', error);
-    return NextResponse.json({ error: 'Failed to process the request' }, { status: 500 });
+    return NextResponse.json(
+      getSlackMessage(SlackResponseType.Ephemeral, 'error: Processing request' + JSON.stringify(error, null, 2))
+    );
   }
 }
