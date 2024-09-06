@@ -98,8 +98,8 @@ const Modal: React.FC<ModalProps> = ({
               onChange={handleChange}
               className="sr-only peer"
             />
-            <div className="w-11 h-6 bg-red-500 rounded-full peer-checked:bg-secondary peer-focus:ring-2 peer-focus:ring-secondary"></div>
-            <div className="absolute top-0.5 left-0.5 bg-white w-5 h-5 rounded-full transition-transform transform peer-checked:translate-x-full"></div>
+            <div className="w-11 h-6 bg-red-500 rounded-full peer-checked:bg-secondary"></div>
+            <div className="absolute top-0.5 left-0.5 bg-light-bg w-5 h-5 rounded-full transition-transform transform peer-checked:translate-x-full"></div>
           </div>
         </label>
       </div>

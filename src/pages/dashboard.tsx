@@ -114,17 +114,18 @@ function GenericTable<T>({ title, data, columns, loading, onRowClick, formatCell
               </TableRow>
             </TableHead>
             <TableBody>
-
               {paginatedData.map((item, index) => (
                 <TableRow
                   key={index}
                   onClick={() => onRowClick && onRowClick(item)}
-                  className={`px-4 py-2 text-base text-black text-left border-b border-gray-400 cursor-pointer 
-                  ${(item as { on_holiday?: boolean }).on_holiday ? 'bg-red-200' : 'bg-green-200'}`}
+                  className={`px-4 py-2 text-base text-black text-left border-b border-gray-400 cursor-pointer
+                    ${(item as { on_backup?: boolean }).on_backup ? 'bg-yellow-200' : (item as { on_holiday?: boolean }).on_holiday ? 'bg-red-200' : (item as { on_duty?: boolean }).on_duty ? 'bg-green-200' : 'bg-white'} `}
                 >
                   {columns.map((keyName, i) => (
                     <TableCell key={String(keyName) + i}>
-                      {formatCell ? formatCell(keyName, item[keyName]) : String(item[keyName])}
+                      {formatCell
+                        ? formatCell(keyName, item[keyName])
+                        : String(item[keyName])}
                     </TableCell>
                   ))}
                 </TableRow>
@@ -137,7 +138,7 @@ function GenericTable<T>({ title, data, columns, loading, onRowClick, formatCell
             <button
               onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
               disabled={currentPage === 1}
-              className="px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-700 disabled:opacity-50 transition-colors font-medium"
+              className="px-4 py-2 bg-dark-bg text-white rounded-lg hover:bg-gray-700 disabled:opacity-50 transition-colors font-medium"
             >
               Previous
             </button>
@@ -147,9 +148,9 @@ function GenericTable<T>({ title, data, columns, loading, onRowClick, formatCell
               <button
                 key={index + 1}
                 onClick={() => handlePageChange(index + 1)}
-                className={`px-3 py-1 text-black rounded-lg font-medium ${index + 1 === currentPage
+                className={`px-3 py-1 text rounded-lg font-medium ${index + 1 === currentPage
                   ? 'bg-gray-800 text-white'
-                  : 'bg-white border border-gray-300 hover:bg-gray-100'}`
+                  : 'bg-light-bg border border-gray-300 hover:bg-gray-100'}`
                 }
               >
                 {index + 1}
@@ -159,7 +160,7 @@ function GenericTable<T>({ title, data, columns, loading, onRowClick, formatCell
             <button
               onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
               disabled={currentPage === totalPages}
-              className="px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-700 disabled:opacity-50 transition-colors font-medium"
+              className="px-4 py-2 bg-dark-bg text-white rounded-lg hover:bg-gray-700 disabled:opacity-50 transition-colors font-medium"
             >
               Next
             </button>
