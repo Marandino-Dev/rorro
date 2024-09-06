@@ -97,8 +97,15 @@ describe('Rotation POST', () => {
       expect(jsonResponse.error).toMatch(/rotation.*required/);
     });
 
-    it.todo('should return an error if the rotation name is not provided');
-    it.todo('should return an error if the user group is not found');
+    it('should return an error if the user group is not found', async () => {
+      getSlackUsersFromUserGroupMock.mockResolvedValueOnce([]);
+
+      const res = await POST(createMockRequest('test rotation <!subteam^S01234567890|test group>'));
+      const jsonResponse = await res.json();
+
+      expect(jsonResponse.text).toMatch(/users.*private channel.*@userGroup/i);
+    });
+
     it.todo('should return an error if there are no users in the channel'); // assert the instructions asking if the channel is private
     it.todo('should handle any of the write operations failing');
   });
