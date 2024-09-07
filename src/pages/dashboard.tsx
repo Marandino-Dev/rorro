@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Modal from './api/components/modal';
+import ContentLoader from "react-content-loader";
 
 import {
   Table,
@@ -98,13 +99,39 @@ function GenericTable<T>({ title, data, columns, loading, onRowClick, formatCell
     </TableHeaderCell>
   ));
 
+  const PlaceLoader = () => (
+    <div className="flex justify-center mt-10">
+      <ContentLoader
+        speed={2}
+        width={600}
+        height={150}
+        viewBox="0 0 600 150"
+        backgroundColor="#ffffff"
+        foregroundColor="#1d1616"
+      >
+        <rect x="0" y="0" rx="5" ry="5" width="120" height="20" />
+        <rect x="130" y="0" rx="5" ry="5" width="300" height="20" />
+        <rect x="150" y="60" rx="5" ry="5" width="120" height="20" />
+        <rect x="280" y="60" rx="5" ry="5" width="200" height="20" />
+        <rect x="30" y="60" rx="5" ry="5" width="140" height="20" />
+        <rect x="0" y="120" rx="5" ry="5" width="60" height="20" />
+        <rect x="30" y="30" rx="5" ry="5" width="300" height="20" />
+        <rect x="350" y="30" rx="5" ry="5" width="400" height="20" />
+      </ContentLoader>
+    </div>
+  );
+
   return (
     <div className='p-4 md:p-10 rounded-2xl'>
       <h1 className='hover:text-secondary text-2xl font-bold'>
         {title}
       </h1>
       {loading ? (
-        <p className='text-gray-300'>Loading...</p>
+        <div className='flex flex-col space-y-4'>
+          <PlaceLoader />
+          <PlaceLoader />
+          <PlaceLoader />
+        </div>
       ) : (
         <div className='overflow-auto'>
           <Table className='text-lg border-separate border-spacing-0 rounded'>
@@ -133,7 +160,7 @@ function GenericTable<T>({ title, data, columns, loading, onRowClick, formatCell
             </TableBody>
           </Table>
 
-          {/* PAGINATION*/}
+          {/* PAGINATION */}
           <div className="flex justify-end items-center mt-4 space-x-4">
             <button
               onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
@@ -169,6 +196,7 @@ function GenericTable<T>({ title, data, columns, loading, onRowClick, formatCell
       )}
     </div>
   );
+
 }
 
 function UserTables(params: { organizationName: string, rotationName: string }) {
