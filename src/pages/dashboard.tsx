@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Modal from './api/components/modal';
-import ContentLoader from "react-content-loader";
+import ContentLoader from 'react-content-loader';
 
 import {
   Table,
