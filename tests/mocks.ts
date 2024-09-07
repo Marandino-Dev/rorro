@@ -20,6 +20,9 @@ export function mockSlackCommand(optional?: string): URLSearchParams {
   });
 }
 
+/**
+ * @deprecated in favour of mockSlackUserV2
+ */
 export function mockSlackUser(slackId: string, onDuty: boolean = false, onHoliday: boolean = false): SlackUser {
   return {
     slack_id: slackId,
@@ -31,7 +34,19 @@ export function mockSlackUser(slackId: string, onDuty: boolean = false, onHolida
   };
 }
 
-export function createMockRequest(slackCommand: string){
+export function mockSlackUserV2(overrides?: Partial<SlackUser>): SlackUser {
+  return {
+    ...overrides,
+    slack_id: 'U2147483697',
+    full_name: 'Ajinomoto',
+    on_duty: false,
+    on_holiday: false,
+    count: 0,
+    on_backup: false,
+  };
+}
+
+export function createMockRequest(slackCommand: string) {
   const mockFormData = mockSlackCommand(slackCommand);
   return {
     method: 'POST',
