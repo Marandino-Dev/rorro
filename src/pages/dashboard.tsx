@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Modal from './api/components/modal';
+import Loader from './components/Loader';
 import ContentLoader from 'react-content-loader';
 
 import {
@@ -51,6 +52,7 @@ function GenericTable<T>({ title, data, columns, loading, onRowClick, formatCell
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
 
   const [currentPage, setCurrentPage] = useState(1);
+  // TODO: make this dynamic, and also allow for custom. e.g: logs will need about 5. while users can be a bit longer as we don't want the users to be trunkated.
   const rowsPerPage = 10;
 
   useEffect(() => {
@@ -98,102 +100,79 @@ function GenericTable<T>({ title, data, columns, loading, onRowClick, formatCell
       )}
     </TableHeaderCell>
   ));
-
-  const PlaceLoader = () => (
-    <div className="flex justify-center mt-10">
-      <ContentLoader
-        speed={2}
-        width={600}
-        height={150}
-        viewBox="0 0 600 150"
-        backgroundColor="#ffffff"
-        foregroundColor="#1d1616"
-      >
-        <rect x="0" y="0" rx="5" ry="5" width="120" height="20" />
-        <rect x="130" y="0" rx="5" ry="5" width="300" height="20" />
-        <rect x="150" y="60" rx="5" ry="5" width="120" height="20" />
-        <rect x="280" y="60" rx="5" ry="5" width="200" height="20" />
-        <rect x="30" y="60" rx="5" ry="5" width="140" height="20" />
-        <rect x="0" y="120" rx="5" ry="5" width="60" height="20" />
-        <rect x="30" y="30" rx="5" ry="5" width="300" height="20" />
-        <rect x="350" y="30" rx="5" ry="5" width="400" height="20" />
-      </ContentLoader>
-    </div>
-  );
-
   return (
     <div className='p-4 md:p-10 rounded-2xl'>
       <h1 className='hover:text-secondary text-2xl font-bold'>
         {title}
       </h1>
-      {loading ? (
-        <div className='flex flex-col space-y-4'>
-          <PlaceLoader />
-          <PlaceLoader />
-          <PlaceLoader />
-        </div>
-      ) : (
-        <div className='overflow-auto'>
-          <Table className='text-lg border-separate border-spacing-0 rounded'>
-            <TableHead>
-              <TableRow className='bg-dark-bg'>
-                {tableHeaders}
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {paginatedData.map((item, index) => (
-                <TableRow
-                  key={index}
-                  onClick={() => onRowClick && onRowClick(item)}
-                  className={`px-4 py-2 text-base text-black text-left border-b border-gray-400 cursor-pointer
-                    ${(item as { on_backup?: boolean }).on_backup ? 'bg-yellow-200' : (item as { on_holiday?: boolean }).on_holiday ? 'bg-red-200' : (item as { on_duty?: boolean }).on_duty ? 'bg-green-200' : 'bg-white'} `}
-                >
-                  {columns.map((keyName, i) => (
-                    <TableCell key={String(keyName) + i}>
-                      {formatCell
-                        ? formatCell(keyName, item[keyName])
-                        : String(item[keyName])}
-                    </TableCell>
-                  ))}
+
+      <div className='overflow-auto'>
+        <Table className='border-separate border-spacing-0 rounded'>
+          {loading ? (
+            <Loader />
+
+          ) : (
+            <>
+              <TableHead>
+                <TableRow className='bg-dark-bg'>
+                  {tableHeaders}
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHead>
+              <TableBody>
+                {paginatedData.map((item, index) => (
+                  <TableRow
+                    key={index}
+                    onClick={() => onRowClick && onRowClick(item)}
+                    className={`px-4 py-2 dark:text-black text-left border-b border-gray-400 cursor-pointer
+                    ${(item as { on_backup?: boolean }).on_backup ? 'bg-yellow-200' : (item as { on_holiday?: boolean }).on_holiday ? 'bg-red-200' : (item as { on_duty?: boolean }).on_duty ? 'bg-green-200' : 'bg-white'} `}
+                  >
+                    {columns.map((keyName, i) => (
+                      <TableCell key={String(keyName) + i}>
+                        {formatCell
+                          ? formatCell(keyName, item[keyName])
+                          : String(item[keyName])}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))}
+              </TableBody>
+            </>
+          )}
+        </Table>
+      </div>
 
-          {/* PAGINATION */}
-          <div className="flex justify-end items-center mt-4 space-x-4">
-            <button
-              onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
-              disabled={currentPage === 1}
-              className="px-4 py-2 bg-dark-bg text-white rounded-lg hover:bg-gray-700 disabled:opacity-50 transition-colors font-medium"
-            >
+      {/* PAGINATION */}
+      <div className="flex justify-end items-center mt-4 space-x-4">
+        <button
+          onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
+          disabled={currentPage === 1}
+          className="px-4 py-2 bg-dark-bg text-white rounded-lg hover:bg-gray-700 disabled:opacity-50 transition-colors font-medium"
+        >
               Previous
-            </button>
+        </button>
 
-            {/* PAGE NUMBER */}
-            {Array.from({ length: totalPages }, (_, index) => (
-              <button
-                key={index + 1}
-                onClick={() => handlePageChange(index + 1)}
-                className={`px-3 py-1 text rounded-lg font-medium ${index + 1 === currentPage
-                  ? 'bg-gray-800 text-white'
-                  : 'bg-light-bg border border-gray-300 hover:bg-gray-100'}`
-                }
-              >
-                {index + 1}
-              </button>
-            ))}
+        {/* PAGE NUMBER */}
+        {Array.from({ length: totalPages }, (_, index) => (
+          <button
+            key={index + 1}
+            onClick={() => handlePageChange(index + 1)}
+            className={`px-3 py-1 text rounded-lg font-medium ${index + 1 === currentPage
+              ? 'bg-gray-800 text-white'
+              : 'bg-light-bg border border-gray-300 hover:bg-gray-100'}`
+            }
+          >
+            {index + 1}
+          </button>
+        ))}
 
-            <button
-              onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
-              disabled={currentPage === totalPages}
-              className="px-4 py-2 bg-dark-bg text-white rounded-lg hover:bg-gray-700 disabled:opacity-50 transition-colors font-medium"
-            >
+        <button
+          onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
+          disabled={currentPage === totalPages}
+          className="px-4 py-2 bg-dark-bg text-white rounded-lg hover:bg-gray-700 disabled:opacity-50 transition-colors font-medium"
+        >
               Next
-            </button>
-          </div>
-        </div>
-      )}
+        </button>
+      </div>
     </div>
   );
 
