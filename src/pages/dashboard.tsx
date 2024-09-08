@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Modal from './api/components/modal';
-import Loader from './components/Loader';
-import ContentLoader from 'react-content-loader';
+import Skeleton from 'react-loading-skeleton';
+import 'react-loading-skeleton/dist/skeleton.css';
 
 import {
   Table,
@@ -15,12 +15,12 @@ import {
 import { Log, SlackUser } from 'types';
 import { useSearchParams } from 'next/navigation';
 
-const formatDate = (dateMillis: number | string): string => {
+const formatDate = (dateMillis: unknown): string => {
   // Convert dateMillis to number if it's a string
   const millis = typeof dateMillis === 'string' ? parseInt(dateMillis, 10) : dateMillis;
 
   // Check if millis is a valid number
-  if (isNaN(millis) || millis <= 0) {
+  if (typeof millis !== 'number' || isNaN(millis) || millis <= 0) {
     console.error('Invalid dateMillis value:', dateMillis);
     return 'Invalid Date';
   }
@@ -45,7 +45,7 @@ interface TableProps<T> {
   formatCell?: (key: keyof T, value: T[keyof T]) => React.ReactNode;
 }
 
-function GenericTable<T>({ title, data, columns, loading, onRowClick, formatCell }: TableProps<T>) {
+function GenericTable<T>({ title, data, columns, loading, onRowClick }: TableProps<T>) {
 
   // SORTING
   const [sortColumn, setSortColumn] = useState<keyof T | null>('on_duty' as keyof T);
@@ -56,8 +56,6 @@ function GenericTable<T>({ title, data, columns, loading, onRowClick, formatCell
   const rowsPerPage = 10;
 
   useEffect(() => {
-    setSortColumn('on_duty' as keyof T);
-    setSortDirection('desc');
   }, []);
 
   const handleSort = (column: keyof T) => {
@@ -78,17 +76,24 @@ function GenericTable<T>({ title, data, columns, loading, onRowClick, formatCell
     });
   }, [data, sortColumn, sortDirection]);
 
+  // TODO: refactor the whole pagination logic
   // PAGINATION LOGIC
   const totalPages = Math.ceil(sortedData.length / rowsPerPage);
   const paginatedData = sortedData.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage);
-
+  // adds empty rows if the data is less than the rows per page
+  if (paginatedData.length < rowsPerPage) {
+    const emptyRows = rowsPerPage - paginatedData.length;
+    for (let i = 0; i < emptyRows; i++) {
+      paginatedData.push({} as T);
+    }
+  }
   const handlePageChange = (newPage: number) => {
     setCurrentPage(newPage);
   };
 
   const tableHeaders = columns.map(column => (
     <TableHeaderCell
-      className='hover:text-secondary py-5 cursor-pointer capitalize'
+      className='hover:text-secondary py-5 cursor-pointer capitalize text-center'
       key={String(column) + '-key'}
       onClick={() => handleSort(column)}
     >
@@ -101,78 +106,113 @@ function GenericTable<T>({ title, data, columns, loading, onRowClick, formatCell
     </TableHeaderCell>
   ));
   return (
-    <div className='p-4 md:p-10 rounded-2xl'>
+    <div className='p-4 md:p-10'>
       <h1 className='hover:text-secondary text-2xl font-bold'>
         {title}
       </h1>
 
-      <div className='overflow-auto'>
-        <Table className='border-separate border-spacing-0 rounded'>
-          {loading ? (
-            <Loader />
+      <Table>
+        {loading ? (
+          <>
+            <TableHead>
+              <TableRow className='bg-dark-bg'>
+                <TableHeaderCell className='hover:text-secondary py-5 cursor-pointer capitalize'>
+                  <Skeleton style={{ opacity: 0.2 }}/>
+                </TableHeaderCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
 
-          ) : (
-            <>
-              <TableHead>
-                <TableRow className='bg-dark-bg'>
-                  {tableHeaders}
+              {Array.from({ length: rowsPerPage }, (_, index) => (
+
+                <TableRow
+                  key={index}
+                  className={'px-4 py-2 dark:text-black border-b border-gray-400 cursor-pointer bg-white'}
+                >
+                  <TableCell className="py-2 px-4">
+                    <Skeleton />
+                  </TableCell>
                 </TableRow>
-              </TableHead>
-              <TableBody>
-                {paginatedData.map((item, index) => (
+              ))}
+            </TableBody>
+          </>
+        ) : (
+          <>
+            <TableHead>
+              <TableRow className='bg-dark-bg'>
+                {tableHeaders}
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {paginatedData.map((item, index) => {
+                return(
                   <TableRow
                     key={index}
                     onClick={() => onRowClick && onRowClick(item)}
-                    className={`px-4 py-2 dark:text-black text-left border-b border-gray-400 cursor-pointer
+                    className={`px-4 py-2 dark:text-black border-b border-gray-400 cursor-pointer
                     ${(item as { on_backup?: boolean }).on_backup ? 'bg-yellow-200' : (item as { on_holiday?: boolean }).on_holiday ? 'bg-red-200' : (item as { on_duty?: boolean }).on_duty ? 'bg-green-200' : 'bg-white'} `}
                   >
-                    {columns.map((keyName, i) => (
-                      <TableCell className="py-1 px-0" key={String(keyName) + i}>
-                        {formatCell
-                          ? formatCell(keyName, item[keyName])
-                          : String(item[keyName])}
-                      </TableCell>
-                    ))}
+                    {columns.map((keyName : keyof T, i) => {
+
+                      if(item[keyName] === undefined){
+                        return <TableCell className="py-2 px-4 text-center" key={String(keyName) + i}>-</TableCell>;
+                      }
+
+                      let cellContent = String(item[keyName]); // stringify the value if not undefined
+
+                      if(keyName === 'date'){
+                        cellContent = formatDate(item[keyName]); // handle dates
+                      }
+                      return (
+                        <TableCell className="py-2 px-4 text-center" key={String(keyName) + i}>
+                          {cellContent}
+                        </TableCell>
+                      );
+                    })}
                   </TableRow>
-                ))}
-              </TableBody>
-            </>
-          )}
-        </Table>
-      </div>
+                );
+
+              }
+              )}
+            </TableBody>
+          </>
+        )}
+      </Table>
 
       {/* PAGINATION */}
-      <div className="flex justify-end items-center mt-4 space-x-4">
-        <button
-          onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
-          disabled={currentPage === 1}
-          className="px-4 py-2 bg-dark-bg text-white rounded-lg hover:bg-gray-700 disabled:opacity-50 transition-colors font-medium"
-        >
-              Previous
-        </button>
-
-        {/* PAGE NUMBER */}
-        {Array.from({ length: totalPages }, (_, index) => (
+      {(totalPages > 1 && !loading) && (
+        <div className="flex justify-end items-center mt-4 space-x-4">
           <button
-            key={index + 1}
-            onClick={() => handlePageChange(index + 1)}
-            className={`px-3 py-1 text rounded-lg font-medium ${index + 1 === currentPage
-              ? 'bg-gray-800 text-white'
-              : 'bg-light-bg border border-gray-300 hover:bg-gray-100'}`
-            }
+            onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
+            disabled={currentPage === 1}
+            className="px-4 py-2 bg-dark-bg text-white rounded-lg hover:bg-gray-700 disabled:opacity-50 transition-colors font-medium"
           >
-            {index + 1}
+            Previous
           </button>
-        ))}
 
-        <button
-          onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
-          disabled={currentPage === totalPages}
-          className="px-4 py-2 bg-dark-bg text-white rounded-lg hover:bg-gray-700 disabled:opacity-50 transition-colors font-medium"
-        >
-              Next
-        </button>
-      </div>
+          {/* PAGE NUMBER */}
+          {Array.from({ length: totalPages }, (_, index) => (
+            <button
+              key={index + 1}
+              onClick={() => handlePageChange(index + 1)}
+              className={`px-3 py-1 text rounded-lg font-medium ${index + 1 === currentPage
+                ? 'bg-gray-800 text-white'
+                : 'bg-light-bg border border-gray-300 hover:bg-gray-100'}`
+              }
+            >
+              {index + 1}
+            </button>
+          ))}
+
+          <button
+            onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
+            disabled={currentPage === totalPages}
+            className="px-4 py-2 bg-dark-bg text-white rounded-lg hover:bg-gray-700 disabled:opacity-50 transition-colors font-medium"
+          >
+            Next
+          </button>
+        </div>
+      )}
     </div>
   );
 
@@ -188,19 +228,21 @@ function UserTables(params: { organizationName: string, rotationName: string }) 
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
   const fetchUserData = async () => {
+    // TODO: refactor this....
     const BASE_API_URL = window.location.origin + '/api/v1' || 'http://localhost:3000/api/v1';
 
     setLoading(true);
+    await new Promise(resolve => setTimeout(resolve, 1300));
     const response = await fetch(
       `${BASE_API_URL}/${organizationName}/${rotationName}/users`
     );
     if (!response.ok) {
       throw new Error('Network response was not ok');
     }
-    setLoading(false);
     const { rows: users, columns }: { rows: SlackUser[], columns: (keyof SlackUser)[] } = await response.json();
     setUsers(users);
     setUserColumns(columns);
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -268,20 +310,12 @@ function LogsTable(params: { organizationName: string, rotationName: string }) {
     fetchLogsData();
   }, []);
 
-  const formatCell = (key: keyof Log, value: Log[keyof Log]) => {
-    if (key === 'date') {
-      return formatDate(value as number);
-    }
-    return String(value);
-  };
-
   return (
     <GenericTable<Log>
       title="Logs Data"
       data={logs}
       columns={logColumns}
       loading={logsLoading}
-      formatCell={formatCell}
     />
   );
 }
