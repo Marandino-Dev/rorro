@@ -127,7 +127,7 @@ function GenericTable<T>({ title, data, columns, loading, onRowClick, formatCell
                     ${(item as { on_backup?: boolean }).on_backup ? 'bg-yellow-200' : (item as { on_holiday?: boolean }).on_holiday ? 'bg-red-200' : (item as { on_duty?: boolean }).on_duty ? 'bg-green-200' : 'bg-white'} `}
                   >
                     {columns.map((keyName, i) => (
-                      <TableCell key={String(keyName) + i}>
+                      <TableCell className="py-1 px-0" key={String(keyName) + i}>
                         {formatCell
                           ? formatCell(keyName, item[keyName])
                           : String(item[keyName])}
