@@ -37,72 +37,98 @@ const formatDate = (dateMillis: unknown): string => {
 };
 
 interface TableProps<T> {
-  title: string;
-  data: T[];
-  columns: (keyof T)[];
-  loading: boolean;
-  onRowClick?: (item: T) => void;
-  formatCell?: (key: keyof T, value: T[keyof T]) => React.ReactNode;
+	title: string;
+	data: T[];
+	columns: (keyof T)[];
+	loading: boolean;
+	onRowClick?: (item: T) => void;
+	sortBy: keyof T;
 }
 
-function GenericTable<T>({ title, data, columns, loading, onRowClick }: TableProps<T>) {
+function GenericTable<T>({ title, data, columns, loading, onRowClick, sortBy }: TableProps<T>) {
 
   // SORTING
-  const [sortColumn, setSortColumn] = useState<keyof T | null>('on_duty' as keyof T);
-  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
-
-  const [currentPage, setCurrentPage] = useState(1);
-  // TODO: make this dynamic, and also allow for custom. e.g: logs will need about 5. while users can be a bit longer as we don't want the users to be trunkated.
+  const [sortColumn, setSortColumn] = useState<keyof T>(sortBy as keyof T);
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
   const rowsPerPage = 10;
 
-  useEffect(() => {
-  }, []);
+  const [totalPages, setTotalPages] = useState<number>(1);
+  const [currentPage, setCurrentPage] = useState(1);
 
-  const handleSort = (column: keyof T) => {
-    if (sortColumn === column) {
+  const [sortedData, setSortedData] = useState<T[]>([]);
+  const [paginatedData, setPaginatedData] = useState<T[]>([]);
+
+  const handleSortingButton = (newColumn: keyof T) => {
+    if (sortColumn === newColumn) {
       setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
     } else {
-      setSortColumn(column);
+      setSortColumn(newColumn);
       setSortDirection('asc');
     }
+    handleSorting(sortDirection, newColumn);
+    handlePageLoad(1);
   };
 
-  const sortedData = React.useMemo(() => {
-    if (!sortColumn) return data;
-    return [...data].sort((a, b) => {
-      if (a[sortColumn] < b[sortColumn]) return sortDirection === 'asc' ? -1 : 1;
-      if (a[sortColumn] > b[sortColumn]) return sortDirection === 'asc' ? 1 : -1;
-      return 0;
-    });
-  }, [data, sortColumn, sortDirection]);
-
-  // TODO: refactor the whole pagination logic
   // PAGINATION LOGIC
-  const totalPages = Math.ceil(sortedData.length / rowsPerPage);
-  const paginatedData = sortedData.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage);
-  // adds empty rows if the data is less than the rows per page
-  if (paginatedData.length < rowsPerPage) {
-    const emptyRows = rowsPerPage - paginatedData.length;
-    for (let i = 0; i < emptyRows; i++) {
-      paginatedData.push({} as T);
+  const handlePageLoad = (newPage: number) => {
+    let newPaginatedData = sortedData.slice(
+      (newPage - 1) * rowsPerPage,
+      newPage * rowsPerPage
+    );
+
+    if (newPaginatedData.length < rowsPerPage) {
+      // create some empty elements to fill the table so it doesn't snap into place
+      const emptyRows = rowsPerPage - newPaginatedData.length;
+      const emptyArray = new Array(emptyRows).fill({} as T);
+      newPaginatedData = [...newPaginatedData, ...emptyArray];
     }
-  }
-  const handlePageChange = (newPage: number) => {
+
+    setPaginatedData(newPaginatedData);
     setCurrentPage(newPage);
+
   };
+
+  const handleSorting = (newSortDirection: 'asc' | 'desc', newSortColumn: keyof T) => {
+
+    setSortedData([...data].sort((a, b) => {
+      const compareValues = (a: T, b: T, column: keyof T): number => {
+        if (a[column] < b[column]) return newSortDirection === 'asc' ? -1 : 1;
+        if (a[column] > b[column]) return newSortDirection === 'asc' ? 1 : -1;
+        return 0;
+      };
+
+      const result = compareValues(a, b, newSortColumn);
+      if (result !== 0) return result;
+
+      // If tied, compare the next column
+      const nextColumnIndex = columns.indexOf(newSortColumn) + 1;
+      if (nextColumnIndex <= columns.length) {
+        const nextColumn = columns[nextColumnIndex];
+        return compareValues(a, b, nextColumn);
+      }
+      return 0;
+    }));
+
+  };
+
+  useEffect(() => {
+    handleSorting(sortDirection, sortColumn);
+    setTotalPages(Math.ceil(sortedData.length / rowsPerPage));
+    handlePageLoad(1); // initialize it with the first page
+  }, [data]);
 
   const tableHeaders = columns.map(column => (
     <TableHeaderCell
       className='hover:text-secondary py-5 cursor-pointer capitalize text-center'
       key={String(column) + '-key'}
-      onClick={() => handleSort(column)}
+      onClick={() => handleSortingButton(column)}
     >
       {String(column).replace('_', ' ')}
-      {sortColumn === column && (
-        <span className='ml-2'>
-          {sortDirection === 'asc' ? '↑' : '↓'}
-        </span>
-      )}
+      <span className='ml-2 text-secondary'>
+        {sortColumn === column && (
+          sortDirection === 'asc' ? '↑' : '↓'
+        )}
+      </span>
     </TableHeaderCell>
   ));
   return (
@@ -117,7 +143,7 @@ function GenericTable<T>({ title, data, columns, loading, onRowClick }: TablePro
             <TableHead>
               <TableRow className='bg-dark-bg'>
                 <TableHeaderCell className='hover:text-secondary py-5 cursor-pointer capitalize'>
-                  <Skeleton style={{ opacity: 0.2 }}/>
+                  <Skeleton style={{ opacity: 0.2 }} />
                 </TableHeaderCell>
               </TableRow>
             </TableHead>
@@ -145,22 +171,22 @@ function GenericTable<T>({ title, data, columns, loading, onRowClick }: TablePro
             </TableHead>
             <TableBody>
               {paginatedData.map((item, index) => {
-                return(
+                return (
                   <TableRow
                     key={index}
                     onClick={() => onRowClick && onRowClick(item)}
                     className={`px-4 py-2 dark:text-black border-b border-gray-400 cursor-pointer
-                    ${(item as { on_backup?: boolean }).on_backup ? 'bg-yellow-200' : (item as { on_holiday?: boolean }).on_holiday ? 'bg-red-200' : (item as { on_duty?: boolean }).on_duty ? 'bg-green-200' : 'bg-white'} `}
+										${(item as { on_backup?: boolean }).on_backup ? 'bg-yellow-200' : (item as { on_holiday?: boolean }).on_holiday ? 'bg-red-200' : (item as { on_duty?: boolean }).on_duty ? 'bg-green-200' : 'bg-white'} `}
                   >
-                    {columns.map((keyName : keyof T, i) => {
+                    {columns.map((keyName: keyof T, i) => {
 
-                      if(item[keyName] === undefined){
+                      if (item[keyName] === undefined) {
                         return <TableCell className="py-2 px-4 text-center" key={String(keyName) + i}>-</TableCell>;
                       }
 
                       let cellContent = String(item[keyName]); // stringify the value if not undefined
 
-                      if(keyName === 'date'){
+                      if (keyName === 'date') {
                         cellContent = formatDate(item[keyName]); // handle dates
                       }
                       return (
@@ -178,23 +204,22 @@ function GenericTable<T>({ title, data, columns, loading, onRowClick }: TablePro
           </>
         )}
       </Table>
-
       {/* PAGINATION */}
       {(totalPages > 1 && !loading) && (
         <div className="flex justify-end items-center mt-4 space-x-4">
           <button
-            onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
+            onClick={() => handlePageLoad((currentPage - 1))}
             disabled={currentPage === 1}
             className="px-4 py-2 bg-dark-bg text-white rounded-lg hover:bg-gray-700 disabled:opacity-50 transition-colors font-medium"
           >
-            Previous
+						Previous
           </button>
 
           {/* PAGE NUMBER */}
           {Array.from({ length: totalPages }, (_, index) => (
             <button
               key={index + 1}
-              onClick={() => handlePageChange(index + 1)}
+              onClick={() => handlePageLoad(index + 1)}
               className={`px-3 py-1 text rounded-lg font-medium ${index + 1 === currentPage
                 ? 'bg-gray-800 text-white'
                 : 'bg-light-bg border border-gray-300 hover:bg-gray-100'}`
@@ -205,11 +230,11 @@ function GenericTable<T>({ title, data, columns, loading, onRowClick }: TablePro
           ))}
 
           <button
-            onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
+            onClick={() => handlePageLoad(currentPage + 1)}
             disabled={currentPage === totalPages}
             className="px-4 py-2 bg-dark-bg text-white rounded-lg hover:bg-gray-700 disabled:opacity-50 transition-colors font-medium"
           >
-            Next
+						Next
           </button>
         </div>
       )}
@@ -228,7 +253,6 @@ function UserTables(params: { organizationName: string, rotationName: string }) 
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
   const fetchUserData = async () => {
-    // TODO: refactor this....
     const BASE_API_URL = window.location.origin + '/api/v1' || 'http://localhost:3000/api/v1';
 
     setLoading(true);
@@ -263,7 +287,8 @@ function UserTables(params: { organizationName: string, rotationName: string }) 
     <>
       <GenericTable<SlackUser>
         title="Team Members"
-        data={users}
+        sortBy='on_duty'
+        data={[...users, ...users, ...users, ...users]}
         columns={userColumns}
         loading={loading}
         onRowClick={handleUpdateClick}
@@ -313,6 +338,7 @@ function LogsTable(params: { organizationName: string, rotationName: string }) {
   return (
     <GenericTable<Log>
       title="Logs Data"
+      sortBy='date'
       data={logs}
       columns={logColumns}
       loading={logsLoading}
