@@ -37,12 +37,12 @@ const formatDate = (dateMillis: unknown): string => {
 };
 
 interface TableProps<T> {
-	title: string;
-	data: T[];
-	columns: (keyof T)[];
-	loading: boolean;
-	onRowClick?: (item: T) => void;
-	sortBy: keyof T;
+  title: string;
+  data: T[];
+  columns: (keyof T)[];
+  loading: boolean;
+  onRowClick?: (item: T) => void;
+  sortBy: keyof T;
 }
 
 function GenericTable<T>({ title, data, columns, loading, onRowClick, sortBy }: TableProps<T>) {
@@ -212,7 +212,7 @@ function GenericTable<T>({ title, data, columns, loading, onRowClick, sortBy }: 
             disabled={currentPage === 1}
             className="px-4 py-2 bg-dark-bg text-white rounded-lg hover:bg-gray-700 disabled:opacity-50 transition-colors font-medium"
           >
-						Previous
+            Previous
           </button>
 
           {/* PAGE NUMBER */}
@@ -234,7 +234,7 @@ function GenericTable<T>({ title, data, columns, loading, onRowClick, sortBy }: 
             disabled={currentPage === totalPages}
             className="px-4 py-2 bg-dark-bg text-white rounded-lg hover:bg-gray-700 disabled:opacity-50 transition-colors font-medium"
           >
-						Next
+            Next
           </button>
         </div>
       )}
