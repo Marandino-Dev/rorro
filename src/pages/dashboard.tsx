@@ -205,39 +205,37 @@ function GenericTable<T>({ title, data, columns, loading, onRowClick, sortBy }: 
         )}
       </Table>
       {/* PAGINATION */}
-      {(totalPages > 1 && !loading) && (
-        <div className="flex justify-end items-center mt-4 space-x-4">
-          <button
-            onClick={() => handlePageLoad((currentPage - 1))}
-            disabled={currentPage === 1}
-            className="px-4 py-2 bg-dark-bg text-white rounded-lg hover:bg-gray-700 disabled:opacity-50 transition-colors font-medium"
-          >
+      <div className="flex justify-end items-center mt-4 space-x-4">
+        <button
+          onClick={() => handlePageLoad((currentPage - 1))}
+          disabled={currentPage === 1}
+          className="px-4 py-2 bg-dark-bg text-white rounded-lg hover:bg-gray-700 disabled:opacity-50 transition-colors font-medium"
+        >
             Previous
-          </button>
+        </button>
 
-          {/* PAGE NUMBER */}
-          {Array.from({ length: totalPages }, (_, index) => (
-            <button
-              key={index + 1}
-              onClick={() => handlePageLoad(index + 1)}
-              className={`px-3 py-1 text rounded-lg font-medium ${index + 1 === currentPage
-                ? 'bg-gray-800 text-white'
-                : 'bg-light-bg border border-gray-300 hover:bg-gray-100'}`
-              }
-            >
-              {index + 1}
-            </button>
-          ))}
-
+        {/* PAGE NUMBER */}
+        {Array.from({ length: totalPages }, (_, index) => (
           <button
-            onClick={() => handlePageLoad(currentPage + 1)}
-            disabled={currentPage === totalPages}
-            className="px-4 py-2 bg-dark-bg text-white rounded-lg hover:bg-gray-700 disabled:opacity-50 transition-colors font-medium"
+            key={index + 1}
+            onClick={() => handlePageLoad(index + 1)}
+            className={`px-3 py-1 text rounded-lg font-medium ${index + 1 === currentPage
+              ? 'bg-gray-800 text-white'
+              : 'bg-light-bg border border-gray-300 hover:bg-gray-100'}`
+            }
           >
-            Next
+            {index + 1}
           </button>
-        </div>
-      )}
+        ))}
+
+        <button
+          onClick={() => handlePageLoad(currentPage + 1)}
+          disabled={currentPage === totalPages}
+          className="px-4 py-2 bg-dark-bg text-white rounded-lg hover:bg-gray-700 disabled:opacity-50 transition-colors font-medium"
+        >
+            Next
+        </button>
+      </div>
     </div>
   );
 
@@ -256,7 +254,6 @@ function UserTables(params: { organizationName: string, rotationName: string }) 
     const BASE_API_URL = window.location.origin + '/api/v1' || 'http://localhost:3000/api/v1';
 
     setLoading(true);
-    await new Promise(resolve => setTimeout(resolve, 1300));
     const response = await fetch(
       `${BASE_API_URL}/${organizationName}/${rotationName}/users`
     );
