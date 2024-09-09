@@ -353,7 +353,7 @@ export default function Dashboard() {
   const rotation_id = params.get('rotation_id');
 
   if (!organization_id || !rotation_id) {
-    return <div>No organization or rotation selected</div>;
+    return <div className='h-screen w-screen flex items-center justify-center' />;
   }
 
   return (
