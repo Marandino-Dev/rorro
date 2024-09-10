@@ -190,7 +190,10 @@ function GenericTable<T>({ title, data, columns, loading, onRowClick, sortBy }: 
                         cellContent = formatDate(item[keyName]); // handle dates
                       }
                       return (
-                        <TableCell className="py-2 px-4 text-center" key={String(keyName) + i}>
+                        <TableCell
+                          className="py-2 px-4 text-center text-clip truncate max-w-[60ch]"
+                          key={String(keyName) + i}
+                        >
                           {cellContent}
                         </TableCell>
                       );
@@ -285,7 +288,7 @@ function UserTables(params: { organizationName: string, rotationName: string }) 
       <GenericTable<SlackUser>
         title="Team Members"
         sortBy='on_duty'
-        data={[...users, ...users, ...users, ...users]}
+        data={users}
         columns={userColumns}
         loading={loading}
         onRowClick={handleUpdateClick}
