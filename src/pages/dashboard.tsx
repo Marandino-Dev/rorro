@@ -63,7 +63,7 @@ function GenericTable<T>({ title, data, columns, loading, onRowClick, sortBy }: 
       setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
     } else {
       setSortColumn(newColumn);
-      setSortDirection('asc');
+      setSortDirection('desc');
     }
     handleSorting(sortDirection, newColumn);
     handlePageLoad(1);
@@ -90,32 +90,53 @@ function GenericTable<T>({ title, data, columns, loading, onRowClick, sortBy }: 
 
   const handleSorting = (newSortDirection: 'asc' | 'desc', newSortColumn: keyof T) => {
 
-    setSortedData([...data].sort((a, b) => {
-      const compareValues = (a: T, b: T, column: keyof T): number => {
-        if (a[column] < b[column]) return newSortDirection === 'asc' ? -1 : 1;
-        if (a[column] > b[column]) return newSortDirection === 'asc' ? 1 : -1;
-        return 0;
-      };
+    // FIXME: this needs a HUGE refactor. All this sorting business should be handled in the backend.
+    setSortedData(data.sort((a, b) => {
+      const aValue = a[newSortColumn];
+      const bValue = b[newSortColumn];
 
-      const result = compareValues(a, b, newSortColumn);
-      if (result !== 0) return result;
-
-      // If tied, compare the next column
-      const nextColumnIndex = columns.indexOf(newSortColumn) + 1;
-      if (nextColumnIndex <= columns.length) {
-        const nextColumn = columns[nextColumnIndex];
-        return compareValues(a, b, nextColumn);
+      // compare strings case insensitive, also handles string timestamps in millis...
+      if (typeof aValue === 'string' && typeof bValue === 'string' && isNaN(Number(aValue))) {
+        const comparison = aValue.localeCompare(bValue, undefined, { sensitivity: 'base' });
+        // sort them alphabetically although "later" is "higher" in the alphabet
+        return newSortDirection === 'desc' ? comparison : -comparison;
       }
+
+      // handle all the other types
+      if (aValue < bValue) return newSortDirection === 'asc' ? -1 : 1;
+      if (aValue > bValue) return newSortDirection === 'asc' ? 1 : -1;
+
+      // If tied, compare the next column (desc)
+      const nextColumnIndex = columns.indexOf(newSortColumn) + 1;
+      const nextColumn = columns[nextColumnIndex];
+      if (nextColumnIndex <= columns.length) {
+        if(a[nextColumn] > b[nextColumn]) {
+          return -1;
+        }
+      }
+      // this is very ugly code, but it will set the on_holiday at the bottom.
+
+      const nextNextColumnIndex = nextColumnIndex + 1;
+      const nextNextColumn = columns[nextNextColumnIndex];
+
+      if(nextNextColumnIndex <= columns.length) {
+        if(a[nextNextColumn] < b[nextNextColumn]) {
+          return -1;
+        }
+      }
+
       return 0;
+
     }));
 
   };
 
   useEffect(() => {
+    if (!data) return;
     handleSorting(sortDirection, sortColumn);
     setTotalPages(Math.ceil(sortedData.length / rowsPerPage));
     handlePageLoad(1); // initialize it with the first page
-  }, [data]);
+  }, [data, sortDirection, sortedData, sortColumn, rowsPerPage]);
 
   const tableHeaders = columns.map(column => (
     <TableHeaderCell
@@ -244,34 +265,31 @@ function GenericTable<T>({ title, data, columns, loading, onRowClick, sortBy }: 
 
 }
 
-function UserTables(params: { organizationName: string, rotationName: string }) {
+function UsersTable(params: { organizationName: string, rotationName: string }) {
   const { organizationName, rotationName } = params;
+  const [loading, setLoading] = useState(true);
   const [users, setUsers] = useState<SlackUser[]>([]);
   const [userColumns, setUserColumns] = useState<(keyof SlackUser)[]>([]);
-  const [loading, setLoading] = useState(true);
 
   const [selectedUser, setSelectedUser] = useState<SlackUser | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
-  const fetchUserData = async () => {
-    const BASE_API_URL = window.location.origin + '/api/v1' || 'http://localhost:3000/api/v1';
-
-    setLoading(true);
-    const response = await fetch(
-      `${BASE_API_URL}/${organizationName}/${rotationName}/users`
-    );
-    if (!response.ok) {
-      throw new Error('Network response was not ok');
-    }
-    const { rows: users, columns }: { rows: SlackUser[], columns: (keyof SlackUser)[] } = await response.json();
-    setUsers(users);
-    setUserColumns(columns);
-    setLoading(false);
-  };
-
   useEffect(() => {
-    fetchUserData();
-  }, []);
+    const fetchUserData = async () => {
+      const BASE_API_URL = window.location.origin + '/api/v1';
+      const response = await fetch(
+        `${BASE_API_URL}/${organizationName}/${rotationName}/users`
+      );
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      const { rows: users, columns }: { rows: SlackUser[], columns: (keyof SlackUser)[] } = await response.json();
+      setUsers(users);
+      setUserColumns(columns);
+    };
+
+    fetchUserData().then(() => setLoading(false));
+  }, [organizationName, rotationName]);
 
   const handleUpdateClick = (user: SlackUser) => {
     setSelectedUser(user);
@@ -282,6 +300,16 @@ function UserTables(params: { organizationName: string, rotationName: string }) 
     setIsModalOpen(false);
     setSelectedUser(null);
   };
+
+  if (loading) {
+    return <GenericTable<SlackUser>
+      title="Team Members"
+      sortBy='on_duty'
+      data={[]}
+      columns={[]}
+      loading={true}
+    />;
+  }
 
   return (
     <>
@@ -311,12 +339,11 @@ function LogsTable(params: { organizationName: string, rotationName: string }) {
   const [logColumns, setLogColumns] = useState<(keyof Log)[]>([]);
   const [logsLoading, setLogsLoading] = useState(true);
 
-  const fetchLogsData = async () => {
-    const BASE_API_URL = window.location.origin + '/api/v1' || 'http://localhost:3000/api/v1';
+  useEffect(() => {
 
-    try {
-      setLogsLoading(true);
-      // TODO: add proper pagination
+    const fetchLogsData = async () => {
+      const BASE_API_URL = window.location.origin + '/api/v1';
+
       const response = await fetch(
         `${BASE_API_URL}/${organizationName}/${rotationName}/logs`
       );
@@ -324,16 +351,20 @@ function LogsTable(params: { organizationName: string, rotationName: string }) {
       const { rows: logs, columns }: { rows: Log[], columns: (keyof Log)[] } = await response.json();
       setLogs(logs);
       setLogColumns(columns);
-    } catch (error) {
-      console.error('Error fetching logs data:', error);
-    } finally {
-      setLogsLoading(false);
-    }
-  };
+    };
 
-  useEffect(() => {
-    fetchLogsData();
-  }, []);
+    fetchLogsData().then(() => setLogsLoading(false));
+  }, [organizationName, rotationName]);
+
+  if (logsLoading) {
+    return <GenericTable<Log>
+      title="Logs Data"
+      sortBy='date'
+      data={[]}
+      columns={[]}
+      loading={true}
+    />;
+  }
 
   return (
     <GenericTable<Log>
@@ -348,12 +379,9 @@ function LogsTable(params: { organizationName: string, rotationName: string }) {
 
 export default function Dashboard() {
   const params = useSearchParams();
-  if (!params) {
-    return <div>No organization or rotation selected</div>;
-  }
 
-  const organization_id = params.get('organization_id');
-  const rotation_id = params.get('rotation_id');
+  const organization_id = params?.get('organization_id');
+  const rotation_id = params?.get('rotation_id');
 
   if (!organization_id || !rotation_id) {
     return <div className='h-screen w-screen flex items-center justify-center' />;
@@ -361,7 +389,7 @@ export default function Dashboard() {
 
   return (
     <>
-      <UserTables organizationName={organization_id} rotationName={rotation_id} />
+      <UsersTable organizationName={organization_id} rotationName={rotation_id} />
       <LogsTable organizationName={organization_id} rotationName={rotation_id} />
     </>
   );
