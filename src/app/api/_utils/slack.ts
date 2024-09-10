@@ -29,17 +29,26 @@ async function fetchSlackApi(slackApiString: string, team_id: string) {
   const token = decrypt(organization.access_hash);
 
   // const res = await fetch('https://slack.com/api/usergroups.users.list?usergroup=' + userGroupId,
-  const res = await fetch('https://slack.com/api/' + slackApiString,
-    {
-      method: 'GET',
-      headers: {
-        'Authorization': 'Bearer ' + token, // TODO: we need to take the token we stored upon installation, not this one.
-      },
-    }
-  );
+  const res = await fetch('https://slack.com/api/' + slackApiString, {
+    method: 'GET',
+    headers: {
+      'Authorization': 'Bearer ' + token,
+    },
+  });
 
-  // if this fails, we must throw an error here, and handle it in the routes. something like: "the token is expired, please reinstall the app"
-  return await res.json();
+  const jsonResponse = await res.json();
+
+  if (jsonResponse?.error === 'invalid_auth') {
+    throw new Error(`Error fetching from Slack API: ${jsonResponse.error || 'Unknown error'}.\nPlease check if the Slack token is valid. Reinstalling the app might resolve this issue.`);
+  }
+
+  // Log other errors, but do not throw them
+  if (!res.ok || jsonResponse?.error) {
+    console.error(`Error fetching from Slack API: ${jsonResponse.error || 'Unknown error'}`);
+  }
+
+  return jsonResponse;
+
 }
 
 export async function getSlackUsersFromChannel(channel: string, team_id: string): Promise<SlackUser[]> {
