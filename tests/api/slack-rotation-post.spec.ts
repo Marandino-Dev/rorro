@@ -57,8 +57,6 @@ describe('Rotation POST', () => {
       expect(createLogsTableIfNotExistsSpy).toHaveBeenCalledTimes(1);
       expect(insertLogSpy).toHaveBeenNthCalledWith(
         1,
-        'marandtest', // organization name
-        'test_rotation', // rotation name after sanitization
         expect.objectContaining({
           type: 'status', // we don't really care about this that much tbh.
         })
@@ -78,8 +76,6 @@ describe('Rotation POST', () => {
       expect(createLogsTableIfNotExistsSpy).toHaveBeenCalledTimes(1);
       expect(insertLogSpy).toHaveBeenNthCalledWith(
         1,
-        'marandtest', // organization name
-        'test_rotation', // rotation name after sanitization
         expect.objectContaining({
           type: 'status', // we don't really care about this that much tbh.
         })
