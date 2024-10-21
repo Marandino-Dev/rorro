@@ -95,10 +95,7 @@ export class PostgresClient {
     return { columns, rows };
   }
 
-  public async insertLog(organizationName: string,
-    rotationName: string, log: Log): Promise<void> {
-
-    console.info(`Writing log for: ${organizationName}, ${rotationName}`);
+  public async insertLog(log: Log): Promise<void> {
 
     const queryString = `
       INSERT INTO ${this._logsTable} (description, date, executed_by, type)
@@ -184,6 +181,18 @@ export class PostgresClient {
     const { rows } = await sql.query<T>(putQuery);
     console.log('Rows inserted:', rows);
     return rows;
+  }
+
+  public async confirmTaskExists(): Promise<boolean> {
+    const queryString = `
+      SELECT EXISTS (
+        SELECT FROM information_schema.tables
+        WHERE table_schema = 'public'
+        AND table_name = $1
+      );
+    `;
+    const { rows } = await sql.query(queryString, [this._usersTable]);
+    return rows[0].exists;
   }
 
   // Update usersTable

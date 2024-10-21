@@ -50,7 +50,7 @@ export async function POST(req: NextRequest) {
 
     const userOnDuty: SlackUser = selectSlackUser(filteredUsers);
 
-    const users = await DbClient.rotateUsers(
+    await DbClient.rotateUsers(
       userOnDuty.slack_id,
       lastOnDuty?.slack_id,
       restartOnDuty?.slack_id
@@ -67,10 +67,8 @@ export async function POST(req: NextRequest) {
       'rotation'
     );
 
-    const log = await DbClient.insertLog(organizationName, rotationName, logEntry);
+    await DbClient.insertLog(logEntry);
 
-    console.debug(log);
-    console.debug(users);
     return NextResponse.json(slackMessage);
 
   } catch (error) {

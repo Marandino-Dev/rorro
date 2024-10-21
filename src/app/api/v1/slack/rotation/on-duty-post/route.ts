@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
     const rotationName = sanitizeSlackText(command);
 
     if (!rotationName) {
-      return NextResponse.json({ error: 'rotationName is required' }, { status: 400 });
+      return NextResponse.json({ error: 'rotationName is required' }, { status: 200 });
     }
 
     const DbClient = new PostgresClient(organizationName, rotationName);
@@ -38,7 +38,7 @@ export async function POST(req: NextRequest) {
 
     const userOnDuty: SlackUser = selectSlackUser(filteredUsers);
 
-    const users = await DbClient.rotateUsers(
+    await DbClient.rotateUsers(
       userOnDuty.slack_id,
       newBackup?.slack_id,
       previousBackup
@@ -56,11 +56,8 @@ export async function POST(req: NextRequest) {
       'rotation'
     );
 
-    // Insert the log entry into the database
-    const log = await DbClient.insertLog(organizationName, rotationName, logEntry);
+    await DbClient.insertLog(logEntry);
 
-    console.debug(log);
-    console.debug(users);
     return NextResponse.json(slackMessage, { status: 200 });
 
   } catch (error) {
