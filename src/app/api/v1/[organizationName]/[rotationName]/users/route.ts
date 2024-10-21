@@ -58,8 +58,7 @@ export async function PUT(
       'status'
     );
 
-    // Insert the log entry into the database
-    await client.insertLog(organizationName, rotationName, logEntry);
+    await client.insertLog(logEntry);
 
     return NextResponse.json({ message: 'User updated', user: updatedUser });
 

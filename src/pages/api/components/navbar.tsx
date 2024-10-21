@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import React, { useState } from 'react';
+import Image from 'next/image';
 
 function buttons() {
   return (
@@ -31,8 +32,7 @@ export default function Navbar() {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link href="/" className='flex items-center space-x-2 text-xl font-bold btn flex-shrink-0'>
-            <img id='rorroLogo' alt='Logo' className='h-10' src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS8YjHt4SPnWQ0zR4IKTa9jQknRHtrvsCOoUg&s" />
-            <h1 id='rorroText'>RORRO</h1>
+            <Image src="/images/logo.jpeg" alt='Logo' width={60} height={50} />
           </Link>
 
           {/* Desktop menu */}
