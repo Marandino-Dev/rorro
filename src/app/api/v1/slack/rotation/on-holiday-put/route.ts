@@ -57,10 +57,8 @@ export async function POST(req: NextRequest) {
       'status'
     );
 
-    // Insert the log entry into the database
-    const log = await DbClient.insertLog(organizationName, rotationName, logEntry);
+    await DbClient.insertLog(logEntry);
 
-    console.debug(log);
     return NextResponse.json(slackMessage);
   } catch (error) {
     console.error('Error processing request:', error);

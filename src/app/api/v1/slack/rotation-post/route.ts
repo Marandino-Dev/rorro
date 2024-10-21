@@ -63,7 +63,7 @@ export async function POST(req: NextRequest) {
       'status'
     );
 
-    await DbClient.insertLog(organizationName, rotationName, logEntry);
+    await DbClient.insertLog(logEntry);
 
     return NextResponse.json(
       getSlackMessage(SlackResponseType.InChannel, `Successfully created the ${rotationName.replace('_', ' ')} rotation.`)
