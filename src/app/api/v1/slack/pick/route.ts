@@ -9,7 +9,7 @@ import {
   parsePayloadFromRequest,
   sanitizeSlackText,
 } from 'utils/slack';
-import { createLog, filterSlackUsers, filterUserOnDuty, selectSlackUser } from '@/app/api/_utils/logic';
+import { createLog, filterCurrentUser, filterSlackUsers, filterUserOnDuty, selectSlackUser } from '@/app/api/_utils/logic';
 
 // TODO: refactor all this...
 export async function POST(req: NextRequest) {
@@ -82,10 +82,11 @@ export async function POST(req: NextRequest) {
     const previousBackup = rows.find(user => user.on_backup === true)?.slack_id;
     const newBackup = rows.find(user => user.on_duty === true);
 
-    const usersNotOnDuty = filterUserOnDuty(rows);
-    const filteredUsers = filterSlackUsers(usersNotOnDuty);
+    const notCurrentUser = filterCurrentUser(user_id, rows);
+    const usersNotOnDuty = filterUserOnDuty(notCurrentUser);
+    const filtered = filterSlackUsers(usersNotOnDuty);
 
-    const userOnDuty: SlackUser = selectSlackUser(filteredUsers);
+    const userOnDuty: SlackUser = selectSlackUser(filtered);
 
     // TODO: refactor everything here...
     await DbClient.rotateUsers(
