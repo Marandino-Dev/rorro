@@ -38,6 +38,10 @@ export function filterUserOnDuty(users: SlackUser[]): SlackUser[] {
   return users.filter(user => !user.on_duty);
 }
 
+// TODO: refactor all this into a class, it would make more sense to have the steps gradually do the filtering
+export function filterCurrentUser(currentUserSlackId: string, users: SlackUser[]): SlackUser[] {
+  return users.filter(user => user.slack_id !== currentUserSlackId);// all the slack users should have the id... idk why this is failing
+}
 /**
  * Filters out the users that aren't selectable based on the number of times they have been selected.
  */
