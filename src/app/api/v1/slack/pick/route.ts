@@ -11,13 +11,30 @@ import {
 } from 'utils/slack';
 import { createLog, filterCurrentUser, filterSlackUsers, filterUserOnDuty, selectSlackUser } from '@/app/api/_utils/logic';
 
+// TODO: refactor this into it's own function inside the slack utils.
+const sendResponseMessage = async (responseUrl: string, message: string) => {
+  const response = {
+    response_type: SlackResponseType.InChannel,
+    text: message,
+  };
+  await fetch(responseUrl, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(response),
+  });
+
+  console.debug('Response sent to', responseUrl);
+};
+
 // TODO: refactor all this...
 export async function POST(req: NextRequest) {
   try {
     const parsedPayload = await parsePayloadFromRequest(req);
 
     // Destructure necessary values from the payload
-    const { text, team_domain, channel_id, team_id, user_name, user_id } = parsedPayload;
+    const { text, team_domain, channel_id, team_id, user_name, user_id, response_url } = parsedPayload;
 
     // Clean up the command text
     const command: string = text.replace(/<[^>]+>/g, '');
@@ -103,11 +120,11 @@ export async function POST(req: NextRequest) {
 
     await DbClient.insertLog(logEntry);
 
-    const slackMessage = getSlackMessage(
-      SlackResponseType.InChannel,
-      `<@${userOnDuty.slack_id}> has been selected for ${rotationName.replace(/_/g, ' ')}${inputUrl ? `\n${inputUrl}` : ''}`
-    );
-    return NextResponse.json(slackMessage);
+    // sends only one message on slack
+    await sendResponseMessage(response_url, `<@${userOnDuty.slack_id}> has been selected for ${rotationName.replace(/_/g, ' ')}${inputUrl ? `: ${inputUrl}` : ''} by <@${user_id}>`);
+
+    // return a 200 to acknowledge the request.
+    return new Response(null, { status: 200 });
   } catch (error) {
     return NextResponse.json(
       getSlackMessage(SlackResponseType.Ephemeral, 'error: Processing request' + JSON.stringify(error, null, 2))
